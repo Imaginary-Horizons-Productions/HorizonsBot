@@ -21,7 +21,9 @@ const client = new Client({
 	intents: ["GUILDS", "GUILD_MEMBERS"]
 });
 
-client.login(require("./config/auth.json").token)
+const authPath = "../config/auth.json";
+
+client.login(require(authPath).token)
 	.catch(console.error);
 //#endregion
 
@@ -31,7 +33,7 @@ client.on("ready", () => {
 
 	(async () => {
 		try {
-			await new REST({ version: 9 }).setToken(require("./config/auth.json").token).put(
+			await new REST({ version: 9 }).setToken(require(authPath).token).put(
 				Routes.applicationCommands(client.user.id),
 				{ body: slashData }
 			)
