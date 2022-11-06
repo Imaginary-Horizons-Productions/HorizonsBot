@@ -7,8 +7,9 @@ const options = [
 const subcomands = [];
 module.exports = new Command("version", "Get HorizonsBot's version notes", false, false, options, subcomands);
 
+/** Send version information
+ */
 module.exports.execute = (interaction) => {
-	// Send version information
 	if (interaction.options.getBoolean("full-notes")) {
 		interaction.reply({
 			content: "Here are all the changes so far: ",
