@@ -1,5 +1,4 @@
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
+const { REST, Routes } = require('discord.js');
 const { token, testBotId, testGuildId } = require('./config/auth.json');
 const { commandFiles } = require('./source/commands/_commandDictionary');
 
@@ -11,7 +10,7 @@ for (const file of commandFiles) {
 	}
 }
 
-const rest = new REST({ version: 9 }).setToken(token);
+const rest = new REST({ version: 10 }).setToken(token);
 
 
 (async () => {

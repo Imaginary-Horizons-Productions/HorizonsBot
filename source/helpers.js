@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Collection, MessageEmbed, MessageActionRow, MessageSelectMenu, MessageButton, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions } = require('discord.js');
+const { Collection, MessageEmbed, EmbedBuilder, MessageActionRow, MessageSelectMenu, MessageButton, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SIGNED_INT } = require('./constants');
 
@@ -201,7 +201,7 @@ exports.eventTimeouts = {};
  * @returns {MessageEmbed}
  */
 exports.embedTemplateBuilder = function (color = "#6b81eb") {
-	return new MessageEmbed().setColor(color)
+	return new EmbedBuilder().setColor(color)
 		.setAuthor({
 			name: "Click here to visit HorizonsBot's GitHub",
 			iconURL: "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png",
@@ -889,6 +889,6 @@ exports.versionEmbedBuilder = function () {
 			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesEnd));
 		}
 
-		return embed.addField("Other Discord Bots", "Check out other Imaginary Horizons Productions bots or commission your own on the [IHP GitHub](https://github.com/Imaginary-Horizons-Productions)");
+		return embed.addFields({ name: "Other Discord Bots", value: "Check out other Imaginary Horizons Productions bots or commission your own on the [IHP GitHub](https://github.com/Imaginary-Horizons-Productions)" });
 	})
 }

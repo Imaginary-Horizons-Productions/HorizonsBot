@@ -1,4 +1,5 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
+const { SlashCommandBuilder } = require("discord.js");
+
 
 // Command Template Class
 module.exports = class Command {

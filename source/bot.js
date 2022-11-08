@@ -1,7 +1,5 @@
 //#region Imports
-const { Client } = require("discord.js");
-const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v9");
+const { Client, REST, GatewayIntentBits, Routes } = require("discord.js");
 
 const { getCommand, slashData } = require("./commands/_commandDictionary.js");
 const { callButton } = require("./buttons/_buttonDictionary.js");
@@ -20,7 +18,7 @@ const client = new Client({
 			name: "/commands"
 		}]
 	},
-	intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES"]
+	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages]
 });
 
 const authPath = "../config/auth.json";
