@@ -1,0 +1,24 @@
+{
+	"color": 7045611,
+	"author": {
+		"name": "Click here to visit HorizonsBot's GitHub",
+		"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png",
+		"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
+	},
+	"title": "HorizonsBot v2.0.0",
+	"description": "HorizonsBot helps with channel management and other stuff on the Imaginary Horizons Community Discord.",
+	"fields": [
+		{
+			"name": "Design & Engineering",
+			"value": "Nathaniel Tseng ( <@106122478715150336> | [GitHub](https://github.com/ntseng) )"
+		},
+		{
+			"name": "Dice Roller",
+			"value": "Lucas Ensign ( <@112785244733628416> | [Twitter](https://twitter.com/SillySalamndr) )"
+		}
+	],
+	"footer": {
+		"text": "Use /support to learn how to support the server!",
+		"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png"
+	}
+}

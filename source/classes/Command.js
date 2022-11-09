@@ -1,13 +1,20 @@
 const { SlashCommandBuilder } = require("discord.js");
 
 
-// Command Template Class
 module.exports = class Command {
-	constructor(nameInput, descriptionInput, managerCommandInput, premiumCommandInput, optionsInput, subcommandsInput) {
+	/** IHP wrapper for slash commands
+	 * @param {string} nameInput
+	 * @param {string} descriptionInput
+	 * @param {boolean} isManagerCommand
+	 * @param {boolean} isPremiumCommand
+	 * @param {Array} optionsInput
+	 * @param {Array} subcommandsInput
+	 */
+	constructor(nameInput, descriptionInput, isManagerCommand, isPremiumCommand, optionsInput, subcommandsInput) {
 		this.name = nameInput;
 		this.description = descriptionInput;
-		this.managerCommand = managerCommandInput;
-		this.premiumCommand = premiumCommandInput;
+		this.managerCommand = isManagerCommand;
+		this.premiumCommand = isPremiumCommand;
 		this.data = new SlashCommandBuilder()
 			.setName(nameInput)
 			.setDescription(descriptionInput);

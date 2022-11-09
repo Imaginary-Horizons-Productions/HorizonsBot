@@ -1,4 +1,5 @@
 const Command = require('../classes/Command.js');
+const { Interaction } = require('discord.js');
 const { versionEmbedBuilder } = require('../helpers.js');
 
 const options = [
@@ -8,6 +9,7 @@ const subcomands = [];
 module.exports = new Command("version", "Get HorizonsBot's version notes", false, false, options, subcomands);
 
 /** Send version information
+ * @param {Interaction} interaction
  */
 module.exports.execute = (interaction) => {
 	if (interaction.options.getBoolean("full-notes")) {
