@@ -1,4 +1,6 @@
 # HorizonsBot Change Log
+#### HorizonsBot Version 2.0.0:
+ - Updated discord.js to v14
 #### HorizonsBot Version 1.17.2:
  - Fixed a crash
 #### HorizonsBot Version 1.17.1:
