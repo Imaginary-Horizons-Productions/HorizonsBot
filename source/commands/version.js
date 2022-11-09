@@ -6,7 +6,7 @@ const options = [
 	{ type: "Boolean", name: "full-notes", description: "Get the file with the full version notes?", required: true, choices: [] }
 ];
 const subcomands = [];
-module.exports = new Command("version", "Get HorizonsBot's version notes", false, false, options, subcomands);
+module.exports = new Command("version", "Get HorizonsBot's version notes", false, options, subcomands);
 
 /** Send version information
  * @param {Interaction} interaction

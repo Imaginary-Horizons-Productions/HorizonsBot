@@ -3,7 +3,7 @@ const CommandSet = require('../classes/CommandSet.js');
 // A maximum of 25 command sets are supported by /commands to conform with MessageEmbed limit of 25 fields
 exports.commandSets = [
 	new CommandSet("General Commands", "These commands are general use utilities for the server.", false,
-		["at-channel.js"]),
+		["at-channel.js", "timestamp.js"]),
 	new CommandSet("Informantional Commands", "Use these commands to learn more about HorizonsBot or this server.", false,
 		["about.js", "version.js"]),
 	// new CommandSet("Topic Commands", "This server has opt-in topic channels that are automatically generated when enough members petition for them.", false,

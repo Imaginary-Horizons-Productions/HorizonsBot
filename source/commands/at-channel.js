@@ -7,7 +7,7 @@ const options = [
 	{ type: "String", name: "type", description: "Who to notify", required: false, choices: [{ name: "Only online users in this channel", value: "@here" }, { name: "All users in this channel", value: "@everyone" }] }
 ];
 const subcomands = [];
-module.exports = new Command("at-channel", "Send a ping to the current channel", false, false, options, subcomands);
+module.exports = new Command("at-channel", "Send a ping to the current channel", false, options, subcomands);
 
 /** Send a rate-limited ping
  * @param {Interaction} interaction

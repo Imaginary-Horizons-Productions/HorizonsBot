@@ -6,15 +6,13 @@ module.exports = class Command {
 	 * @param {string} nameInput
 	 * @param {string} descriptionInput
 	 * @param {boolean} isManagerCommand
-	 * @param {boolean} isPremiumCommand
 	 * @param {Array} optionsInput
 	 * @param {Array} subcommandsInput
 	 */
-	constructor(nameInput, descriptionInput, isManagerCommand, isPremiumCommand, optionsInput, subcommandsInput) {
+	constructor(nameInput, descriptionInput, isManagerCommand, optionsInput, subcommandsInput) {
 		this.name = nameInput;
 		this.description = descriptionInput;
 		this.managerCommand = isManagerCommand;
-		this.premiumCommand = isPremiumCommand;
 		this.data = new SlashCommandBuilder()
 			.setName(nameInput)
 			.setDescription(descriptionInput);
