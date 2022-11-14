@@ -798,7 +798,7 @@ function reminderWaitLoop(club, channelManager) {
 					))
 				}
 				textChannel.send({
-					content: `@everyone ${club.timeslot.message ? club.timeslot.message : "Reminder: this club meets in about 24 hours"}`,
+					content: `@everyone ${club.timeslot.message ? club.timeslot.message : "Reminder: This club about this time tomorrow!"}`,
 					components
 				});
 			});
