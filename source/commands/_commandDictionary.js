@@ -5,7 +5,7 @@ exports.commandSets = [
 	new CommandSet("General Commands", "These commands are general use utilities for the server.", false,
 		["at-channel.js", "timestamp.js"]),
 	new CommandSet("Informantional Commands", "Use these commands to learn more about HorizonsBot or this server.", false,
-		["rules.js", "about.js", "version.js", "data-policy.js"]),
+		["rules.js", "commands.js", "about.js", "version.js", "data-policy.js"]),
 	// new CommandSet("Topic Commands", "This server has opt-in topic channels that are automatically generated when enough members petition for them.", false,
 	// 	[]),
 	// new CommandSet("Club Commands", "Clubs are private text and voice channels that include organization utilities like automatic reminders.", false,
