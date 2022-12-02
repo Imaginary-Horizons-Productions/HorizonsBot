@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Collection, MessageEmbed, EmbedBuilder, MessageActionRow, MessageSelectMenu, MessageButton, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions } = require('discord.js');
+const { Collection, MessageEmbed, EmbedBuilder, MessageActionRow, MessageSelectMenu, MessageButton, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SIGNED_INT } = require('./constants');
 
@@ -519,26 +519,27 @@ exports.checkPetition = function (guild, topicName, author = null) {
  * @returns {Promise<TextChannel>}
  */
 exports.addTopicChannel = function (guild, topicName) {
-	return guild.channels.create(topicName, {
+	return guild.channels.create({
+		name: topicName,
 		parent: "800460987416313887",
 		permissionOverwrites: [
 			{
-				id: guild.me,
-				allow: ["VIEW_CHANNEL"],
+				id: guild.client.user.id,
+				allow: [PermissionsBitField.Flags.ViewChannel],
 				type: 1
 			},
 			{
 				id: exports.modRoleId,
-				allow: ["VIEW_CHANNEL"],
+				allow: [PermissionsBitField.Flags.ViewChannel],
 				type: 0
 			},
 			{
 				id: guild.id,
-				deny: ["VIEW_CHANNEL"],
+				deny: [PermissionsBitField.Flags.ViewChannel],
 				type: 0
 			}
 		],
-		type: "GUILD_TEXT"
+		type: ChannelType.GuildText
 	}).then(channel => {
 		var petitions = exports.getPetitions();
 		if (!petitions[topicName]) {
@@ -551,7 +552,7 @@ exports.addTopicChannel = function (guild, topicName) {
 		}).then(allowedCollection => {
 			allowedCollection.mapValues(member => {
 				channel.permissionOverwrites.create(member.user, {
-					"VIEW_CHANNEL": true
+					[PermissionsBitField.Flags.ViewChannel]: true
 				});
 			})
 
