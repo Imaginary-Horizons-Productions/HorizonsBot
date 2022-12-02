@@ -1,6 +1,6 @@
 const fs = require("fs");
 const Command = require('../classes/Command.js');
-const { embedTemplateBuilder } = require("../helpers.js");
+const { embedTemplateBuilder, randomEmbedFooter } = require("../helpers.js");
 
 const options = [
 	{
@@ -36,7 +36,7 @@ module.exports.execute = (interaction) => {
 		const embed = embedTemplateBuilder()
 			.setTitle(commandSetName)
 			.setDescription(commandSetText)
-			.setFooter({ text: "Use /support to learn how to support the server!", iconURL: interaction.client.user.displayAvatarURL() })
+			.setFooter(randomEmbedFooter())
 
 		for (const command of commands.slice(1)) {
 			let [commandName, description, ...args] = command.split(/\r*\n/)

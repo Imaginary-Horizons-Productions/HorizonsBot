@@ -27,9 +27,5 @@
 			"name": "Use Spoiler Tags",
 			"value": "Surround extreme or sensitive topics as well as story reveals from media with `||` so that Discord hides it by default. Example: `||This is a spoiler||` shows as ||This is a spoiler||."
 		}
-	],
-	"footer": {
-		"text": "Use /support to learn how to support the server!",
-		"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png"
-	}
+	]
 }

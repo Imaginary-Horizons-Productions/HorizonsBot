@@ -1,6 +1,7 @@
 const Command = require('../classes/Command.js');
 const { Interaction } = require('discord.js');
 const embed = require("../../config/embeds/rules.json");
+const { randomEmbedFooter } = require('../helpers.js');
 
 const options = [];
 const subcommands = [];
@@ -10,5 +11,6 @@ module.exports = new Command("rules", "Get the server rules", false, options, su
  * @param {Interaction} interaction
  */
 module.exports.execute = (interaction) => {
+	embed.footer = randomEmbedFooter();
 	interaction.reply({ embeds: [embed], ephemeral: true });
 }

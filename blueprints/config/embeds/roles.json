@@ -23,9 +23,5 @@
 			"name": "Supporter Role",
 			"value": "<@&662764480970883074>\nThis role is given to people who are supporting the server, either by boosting with Discord Nitro or voting for us on [top.gg](https://top.gg/servers/353575133157392385/vote)."
 		}
-	],
-	"footer": {
-		"text": "Use /support to learn how to support the server!",
-		"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png"
-	}
+	]
 }

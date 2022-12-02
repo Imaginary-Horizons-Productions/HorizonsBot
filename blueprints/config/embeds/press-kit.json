@@ -14,9 +14,5 @@
 			"name": "Colors",
 			"value": "Salmon - #f07581\nPeriwinkle - #6b81eb\nSpring Green - #b0ffe8\nWhite - #ffffff"
 		}
-	],
-	"footer": {
-		"text": "Invite Link - discord.gg/5EPWvu4",
-		"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png"
-	}
+	]
 }
