@@ -814,7 +814,7 @@ function reminderWaitLoop(club, channelManager) {
 					))
 				}
 				textChannel.send({
-					content: `@everyone ${club.timeslot.message ? club.timeslot.message : "Reminder: This club about this time tomorrow!"}`,
+					content: `@everyone ${club.timeslot.message ? club.timeslot.message : `Reminder: This club about this time tomorrow (<t:${club.timeslot.nextMeeting}:t>)!`}`,
 					components
 				});
 			});
