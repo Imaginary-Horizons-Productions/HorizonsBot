@@ -104,7 +104,6 @@ let topics = new Collection();
 /** Get the array of topic channel ids
  * @returns {string[]}
  */
-//TODONOW getTopicIDs -> getTopicIds
 exports.getTopicIds = function () {
 	return Array.from(topics.keys());
 }
@@ -133,12 +132,13 @@ exports.addTopic = function (id, channelName) {
 }
 
 /** Clean up internal state to keep in sync with removing a topic channel
- * @param {TextChannel} channel
+ * @param {string} channelId
+ * @param {Guild} guild
  */
-exports.removeTopic = function (channel) {
-	topics.delete(channel.id);
+exports.removeTopic = function (channelId, guild) {
+	topics.delete(channelId);
 	exports.saveObject(exports.getTopicIds(), 'topicList.json');
-	exports.updateList(channel.guild.channels, "topics");
+	exports.updateList(guild.channels, "topics");
 }
 
 let petitions = require('../config/petitionList.json');
@@ -360,7 +360,7 @@ exports.topicListBuilder = function (channelManager) {
 		})
 	}
 
-	//TODONOW make constants for 2048 and 1024
+	//TODONOW use MessageEmbed.length instead
 	if (description.length > 2048 || petitionText.length > 1024) {
 		return new Promise((resolve, reject) => {
 			let fileText = description;
@@ -521,7 +521,7 @@ exports.checkPetition = function (guild, topicName, author = null) {
 exports.addTopicChannel = function (guild, topicName) {
 	return guild.channels.create({
 		name: topicName,
-		parent: "800460987416313887",
+		parent: "656186659758407691",
 		permissionOverwrites: [
 			{
 				id: guild.client.user.id,

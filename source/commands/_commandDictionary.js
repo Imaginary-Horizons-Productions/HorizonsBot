@@ -11,7 +11,7 @@ exports.commandSets = [
 	// new CommandSet("Club Commands", "Clubs are private text and voice channels that include organization utilities like automatic reminders.", false,
 	// 	[]),
 	new CommandSet("Moderation Commands", "Commands for moderators. Required permissions are listed in (parenthesis) at the beginning of the description.", true,
-		["at-permission.js"])
+		["at-permission.js", "delete.js"])
 ];
 
 exports.commandFiles = exports.commandSets.reduce((allFiles, set) => allFiles.concat(set.fileNames), []);

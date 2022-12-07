@@ -1,11 +1,13 @@
 //#region Imports
 const { Client, REST, GatewayIntentBits, Routes } = require("discord.js");
+const fsa = require("fs/promises");
 
 const { getCommand, slashData } = require("./commands/_commandDictionary.js");
 const { callButton } = require("./buttons/_buttonDictionary.js");
 const { callSelect } = require("./selects/_selectDictionary.js");
-const { listMessages, pinClubsList, getClubs, updateList, getPetitions, setPetitions, checkPetition, getTopicIDs, removeTopic, removeClub } = require("./helpers.js");
-const { SAFE_DELIMITER } = require('./constants.js');
+const { listMessages, pinClubsList, getClubs, updateList, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, versionEmbedBuilder, scheduleClubEvent, setClubReminder } = require("./helpers.js");
+const { SAFE_DELIMITER, guildId } = require('./constants.js');
+const versionData = require('../config/_versionData.json');
 //TODONOW pinClubList or pinClubsList
 //#endregion
 
@@ -41,6 +43,55 @@ client.on("ready", () => {
 			console.error(error);
 		}
 	})()
+
+	client.guilds.fetch(guildId).then(guild => {
+		// Post version notes
+		if (versionData.patchNotesChannelId) {
+			fsa.readFile('./ChangeLog.md', { encoding: 'utf8' }).then(data => {
+				let [currentFull, currentMajor, currentMinor, currentPatch] = data.match(/(\d+)\.(\d+)\.(\d+)/);
+				let [_lastFull, lastMajor, lastMinor, lastPatch] = versionData.lastPostedVersion.match(/(\d+)\.(\d+)\.(\d+)/);
+
+				if (currentMajor <= lastMajor) {
+					if (currentMinor <= lastMinor) {
+						if (currentPatch <= lastPatch) {
+							return;
+						}
+					}
+				}
+
+				versionEmbedBuilder().then(embed => {
+					guild.channels.fetch(versionData.patchNotesChannelId).then(patchChannel => {
+						patchChannel.send({ embeds: [embed] });
+						versionData.lastPostedVersion = currentFull;
+						fsa.writeFile('./config/_versionData.json', JSON.stringify(versionData), "utf-8");
+					})
+				}).catch(console.error);
+			});
+		}
+
+		// Generate topic collection
+		const channelManager = guild.channels;
+		require('../config/topicList.json').forEach(id => {
+			channelManager.fetch(id).then(channel => {
+				addTopic(id, channel.name);
+			}).catch(console.error);
+		})
+
+		// Begin checking for club reminders
+		for (let club of Object.values(getClubs())) {
+			setClubReminder(club, channelManager);
+			scheduleClubEvent(club, guild);
+		}
+
+		// Update pinned lists
+		if (listMessages.topics) {
+			updateList(channelManager, "topics");
+		}
+
+		if (listMessages.clubs) {
+			updateList(channelManager, "clubs");
+		}
+	})
 })
 
 client.on("interactionCreate", interaction => {
@@ -99,10 +150,10 @@ client.on('guildMemberRemove', ({ id: memberId, guild }) => {
 })
 
 client.on('channelDelete', ({ id, guild }) => {
-	const topics = getTopicIDs();
+	const topics = getTopicIds();
 	const clubDictionary = getClubs();
 	if (topics?.includes(id)) {
-		removeTopic(channel);
+		removeTopic(id, guild);
 	} else if (clubDictionary) {
 		const clubs = Object.values(clubDictionary);
 		if (clubs.map(club => club.voiceChannelId).includes(id)) {
