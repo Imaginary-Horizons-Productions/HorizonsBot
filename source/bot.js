@@ -5,7 +5,7 @@ const fsa = require("fs/promises");
 const { getCommand, slashData } = require("./commands/_commandDictionary.js");
 const { callButton } = require("./buttons/_buttonDictionary.js");
 const { callSelect } = require("./selects/_selectDictionary.js");
-const { listMessages, pinClubsList, getClubs, updateList, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, versionEmbedBuilder, scheduleClubEvent, setClubReminder } = require("./helpers.js");
+const { listMessages, pinClubsList, getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, versionEmbedBuilder, scheduleClubEvent, setClubReminder } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //TODONOW pinClubList or pinClubsList
@@ -78,7 +78,7 @@ client.on("ready", () => {
 		})
 
 		// Begin checking for club reminders
-		for (let club of Object.values(getClubs())) {
+		for (let club of Object.values(getClubDictionary())) {
 			setClubReminder(club, channelManager);
 			scheduleClubEvent(club, guild);
 		}
@@ -131,7 +131,7 @@ client.on("messageCreate", receivedMessage => {
 
 client.on('guildMemberRemove', ({ id: memberId, guild }) => {
 	// Remove member's clubs
-	for (const club of Object.values(getClubs())) {
+	for (const club of Object.values(getClubDictionary())) {
 		if (memberId == club.hostId) {
 			guild.channels.resolve(club.id).delete("Club host left server");
 		} else if (club.userIds.includes(memberId)) {
@@ -151,7 +151,7 @@ client.on('guildMemberRemove', ({ id: memberId, guild }) => {
 
 client.on('channelDelete', ({ id, guild }) => {
 	const topics = getTopicIds();
-	const clubDictionary = getClubs();
+	const clubDictionary = getClubDictionary();
 	if (topics?.includes(id)) {
 		removeTopic(id, guild);
 	} else if (clubDictionary) {

@@ -167,8 +167,7 @@ Object.values(require('../config/clubList.json')).forEach(club => {
 /** Get the dictionary relating club text channel id to club class instances
  * @returns {{[TextChannel.id]: Club}} { [TextChannel.id]: Club }
  */
-//TODONOW getClubs -> getClubDictionary
-exports.getClubs = function () {
+exports.getClubDictionary = function () {
 	return clubDictionary;
 }
 
@@ -229,7 +228,7 @@ exports.embedTemplateBuilder = function (color = "#6b81eb") {
  * @returns {string[]}
  */
 exports.getManagedChannels = function () {
-	return exports.getTopicIds().concat(Object.keys(exports.getClubs()));
+	return exports.getTopicIds().concat(Object.keys(exports.getClubDictionary()));
 }
 
 /** Update the club or topics list message
@@ -299,7 +298,7 @@ function listSelectBuilder(listType) {
 		case "clubs":
 			selectCutomId = "clubList";
 
-			entries = Object.values(exports.getClubs()).map(club => {
+			entries = Object.values(exports.getClubDictionary()).map(club => {
 				return {
 					label: club.title,
 					description: `${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members`,
@@ -425,7 +424,7 @@ exports.clubListBuilder = function () {
 	messageOptions.components = [listSelectBuilder("clubs")];
 
 	let description = "Here's a list of the clubs on the server. Learn more about one by typing `/club-invite (club ID)`.\n";
-	let clubs = exports.getClubs();
+	let clubs = exports.getClubDictionary();
 
 	Object.keys(clubs).forEach(id => {
 		let club = clubs[id];
@@ -583,8 +582,8 @@ exports.joinChannel = function (channel, user) {
 				}).then(() => {
 					channel.send(`Welcome to ${channelName}, ${user}!`);
 				}).catch(console.error);
-			} else if (Object.keys(exports.getClubs()).includes(id)) {
-				let club = exports.getClubs()[id];
+			} else if (Object.keys(exports.getClubDictionary()).includes(id)) {
+				let club = exports.getClubDictionary()[id];
 				if (club.seats === -1 || club.isRecruiting()) {
 					if (club.hostId != user.id && !club.userIds.includes(user.id)) {
 						club.userIds.push(user.id);
@@ -656,7 +655,7 @@ exports.clubInviteBuilder = function (club, includeJoinButton) {
  * @param {User} recipient
  */
 exports.clubInvite = function (interaction, clubId, recipient) {
-	let club = exports.getClubs()[clubId];
+	let club = exports.getClubDictionary()[clubId];
 	if (club) {
 		if (!recipient) {
 			recipient = interaction.user;
@@ -743,7 +742,7 @@ exports.createClubEvent = function (club, guild) {
 exports.scheduleClubEvent = function (club, guild) {
 	if (club.isRecruiting()) {
 		let timeout = setTimeout((clubId, timeoutGuild) => {
-			const club = exports.getClubs()[clubId];
+			const club = exports.getClubDictionary()[clubId];
 			if (club?.isRecruiting()) {
 				exports.createClubEvent(club, timeoutGuild);
 			}
