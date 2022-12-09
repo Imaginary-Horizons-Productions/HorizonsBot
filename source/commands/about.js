@@ -1,7 +1,7 @@
 const { Interaction } = require('discord.js');
 const Command = require('../classes/Command.js');
 const embed = require("../../config/embeds/about.json");
-const { randomEmbedFooter } = require('../controllers/messageController.js');
+const { randomEmbedFooter } = require('../engines/messageEngine.js');
 
 const options = [];
 const subcommands = [];

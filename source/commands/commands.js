@@ -1,6 +1,6 @@
 const fs = require("fs");
 const Command = require('../classes/Command.js');
-const { randomEmbedFooter, embedTemplateBuilder } = require("../controllers/messageController.js");
+const { randomEmbedFooter, embedTemplateBuilder } = require("../engines/messageEngine.js");
 
 const options = [
 	{
