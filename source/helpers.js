@@ -1,7 +1,8 @@
 const fs = require('fs');
-const { Collection, MessageEmbed, EmbedBuilder, MessageActionRow, MessageSelectMenu, MessageButton, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField } = require('discord.js');
+const { Collection, EmbedBuilder, MessageSelectMenu, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, MessagePayload } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SIGNED_INT } = require('./constants');
+const { randomEmbedFooter, embedTemplateBuilder } = require('./engines/messageEngine');
 
 /** Convert an amount of time from a starting unit to a different one
  * @param {number} value
@@ -195,35 +196,6 @@ exports.reminderTimeouts = {};
 exports.eventTimeouts = {};
 
 // Functions
-exports.randomEmbedFooter = function () {
-	const tips = [
-		"You can roll dice with the /roll command!",
-		"Once 5% of the server has used /petition for a topic, a text channel will automatically be created",
-		"Clubs and topics are hidden by default to reduce channel clutter. Use /list to see what you're missing!",
-		"Find out how to get roles on the server with /roles",
-		"Use /timestamp to get a string that Discord automatically converts into the reader's timezone!",
-		"Use /at-channel if you want to ping the channel (this lets us rate limit @here and @everyone)"
-	];
-	return {
-		text: tips[Math.floor(Math.random() * tips.length)],
-		iconURL: 'https://media.discordapp.net/attachments/789323338946183188/1048075545017065562/light-bulb.png?width=468&height=468'
-	}
-}
-
-/** Create a Message Embed with common settings (author, timestamp, color)
- * @param {string} color
- * @returns {MessageEmbed}
- */
-exports.embedTemplateBuilder = function (color = "#6b81eb") {
-	return new EmbedBuilder().setColor(color)
-		.setAuthor({
-			name: "Click here to visit HorizonsBot's GitHub",
-			iconURL: "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png",
-			url: "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
-		})
-		.setTimestamp();
-}
-
 /** Get the array of all club and topic text channel ids
  * @returns {string[]}
  */
@@ -250,9 +222,9 @@ exports.updateList = async function (channelManager, listType) {
 	}
 }
 
-/** Create the MessageActionRow containing the selects for joining clubs/topics and adding to petitions
+/** Create the ActionRowBuilder containing the selects for joining clubs/topics and adding to petitions
  * @param {"topics" | "clubs"} listType
- * @returns {MessageActionRow}
+ * @returns {ActionRowBuilder}
  */
 function listSelectBuilder(listType) {
 	let selectCutomId = "";
@@ -314,7 +286,7 @@ function listSelectBuilder(listType) {
 			break;
 	}
 
-	return new MessageActionRow().addComponents(
+	return new ActionRowBuilder().addComponents(
 		new MessageSelectMenu()
 			.setCustomId(selectCutomId)
 			.setPlaceholder(placeholderText)
@@ -383,7 +355,7 @@ exports.topicListBuilder = function (channelManager) {
 		})
 	} else {
 		return new Promise((resolve, reject) => {
-			let embed = exports.embedTemplateBuilder()
+			let embed = embedTemplateBuilder()
 				.setTitle("Topic Channels")
 				.setDescription(description)
 				.setFooter({ text: "Please do not make bounties to vote for your petitions." });
@@ -457,7 +429,7 @@ exports.clubListBuilder = function () {
 	} else {
 		return new Promise((resolve, reject) => {
 			messageOptions.embeds = [
-				exports.embedTemplateBuilder("#f07581")
+				embedTemplateBuilder("#f07581")
 					.setTitle("Clubs")
 					.setDescription(description)
 			];
@@ -614,36 +586,35 @@ exports.joinChannel = function (channel, user) {
 	}
 }
 
-/** Generate the invite MessageEmbed
+/** Generate the invite MessageOptions
  * @param {Club} club
  * @param {boolean} includeJoinButton
- * @returns {MessageEmbed}
+ * @returns {MessageOptions}
  */
 exports.clubInviteBuilder = function (club, includeJoinButton) {
 	// Generate Embed
-	let embed = exports.embedTemplateBuilder()
-		.setTitle(`__**${club.title}**__ (${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members)`)
-		.setDescription(club.description)
-		.addField("Club Host", `<@${club.hostId}>`)
-		.setImage(club.imageURL);
+	const fields = [{ name: "Club Host", value: `<@${club.hostId}>` }];
 	if (club.system) {
-		embed.addField("Game", club.system);
+		fields.push({ name: "Game", value: club.system });
 	}
 	if (club.timeslot.nextMeeting) {
-		embed.addField("Next Meeting", `<t:${club.timeslot.nextMeeting}:F>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "w" ? "week(s)" : "day(s)"}`}`);
-	}
-	if (club.color) {
-		embed.setColor(club.color);
+		fields.push({
+			name: "Next Meeting",
+			value: `<t:${club.timeslot.nextMeeting}:F>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "w" ? "week(s)" : "day(s)"}`}`
+		});
 	}
 
+	const embed = embedTemplateBuilder()
+		.setTitle(`__**${club.title}**__ (${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members)`)
+		.setDescription(club.description)
+		.addFields(fields)
+		.setImage(club.imageURL || null)
+		.setColor(club.color || null);
+
 	// Generate Components
-	let buttons = [];
+	const uiComponents = [];
 	if (includeJoinButton) {
-		buttons.push(new MessageButton().setCustomId(`join-${club.id}`).setLabel(`Join ${club.title}`).setStyle("SUCCESS"));
-	}
-	let uiComponents = [];
-	if (buttons.length > 0) {
-		uiComponents.push(new MessageActionRow().addComponents(...buttons));
+		uiComponents.push(new ActionRowBuilder().addComponents(...new ButtonBuilder().setCustomId(`join-${club.id}`).setLabel(`Join ${club.title}`).setStyle("SUCCESS")));
 	}
 
 	return { embed, uiComponents };
@@ -805,8 +776,8 @@ function reminderWaitLoop(club, channelManager) {
 					invite = await (await channelManager.guild.scheduledEvents.fetch(club.timeslot.eventId)).channel.createInvite();
 				}
 				if (invite?.url) {
-					components.push(new MessageActionRow().addComponents(
-						new MessageButton()
+					components.push(new ActionRowBuilder().addComponents(
+						new ButtonBuilder()
 							.setLabel("Join Voice")
 							.setStyle("LINK")
 							.setURL(invite.url)
@@ -874,7 +845,7 @@ exports.saveObject = function (entity, fileName) {
 }
 
 /** The version embed should contain the last version's changes, known issues, and project links
- * @returns {MessageEmbed}
+ * @returns {EmbedBuilder}
  */
 exports.versionEmbedBuilder = function () {
 	return fs.promises.readFile('./ChangeLog.md', { encoding: 'utf8' }).then(data => {
@@ -890,11 +861,11 @@ exports.versionEmbedBuilder = function () {
 		}
 		let knownIssuesEnd = dividerRegEx.exec(data).index;
 
-		let embed = exports.embedTemplateBuilder()
+		let embed = embedTemplateBuilder()
 			.setTitle(data.slice(titleStart + 5, changesStartRegEx.lastIndex))
 			.setURL('https://discord.gg/bcE3Syu')
 			.setThumbnail('https://cdn.discordapp.com/attachments/545684759276421120/734099622846398565/newspaper.png')
-			.setFooter(exports.randomEmbedFooter());
+			.setFooter(randomEmbedFooter());
 
 		if (knownIssuesStart && knownIssuesStart < knownIssuesEnd) {
 			// Known Issues section found
