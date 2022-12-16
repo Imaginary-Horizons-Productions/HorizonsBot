@@ -4,6 +4,7 @@ const fsa = require("fs/promises");
 
 const { getCommand, slashData } = require("./commands/_commandDictionary.js");
 const { callButton } = require("./buttons/_buttonDictionary.js");
+const { callModalSubmission } = require("./modalSubmissions/_modalSubmissionDictionary.js");
 const { callSelect } = require("./selects/_selectDictionary.js");
 const { listMessages, pinClubsList, getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, versionEmbedBuilder, scheduleClubEvent, setClubReminder } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
@@ -107,8 +108,10 @@ client.on("interactionCreate", interaction => {
 		const [mainId, ...args] = interaction.customId.split(SAFE_DELIMITER);
 		if (interaction.isButton()) {
 			callButton(mainId, interaction, args);
-		} else if (interaction.isSelectMenu()) {
+		} else if (interaction.isStringSelectMenu()) {
 			callSelect(mainId, interaction, args);
+		} else if (interaction.isModalSubmit()) {
+			callModalSubmission(mainId, interaction, args);
 		}
 	}
 })

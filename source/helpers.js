@@ -617,7 +617,7 @@ exports.clubInviteBuilder = function (club, includeJoinButton) {
 		uiComponents.push(new ActionRowBuilder().addComponents(...new ButtonBuilder().setCustomId(`join-${club.id}`).setLabel(`Join ${club.title}`).setStyle("SUCCESS")));
 	}
 
-	return { embed, uiComponents };
+	return { embeds: [embed], components: uiComponents };
 }
 
 /** Send the recipient an invitation to the club
@@ -633,8 +633,7 @@ exports.clubInvite = function (interaction, clubId, recipient) {
 		}
 		if (!recipient.bot) {
 			if (recipient.id !== club.hostId && !club.userIds.includes(recipient.id)) {
-				let { embed, uiComponents } = exports.clubInviteBuilder(club, true);
-				recipient.send({ embeds: [embed], components: uiComponents }).then(() => {
+				recipient.send(exports.clubInviteBuilder(club, true)).then(() => {
 					interaction.reply({ content: "Club details have been sent.", ephemeral: true });
 				}).catch(console.error);
 			} else {
@@ -654,8 +653,8 @@ exports.clubInvite = function (interaction, clubId, recipient) {
  */
 exports.updateClubDetails = (club, channel) => {
 	channel.messages.fetch(club.detailSummaryId).then(message => {
-		let { embed, uiComponents } = exports.clubInviteBuilder(club, false);
-		message.edit({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds: [embed], components: uiComponents, fetchReply: true }).then(detailSummaryMessage => {
+		const { embeds, components } = exports.clubInviteBuilder(club, false);
+		message.edit({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds, components, fetchReply: true }).then(detailSummaryMessage => {
 			detailSummaryMessage.pin();
 			club.detailSummaryId = detailSummaryMessage.id;
 			exports.updateList(channel.guild.channels, "clubs");
@@ -664,8 +663,8 @@ exports.updateClubDetails = (club, channel) => {
 	}).catch(error => {
 		if (error.message === "Unknown Message") {
 			// message not found
-			let { embed, uiComponents } = exports.clubInviteBuilder(club, false);
-			channel.send({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds: [embed], components: uiComponents, fetchReply: true }).then(detailSummaryMessage => {
+			const { embeds, components } = exports.clubInviteBuilder(club, false);
+			channel.send({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds, components, fetchReply: true }).then(detailSummaryMessage => {
 				detailSummaryMessage.pin();
 				club.detailSummaryId = detailSummaryMessage.id;
 				exports.updateList(channel.guild.channels, "clubs");

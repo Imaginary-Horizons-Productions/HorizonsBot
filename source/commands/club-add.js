@@ -73,8 +73,8 @@ module.exports.execute = (interaction) => {
 			}).then(voiceChannel => {
 				const club = new Club(textChannel.id, host.id, voiceChannel.id);
 				textChannel.send({ content: `Welcome to your new club's text channel ${host}! As club host, you can pin and delete messages in this channel and configure various settings with \`/club-config\`.` });
-				const { embed } = clubInviteBuilder(club, false);
-				textChannel.send({ content: "When invites are sent with \`/club-invite\`, the invitee will be shown the following embed:", embeds: [embed], fetchReply: true }).then(invitePreviewMessage => {
+				const { embeds } = clubInviteBuilder(club, false);
+				textChannel.send({ content: "When invites are sent with \`/club-invite\`, the invitee will be shown the following embed:", embeds, fetchReply: true }).then(invitePreviewMessage => {
 					invitePreviewMessage.pin();
 					club.detailSummaryId = invitePreviewMessage.id;
 					updateList(interaction.guild.channels, "clubs");
