@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Collection, EmbedBuilder, MessageSelectMenu, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, MessagePayload } = require('discord.js');
+const { Collection, EmbedBuilder, MessageSelectMenu, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SIGNED_INT } = require('./constants');
 const { randomEmbedFooter, embedTemplateBuilder } = require('./engines/messageEngine');
@@ -195,13 +195,6 @@ exports.reminderTimeouts = {};
 exports.eventTimeouts = {};
 
 // Functions
-/** Get the array of all club and topic text channel ids
- * @returns {string[]}
- */
-exports.getManagedChannels = function () {
-	return exports.getTopicIds().concat(Object.keys(exports.getClubDictionary()));
-}
-
 /** Update the club or topics list message
  * @param {GuildChannelManager} channelManager
  * @param {"topics" | "clubs"} listType
@@ -741,7 +734,7 @@ exports.cancelClubEvent = function (voiceChannelId, eventId, eventManager) {
  */
 exports.setClubReminder = async function (club, channelManager) {
 	if (club.timeslot.nextMeeting) {
-		let timeout = setTimeout(
+		const timeout = setTimeout(
 			reminderWaitLoop,
 			calculateReminderMS(club.timeslot.nextMeeting),
 			club,
@@ -768,22 +761,8 @@ function reminderWaitLoop(club, channelManager) {
 	if (club.timeslot.nextMeeting) {
 		if (calculateReminderMS(club.timeslot.nextMeeting) < MAX_SIGNED_INT) {
 			channelManager.fetch(club.id).then(async textChannel => {
-				const components = [];
-				let invite;
-				if (club.timeslot.eventId) {
-					invite = await (await channelManager.guild.scheduledEvents.fetch(club.timeslot.eventId)).channel.createInvite();
-				}
-				if (invite?.url) {
-					components.push(new ActionRowBuilder().addComponents(
-						new ButtonBuilder()
-							.setLabel("Join Voice")
-							.setStyle("LINK")
-							.setURL(invite.url)
-					))
-				}
 				textChannel.send({
-					content: `@everyone ${club.timeslot.message ? club.timeslot.message : `Reminder: This club about this time tomorrow (<t:${club.timeslot.nextMeeting}:t>)!`}`,
-					components
+					content: `@everyone ${club.timeslot.message ? club.timeslot.message : `Reminder: This club about this time tomorrow (<t:${club.timeslot.nextMeeting}:t>)! <#${club.voiceChannelId}>`}`,
 				});
 			});
 			if (club.timeslot.periodCount) {
