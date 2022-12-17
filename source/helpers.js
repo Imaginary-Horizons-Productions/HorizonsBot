@@ -174,7 +174,6 @@ exports.getClubDictionary = function () {
 
 /** Update a club's details in the internal dictionary and in the club list embed
  * @param {Club} club
- * @param {GuildChannelManager} channelManager
  */
 exports.updateClub = function (club) {
 	clubDictionary[club.id] = club;

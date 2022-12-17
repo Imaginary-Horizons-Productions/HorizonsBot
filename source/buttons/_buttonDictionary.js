@@ -3,7 +3,8 @@ const buttonDictionary = {};
 for (const file of [
 	"changeclubinfo.js",
 	"changeclubmeeting.js",
-	"changeclubseats.js"
+	"changeclubseats.js",
+	"delete.js"
 ]) {
 	const button = require(`./${file}`);
 	buttonDictionary[button.name] = button;
