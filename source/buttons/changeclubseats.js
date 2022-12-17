@@ -11,7 +11,7 @@ module.exports = new Button(id,
 	 */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
-		const modal = new ModalBuilder().setCustomId(`setclub${SAFE_DELIMITER}${clubId}`)
+		const modal = new ModalBuilder().setCustomId(`${id}${SAFE_DELIMITER}${clubId}`)
 			.setTitle("Club Membership Settings")
 			.addComponents(
 				new ActionRowBuilder().addComponents(

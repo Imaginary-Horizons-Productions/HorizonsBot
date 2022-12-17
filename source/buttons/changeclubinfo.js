@@ -11,7 +11,7 @@ module.exports = new Button(id,
 	 */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
-		const modal = new ModalBuilder().setCustomId(`setclub${SAFE_DELIMITER}${clubId}`)
+		const modal = new ModalBuilder().setCustomId(`${id}${SAFE_DELIMITER}${clubId}`)
 			.setTitle("Set Club Info")
 			.addComponents(
 				new ActionRowBuilder().addComponents(
@@ -55,7 +55,7 @@ module.exports = new Button(id,
 						.setMinLength(7)
 						.setMaxLength(7)
 						.setRequired(false)
-						.setPlaceholder("Hexcode format (eg #6b81eb")
+						.setPlaceholder("Hexcode format (eg #6b81eb)")
 				)
 			);
 		interaction.showModal(modal);

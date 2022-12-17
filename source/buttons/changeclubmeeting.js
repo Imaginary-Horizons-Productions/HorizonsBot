@@ -11,13 +11,13 @@ module.exports = new Button(id,
 	 */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
-		const modal = new ModalBuilder().setCustomId(`setclub${SAFE_DELIMITER}${clubId}`)
+		const modal = new ModalBuilder().setCustomId(`${id}${SAFE_DELIMITER}${clubId}`)
 			.setTitle("Club Meeting Time Settings")
 			.addComponents(
 				new ActionRowBuilder().addComponents(
 					new TextInputBuilder().setCustomId("nextMeeting")
 						.setLabel("Schedule Next Meeting")
-						.setValue(club.timeslot.nextMeeting)
+						.setValue(club.timeslot.nextMeeting ?? "")
 						.setStyle(TextInputStyle.Short)
 						.setMinLength(1)
 						.setMaxLength(100)
@@ -27,16 +27,16 @@ module.exports = new Button(id,
 				new ActionRowBuilder().addComponents(
 					new TextInputBuilder().setCustomId("message")
 						.setLabel("Reminder Message")
-						.setValue(club.timeslot.message)
+						.setValue(club.timeslot.message ?? "")
 						.setStyle(TextInputStyle.Paragraph)
 						.setMaxLength(1990)
 						.setRequired(false)
-						.setPlaceholder("Default Message - Reminder: This club about this time tomorrow (<timezone converted time>)! <Link to voice channel>") //TODONOW mention voice channel instead of button
+						.setPlaceholder("Default: 'Reminder: This club about this time tomorrow (<timezone converted time>)! <Link to voice>'")
 				),
 				new ActionRowBuilder().addComponents(
 					new TextInputBuilder().setCustomId("periodCount")
 						.setLabel("Repeating Meetings Count")
-						.setValue(club.timeslot.periodCount)
+						.setValue(club.timeslot.periodCount.toString() ?? "")
 						.setStyle(TextInputStyle.Short)
 						.setMaxLength(1024)
 						.setRequired(false)
@@ -45,10 +45,10 @@ module.exports = new Button(id,
 				new ActionRowBuilder().addComponents(
 					new TextInputBuilder().setCustomId("periodUnit")
 						.setLabel("Repeating Meetings Unit")
-						.setValue(club.timeslot.periodUnits)
+						.setValue(club.timeslot.periodUnits ?? "")
 						.setStyle(TextInputStyle.Short)
 						.setRequired(false)
-						.setPlaceholder('"d" for day(s) or "w" for week(s)')
+						.setPlaceholder('"d" for day(s) or "w" for week(s)') //TODO change periodUnit enum to "days" and "weeks"
 				)
 			);
 		interaction.showModal(modal);

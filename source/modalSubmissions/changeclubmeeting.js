@@ -2,9 +2,9 @@ const { Interaction } = require('discord.js');
 const ModalSubmission = require('../classes/ModalSubmission.js');
 const { getClubDictionary, updateClub, updateClubDetails, updateList, clubInviteBuilder } = require('../helpers.js');
 
-const id = "setclub";
-module.exports = new ModalSubmission(id, //TODONOW split per button
-	/** Set the given properties for the club with provided id
+const id = "changeclubmeeting";
+module.exports = new ModalSubmission(id,
+	/** Set the meeting time/repetition properties for the club with provided id
 	 * @param {Interaction} interaction
 	 * @param {Array<string>} args
 	 */
@@ -13,38 +13,6 @@ module.exports = new ModalSubmission(id, //TODONOW split per button
 		const { fields } = interaction;
 		const errors = {};
 
-		if (fields.fields.has("title")) {
-			const titleInput = fields.getTextInputValue("title");
-			club.title = titleInput;
-			const textChannel = await interaction.guild.channels.fetch(club.id);
-			textChannel.setName(titleInput);
-			const voiceChannel = await interaction.guild.channels.fetch(club.voiceChannelId);
-			voiceChannel.setName(titleInput + " Voice")
-		}
-		if (fields.fields.has("description")) {
-			const descriptionInput = fields.getTextInputValue("description");
-			club.description = descriptionInput;
-			const textChannel = await interaction.guild.channels.fetch(club.id);
-			textChannel.setTopic(descriptionInput);
-		}
-		["system", "imageURL", "color"].forEach(simpleStringKey => {
-			if (fields.fields.has(simpleStringKey)) {
-				const value = fields.getTextInputValue(simpleStringKey);
-				club[simpleStringKey] = value;
-			}
-		});
-		["seats"].forEach(simpleIntegerKey => {
-			if (fields.fields.has(simpleIntegerKey)) {
-				const unparsedValue = fields.getTextInputValue(simpleIntegerKey);
-				const value = parseInt(unparsedValue);
-				if (value) {
-					club[simpleIntegerKey] = value;
-				} else {
-					errors[simpleIntegerKey] = `Could not interpret ${unparsedValue} as integer`;
-				}
-			}
-		})
-		//TODONOW isRecruiting (cast to boolean)
 		if (fields.fields.has("timeslot.nextMeeting")) {
 			const unparsedValue = fields.getTextInputValue("timeslot.nextMeeting");
 			const nextMeetingInput = parseInt(unparsedValue);

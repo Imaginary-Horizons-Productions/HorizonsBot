@@ -1,7 +1,9 @@
 const modalSubmissionDictionary = {};
 
 for (const file of [
-	"setclub.js"
+	"changeclubinfo.js",
+	"changeclubmeeting.js",
+	"changeclubseats.js"
 ]) {
 	const modalSubmission = require(`./${file}`);
 	modalSubmissionDictionary[modalSubmission.name] = modalSubmission;
