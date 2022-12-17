@@ -80,8 +80,10 @@ client.on("ready", () => {
 
 		// Begin checking for club reminders
 		for (let club of Object.values(getClubDictionary())) {
-			setClubReminder(club, channelManager);
-			scheduleClubEvent(club, guild);
+			if (club.timeslot.nextMeeting) {
+				setClubReminder(club, channelManager);
+				scheduleClubEvent(club, guild);
+			}
 		}
 
 		// Update pinned lists

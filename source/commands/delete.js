@@ -1,6 +1,7 @@
 const { Interaction } = require('discord.js');
 const Command = require('../classes/Command.js');
-const { isModerator, getManagedChannels } = require('../helpers.js');
+const { getManagedChannels } = require('../engines/channelEngine.js');
+const { isModerator } = require('../helpers.js');
 
 const options = [{ type: "Integer", name: "delay", description: "Number of hours to delay deleting the channel", required: true, choices: [] }];
 const subcomands = [];
