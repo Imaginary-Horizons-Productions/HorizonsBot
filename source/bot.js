@@ -6,10 +6,9 @@ const { getCommand, slashData } = require("./commands/_commandDictionary.js");
 const { callButton } = require("./buttons/_buttonDictionary.js");
 const { callModalSubmission } = require("./modalSubmissions/_modalSubmissionDictionary.js");
 const { callSelect } = require("./selects/_selectDictionary.js");
-const { listMessages, pinClubsList, getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, versionEmbedBuilder, scheduleClubEvent, setClubReminder } = require("./helpers.js");
+const { listMessages, pinClubList, getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, versionEmbedBuilder, scheduleClubEvent, setClubReminder } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
-//TODONOW pinClubList or pinClubsList
 //#endregion
 
 //#region Executing Code
@@ -128,7 +127,7 @@ client.on("messageCreate", receivedMessage => {
 			receivedMessage.channel.messages.fetch(listMessages.clubs.messageId).then(oldMessage => {
 				oldMessage.delete();
 			})
-			pinClubsList(receivedMessage.guild.channels, receivedMessage.channel);
+			pinClubList(receivedMessage.guild.channels, receivedMessage.channel);
 			clubBuriedness = 0;
 		}
 	}

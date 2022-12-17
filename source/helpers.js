@@ -435,7 +435,7 @@ exports.clubListBuilder = function () {
  * @param {GuildChannelManager} channelManager
  * @param {TextChannel} channel
  */
-exports.pinClubsList = function (channelManager, channel) {
+exports.pinClubList = function (channelManager, channel) {
 	exports.clubListBuilder(channelManager).then(messageOptions => {
 		channel.send(messageOptions).then(message => {
 			exports.listMessages.clubs = {

@@ -48,7 +48,7 @@ module.exports = new Button(id,
 						.setValue(club.timeslot.periodUnits ?? "")
 						.setStyle(TextInputStyle.Short)
 						.setRequired(false)
-						.setPlaceholder('"d" for day(s) or "w" for week(s)') //TODO change periodUnit enum to "days" and "weeks"
+						.setPlaceholder('"d" for day(s) or "w" for week(s)') //TODONOW change periodUnit enum to "days" and "weeks"
 				)
 			);
 		interaction.showModal(modal);
