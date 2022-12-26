@@ -451,7 +451,7 @@ exports.pinClubList = function (channelManager, channel) {
  * @param {Guild} guild
  * @param {string} topicName
  * @param {User} author
- * @returns {void}
+ * @returns {{petitions: number, threshold: number}}
  */
 exports.checkPetition = function (guild, topicName, author = null) {
 	let petitions = exports.getPetitions();
@@ -467,12 +467,18 @@ exports.checkPetition = function (guild, topicName, author = null) {
 			return;
 		}
 	}
-	if (petitions[topicName].length > guild.memberCount * 0.05) {
+	const petitionCount = petitions[topicName].length ?? 0;
+	const threshold = Math.ceil(guild.memberCount * 0.05) + 1;
+	if (petitionCount >= threshold) {
 		exports.addTopicChannel(guild, topicName);
 	} else {
 		exports.setPetitions(petitions, guild.channels);
 	}
 	exports.updateList(guild.channels, "topics");
+	return {
+		petitions: petitionCount,
+		threshold
+	}
 }
 
 /** Create a topic channel
