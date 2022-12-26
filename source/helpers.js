@@ -1,8 +1,8 @@
 const fs = require('fs');
-const { Collection, EmbedBuilder, MessageSelectMenu, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { Collection, MessageSelectMenu, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SIGNED_INT } = require('./constants');
-const { randomEmbedFooter, embedTemplateBuilder } = require('./engines/messageEngine');
+const { embedTemplateBuilder } = require('./engines/messageEngine');
 
 /** Convert an amount of time from a starting unit to a different one
  * @param {number} value
@@ -323,7 +323,6 @@ exports.topicListBuilder = function (channelManager) {
 		})
 	}
 
-	//TODONOW use MessageEmbed.length instead
 	if (description.length > 2048 || petitionText.length > 1024) {
 		return new Promise((resolve, reject) => {
 			let fileText = description;
@@ -818,41 +817,5 @@ exports.saveObject = function (entity, fileName) {
 		if (error) {
 			console.error(error);
 		}
-	})
-}
-
-/** The version embed should contain the last version's changes, known issues, and project links
- * @returns {EmbedBuilder}
- */
-exports.versionEmbedBuilder = function () {
-	return fs.promises.readFile('./ChangeLog.md', { encoding: 'utf8' }).then(data => {
-		const dividerRegEx = /####/g;
-		const changesStartRegEx = /\.\d+:/g;
-		const knownIssuesStartRegEx = /### Known Issues/g;
-		let titleStart = dividerRegEx.exec(data).index;
-		changesStartRegEx.exec(data);
-		let knownIssuesStart;
-		let knownIssueStartResult = knownIssuesStartRegEx.exec(data);
-		if (knownIssueStartResult) {
-			knownIssuesStart = knownIssueStartResult.index;
-		}
-		let knownIssuesEnd = dividerRegEx.exec(data).index;
-
-		let embed = embedTemplateBuilder()
-			.setTitle(data.slice(titleStart + 5, changesStartRegEx.lastIndex))
-			.setURL('https://discord.gg/bcE3Syu')
-			.setThumbnail('https://cdn.discordapp.com/attachments/545684759276421120/734099622846398565/newspaper.png')
-			.setFooter(randomEmbedFooter());
-
-		if (knownIssuesStart && knownIssuesStart < knownIssuesEnd) {
-			// Known Issues section found
-			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesStart))
-				.addField(`Known Issues`, data.slice(knownIssuesStart + 16, knownIssuesEnd))
-		} else {
-			// Known Issues section not found
-			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesEnd));
-		}
-
-		return embed.addFields({ name: "Other Discord Bots", value: "Check out other Imaginary Horizons Productions bots or commission your own on the [IHP GitHub](https://github.com/Imaginary-Horizons-Productions)" });
 	})
 }

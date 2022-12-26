@@ -1,6 +1,6 @@
 const Command = require('../classes/Command.js');
 const { Interaction } = require('discord.js');
-const { versionEmbedBuilder } = require('../helpers.js');
+const { versionEmbedBuilder } = require('../engines/messageEngine.js');
 
 const options = [
 	{ type: "Boolean", name: "full-notes", description: "Get the file with the full version notes?", required: true, choices: [] }

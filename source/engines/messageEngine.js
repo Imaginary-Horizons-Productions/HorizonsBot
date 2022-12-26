@@ -1,3 +1,4 @@
+const fs = require('fs');
 const { EmbedBuilder } = require("discord.js");
 
 /** Create a Message Embed with common settings (author, timestamp, color)
@@ -28,4 +29,40 @@ exports.randomEmbedFooter = function () {
 		text: tips[Math.floor(Math.random() * tips.length)],
 		iconURL: 'https://media.discordapp.net/attachments/789323338946183188/1048075545017065562/light-bulb.png?width=468&height=468'
 	}
+}
+
+/** The version embed should contain the last version's changes, known issues, and project links
+ * @returns {EmbedBuilder}
+ */
+exports.versionEmbedBuilder = function () {
+	return fs.promises.readFile('./ChangeLog.md', { encoding: 'utf8' }).then(data => {
+		const dividerRegEx = /####/g;
+		const changesStartRegEx = /\.\d+:/g;
+		const knownIssuesStartRegEx = /### Known Issues/g;
+		let titleStart = dividerRegEx.exec(data).index;
+		changesStartRegEx.exec(data);
+		let knownIssuesStart;
+		let knownIssueStartResult = knownIssuesStartRegEx.exec(data);
+		if (knownIssueStartResult) {
+			knownIssuesStart = knownIssueStartResult.index;
+		}
+		let knownIssuesEnd = dividerRegEx.exec(data).index;
+
+		let embed = exports.embedTemplateBuilder()
+			.setTitle(data.slice(titleStart + 5, changesStartRegEx.lastIndex))
+			.setURL('https://discord.gg/bcE3Syu')
+			.setThumbnail('https://cdn.discordapp.com/attachments/545684759276421120/734099622846398565/newspaper.png')
+			.setFooter(exports.randomEmbedFooter());
+
+		if (knownIssuesStart && knownIssuesStart < knownIssuesEnd) {
+			// Known Issues section found
+			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesStart))
+				.addField(`Known Issues`, data.slice(knownIssuesStart + 16, knownIssuesEnd))
+		} else {
+			// Known Issues section not found
+			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesEnd));
+		}
+
+		return embed.addFields({ name: "Other Discord Bots", value: "Check out other Imaginary Horizons Productions bots or commission your own on the [IHP GitHub](https://github.com/Imaginary-Horizons-Productions)" });
+	})
 }
