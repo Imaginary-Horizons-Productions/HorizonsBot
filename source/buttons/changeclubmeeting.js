@@ -19,8 +19,7 @@ module.exports = new Button(id,
 						.setLabel("Schedule Next Meeting")
 						.setValue(club.timeslot.nextMeeting ?? "")
 						.setStyle(TextInputStyle.Short)
-						.setMinLength(1)
-						.setMaxLength(100)
+						.setMaxLength(10) // number of digits in 2^32
 						.setRequired(false)
 						.setPlaceholder("The Unix Timestamp (seconds since Jan 1st 1970)")
 				),
