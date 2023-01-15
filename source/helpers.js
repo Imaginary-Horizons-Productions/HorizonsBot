@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Collection, MessageSelectMenu, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { Collection, MessageSelectMenu, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SIGNED_INT } = require('./constants');
 const { embedTemplateBuilder } = require('./engines/messageEngine');
@@ -684,7 +684,7 @@ exports.createClubEvent = function (club, guild) {
 				name: club.title,
 				scheduledStartTime: club.timeslot.nextMeeting * 1000,
 				privacyLevel: 2,
-				entityType: "VOICE",
+				entityType: GuildScheduledEventEntityType.Voice,
 				description: club.description,
 				channel: voiceChannel
 			})
