@@ -766,8 +766,10 @@ function reminderWaitLoop(club, channelManager) {
 	if (club.timeslot.nextMeeting) {
 		if (calculateReminderMS(club.timeslot.nextMeeting) < MAX_SIGNED_INT) {
 			channelManager.fetch(club.id).then(async textChannel => {
+				// NOTE: defaultReminder.length (without interpolated length) must be less than or equal to 49 characters so it fits in the config modal placeholder with its wrapper (100 characters)
+				const defaultReminder = `Reminder: This club will meet at <t:${club.timeslot.nextMeeting}:t> tomorrow! <#${club.voiceChannelId}>`;
 				textChannel.send({
-					content: `@everyone ${club.timeslot.message ? club.timeslot.message : `Reminder: This club will meet about this time tomorrow (<t:${club.timeslot.nextMeeting}:t>)! <#${club.voiceChannelId}>`}`,
+					content: `@everyone ${club.timeslot.message ? club.timeslot.message : defaultReminder}`,
 				});
 			});
 			if (club.timeslot.periodCount) {

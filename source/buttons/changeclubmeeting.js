@@ -30,7 +30,7 @@ module.exports = new Button(id,
 						.setStyle(TextInputStyle.Paragraph)
 						.setMaxLength(1990)
 						.setRequired(false)
-						.setPlaceholder("Default: 'Reminder: This club will meet about this time tomorrow (<timezone converted time>)! <Link to voice>'")
+						.setPlaceholder("Default: 'Reminder: This club will meet at <timezone converted time> tomorrow! <Link to voice>'")
 				),
 				new ActionRowBuilder().addComponents(
 					new TextInputBuilder().setCustomId("periodCount")
