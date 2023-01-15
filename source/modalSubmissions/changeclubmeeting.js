@@ -1,6 +1,6 @@
 const { Interaction } = require('discord.js');
 const ModalSubmission = require('../classes/ModalSubmission.js');
-const { getClubDictionary, updateClub, updateClubDetails, updateList, clubInviteBuilder } = require('../helpers.js');
+const { getClubDictionary, updateClub, updateClubDetails, updateList, clubInviteBuilder, clearClubReminder, cancelClubEvent, setClubReminder, createClubEvent, scheduleClubEvent } = require('../helpers.js');
 
 const id = "changeclubmeeting";
 module.exports = new ModalSubmission(id,
@@ -17,7 +17,14 @@ module.exports = new ModalSubmission(id,
 			const unparsedValue = fields.getTextInputValue("nextMeeting");
 			const nextMeetingInput = parseInt(unparsedValue);
 			if (nextMeetingInput) {
-				club.timeslot.nextMeeting = nextMeetingInput;
+				club.timeslot.setNextMeeting(nextMeetingInput);
+				clearClubReminder(club.id);
+				cancelClubEvent(club.voiceChannelId, club.timeslot.eventId, interaction.guild.scheduledEvents);
+				setClubReminder(club, interaction.guild.channels);
+				createClubEvent(club, interaction.guild);
+				if (club.timeslot.periodCount && club.isRecruiting()) {
+					scheduleClubEvent(club, interaction.guild);
+				}
 			} else {
 				errors["nextMeeting"] = `Could not interpret ${unparsedValue} as integer`;
 			}
