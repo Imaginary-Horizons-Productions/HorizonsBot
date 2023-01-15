@@ -8,7 +8,7 @@ const { embedTemplateBuilder } = require('./engines/messageEngine');
  * @param {number} value
  * @param {"w" | "d" | "h" | "m" | "s" | "ms"} startingUnit
  * @param {"w" | "d" | "h" | "m" | "s" | "ms"} resultUnit
- * @returns {number} result
+ * @returns {number}
  */
 exports.timeConversion = function (value, startingUnit, resultUnit) {
 	const unknownUnits = [];
@@ -96,7 +96,7 @@ exports.noAts = require("../config/modData.json").noAts; // [userId]
 exports.atIds = new Set(); // contains userIds
 //#endregion
 
-// {[type]: {[messageId]: number, [channelId]: number}}
+// {[type]: {messageId: string, channelId: string}}
 exports.listMessages = require('../config/listMessageIds.json');
 
 // Collection <channelId, channelName>
@@ -144,7 +144,7 @@ exports.removeTopic = function (channelId, guild) {
 
 let petitions = require('../config/petitionList.json');
 /** Get the dictionary relating topic petitions to their arrays of petitioner ids
- * @returns {object} {name: User.id[]}
+ * @returns {Record<string, string[]>} Record<petition, petitionerId[]>
  */
 exports.getPetitions = function () {
 	return petitions;
@@ -166,7 +166,7 @@ Object.values(require('../config/clubList.json')).forEach(club => {
 	clubDictionary[club.id] = Object.assign(new Club(), serializedClub);
 });
 /** Get the dictionary relating club text channel id to club class instances
- * @returns {{[TextChannel.id]: Club}} { [TextChannel.id]: Club }
+ * @returns {Record<string, Club>} Record<clubId, Club>
  */
 exports.getClubDictionary = function () {
 	return clubDictionary;

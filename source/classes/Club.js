@@ -1,8 +1,8 @@
 module.exports.Club = class {
 	/**
-	 * @param {number} idInput
-	 * @param {number} hostIdInput The host's Discord snowflake
-	 * @param {number} voiceChannelIdInput
+	 * @param {string} idInput the club's text channel's id
+	 * @param {string} hostIdInput The host's Discord snowflake
+	 * @param {string} voiceChannelIdInput
 	 */
 	constructor(idInput, hostIdInput, voiceChannelIdInput) {
 		this.id = idInput;
