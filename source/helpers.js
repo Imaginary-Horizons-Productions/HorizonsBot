@@ -767,7 +767,7 @@ function reminderWaitLoop(club, channelManager) {
 		if (calculateReminderMS(club.timeslot.nextMeeting) < MAX_SIGNED_INT) {
 			channelManager.fetch(club.id).then(async textChannel => {
 				textChannel.send({
-					content: `@everyone ${club.timeslot.message ? club.timeslot.message : `Reminder: This club about this time tomorrow (<t:${club.timeslot.nextMeeting}:t>)! <#${club.voiceChannelId}>`}`,
+					content: `@everyone ${club.timeslot.message ? club.timeslot.message : `Reminder: This club will meet about this time tomorrow (<t:${club.timeslot.nextMeeting}:t>)! <#${club.voiceChannelId}>`}`,
 				});
 			});
 			if (club.timeslot.periodCount) {
