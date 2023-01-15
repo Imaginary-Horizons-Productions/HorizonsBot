@@ -17,7 +17,7 @@ module.exports = new Button(id,
 				new ActionRowBuilder().addComponents(
 					new TextInputBuilder().setCustomId("nextMeeting")
 						.setLabel("Schedule Next Meeting")
-						.setValue(club.timeslot.nextMeeting ?? "")
+						.setValue(club.timeslot.nextMeeting.toString() ?? "")
 						.setStyle(TextInputStyle.Short)
 						.setMaxLength(10) // number of digits in 2^32
 						.setRequired(false)
