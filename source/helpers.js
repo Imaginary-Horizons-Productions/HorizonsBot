@@ -678,21 +678,28 @@ exports.updateClubDetails = (club, channel) => {
  * @param {Guild} guild
  */
 exports.createClubEvent = function (club, guild) {
+	const YEAR_IN_SECONDS = 31556926;
 	if (club.timeslot.nextMeeting * 1000 > Date.now()) {
-		guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
-			return guild.scheduledEvents.create({
-				name: club.title,
-				scheduledStartTime: club.timeslot.nextMeeting * 1000,
-				privacyLevel: 2,
-				entityType: GuildScheduledEventEntityType.Voice,
-				description: club.description,
-				channel: voiceChannel
+		if (club.timeslot.nextMeeting * 1000 < Date.now() + (5 * YEAR_IN_SECONDS)) {
+			guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
+				return guild.scheduledEvents.create({
+					name: club.title,
+					scheduledStartTime: club.timeslot.nextMeeting * 1000,
+					privacyLevel: 2,
+					entityType: GuildScheduledEventEntityType.Voice,
+					description: club.description,
+					channel: voiceChannel
+				})
+			}).then(event => {
+				club.timeslot.setEventId(event.id);
+				exports.updateList(guild.channels, "clubs");
+				exports.updateClub(club);
+			});
+		} else {
+			guild.channels.fetch(club.id).then(textChannel => {
+				textChannel.send("Discord does not allow the creation of events 5 years in the future. Please try to schedule your event closer to its start.");
 			})
-		}).then(event => {
-			club.timeslot.setEventId(event.id);
-			exports.updateList(guild.channels, "clubs");
-			exports.updateClub(club);
-		});
+		}
 	} else {
 		club.timeslot.setNextMeeting(null);
 		club.timeslot.setEventId("");
@@ -708,13 +715,23 @@ exports.createClubEvent = function (club, guild) {
  */
 exports.scheduleClubEvent = function (club, guild) {
 	if (club.isRecruiting()) {
-		let timeout = setTimeout((clubId, timeoutGuild) => {
-			const club = exports.getClubDictionary()[clubId];
-			if (club?.isRecruiting()) {
-				exports.createClubEvent(club, timeoutGuild);
-			}
-		}, (club.timeslot.nextMeeting * 1000) - Date.now(), club.id, guild);
-		exports.eventTimeouts[club.voiceChannelId] = timeout;
+		if ((club.timeslot.nextMeeting * 1000) - Date.now() <= MAX_SIGNED_INT) {
+			let timeout = setTimeout((clubId, timeoutGuild) => {
+				const club = exports.getClubDictionary()[clubId];
+				if (club?.isRecruiting()) {
+					exports.createClubEvent(club, timeoutGuild);
+				}
+			}, (club.timeslot.nextMeeting * 1000) - Date.now(), club.id, guild);
+			exports.eventTimeouts[club.voiceChannelId] = timeout;
+		} else {
+			const timeout = setTimeout((timeoutClub, timeoutGuild) => {
+				exports.scheduleClubEvent(timeoutClub, timeoutGuild);
+			},
+				MAX_SIGNED_INT,
+				club,
+				guild)
+			exports.eventTimeouts[club.voiceChannelId] = timeout;
+		}
 	}
 }
 
