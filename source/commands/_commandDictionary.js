@@ -1,3 +1,4 @@
+const Command = require('../classes/Command.js');
 const CommandSet = require('../classes/CommandSet.js');
 
 // A maximum of 25 command sets are supported by /commands to conform with MessageEmbed limit of 25 fields
@@ -24,6 +25,10 @@ for (const file of exports.commandFiles) {
 	exports.slashData.push(command.data.toJSON());
 }
 
+/**
+ * @param {string} commandName
+ * @returns {Command}
+ */
 exports.getCommand = function (commandName) {
 	return commandDictionary[commandName];
 }

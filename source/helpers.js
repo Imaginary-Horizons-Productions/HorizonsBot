@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Collection, MessageSelectMenu, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { Collection, MessageSelectMenu, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SIGNED_INT } = require('./constants');
 const { embedTemplateBuilder } = require('./engines/messageEngine');
@@ -8,7 +8,7 @@ const { embedTemplateBuilder } = require('./engines/messageEngine');
  * @param {number} value
  * @param {"w" | "d" | "h" | "m" | "s" | "ms"} startingUnit
  * @param {"w" | "d" | "h" | "m" | "s" | "ms"} resultUnit
- * @returns {number} result
+ * @returns {number}
  */
 exports.timeConversion = function (value, startingUnit, resultUnit) {
 	const unknownUnits = [];
@@ -96,7 +96,7 @@ exports.noAts = require("../config/modData.json").noAts; // [userId]
 exports.atIds = new Set(); // contains userIds
 //#endregion
 
-// {[type]: {[messageId]: number, [channelId]: number}}
+// {[type]: {messageId: string, channelId: string}}
 exports.listMessages = require('../config/listMessageIds.json');
 
 // Collection <channelId, channelName>
@@ -144,7 +144,7 @@ exports.removeTopic = function (channelId, guild) {
 
 let petitions = require('../config/petitionList.json');
 /** Get the dictionary relating topic petitions to their arrays of petitioner ids
- * @returns {object} {name: User.id[]}
+ * @returns {Record<string, string[]>} Record<petition, petitionerId[]>
  */
 exports.getPetitions = function () {
 	return petitions;
@@ -166,7 +166,7 @@ Object.values(require('../config/clubList.json')).forEach(club => {
 	clubDictionary[club.id] = Object.assign(new Club(), serializedClub);
 });
 /** Get the dictionary relating club text channel id to club class instances
- * @returns {{[TextChannel.id]: Club}} { [TextChannel.id]: Club }
+ * @returns {Record<string, Club>} Record<clubId, Club>
  */
 exports.getClubDictionary = function () {
 	return clubDictionary;
@@ -678,21 +678,28 @@ exports.updateClubDetails = (club, channel) => {
  * @param {Guild} guild
  */
 exports.createClubEvent = function (club, guild) {
+	const YEAR_IN_SECONDS = 31556926;
 	if (club.timeslot.nextMeeting * 1000 > Date.now()) {
-		guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
-			return guild.scheduledEvents.create({
-				name: club.title,
-				scheduledStartTime: club.timeslot.nextMeeting * 1000,
-				privacyLevel: 2,
-				entityType: "VOICE",
-				description: club.description,
-				channel: voiceChannel
+		if (club.timeslot.nextMeeting * 1000 < Date.now() + (5 * YEAR_IN_SECONDS)) {
+			guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
+				return guild.scheduledEvents.create({
+					name: club.title,
+					scheduledStartTime: club.timeslot.nextMeeting * 1000,
+					privacyLevel: 2,
+					entityType: GuildScheduledEventEntityType.Voice,
+					description: club.description,
+					channel: voiceChannel
+				})
+			}).then(event => {
+				club.timeslot.setEventId(event.id);
+				exports.updateList(guild.channels, "clubs");
+				exports.updateClub(club);
+			});
+		} else {
+			guild.channels.fetch(club.id).then(textChannel => {
+				textChannel.send("Discord does not allow the creation of events 5 years in the future. Please try to schedule your event closer to its start.");
 			})
-		}).then(event => {
-			club.timeslot.setEventId(event.id);
-			exports.updateList(guild.channels, "clubs");
-			exports.updateClub(club);
-		});
+		}
 	} else {
 		club.timeslot.setNextMeeting(null);
 		club.timeslot.setEventId("");
@@ -708,13 +715,23 @@ exports.createClubEvent = function (club, guild) {
  */
 exports.scheduleClubEvent = function (club, guild) {
 	if (club.isRecruiting()) {
-		let timeout = setTimeout((clubId, timeoutGuild) => {
-			const club = exports.getClubDictionary()[clubId];
-			if (club?.isRecruiting()) {
-				exports.createClubEvent(club, timeoutGuild);
-			}
-		}, (club.timeslot.nextMeeting * 1000) - Date.now(), club.id, guild);
-		exports.eventTimeouts[club.voiceChannelId] = timeout;
+		if ((club.timeslot.nextMeeting * 1000) - Date.now() <= MAX_SIGNED_INT) {
+			let timeout = setTimeout((clubId, timeoutGuild) => {
+				const club = exports.getClubDictionary()[clubId];
+				if (club?.isRecruiting()) {
+					exports.createClubEvent(club, timeoutGuild);
+				}
+			}, (club.timeslot.nextMeeting * 1000) - Date.now(), club.id, guild);
+			exports.eventTimeouts[club.voiceChannelId] = timeout;
+		} else {
+			const timeout = setTimeout((timeoutClub, timeoutGuild) => {
+				exports.scheduleClubEvent(timeoutClub, timeoutGuild);
+			},
+				MAX_SIGNED_INT,
+				club,
+				guild)
+			exports.eventTimeouts[club.voiceChannelId] = timeout;
+		}
 	}
 }
 
@@ -766,8 +783,10 @@ function reminderWaitLoop(club, channelManager) {
 	if (club.timeslot.nextMeeting) {
 		if (calculateReminderMS(club.timeslot.nextMeeting) < MAX_SIGNED_INT) {
 			channelManager.fetch(club.id).then(async textChannel => {
+				// NOTE: defaultReminder.length (without interpolated length) must be less than or equal to 49 characters so it fits in the config modal placeholder with its wrapper (100 characters)
+				const defaultReminder = `Reminder: This club will meet at <t:${club.timeslot.nextMeeting}:t> tomorrow! <#${club.voiceChannelId}>`;
 				textChannel.send({
-					content: `@everyone ${club.timeslot.message ? club.timeslot.message : `Reminder: This club about this time tomorrow (<t:${club.timeslot.nextMeeting}:t>)! <#${club.voiceChannelId}>`}`,
+					content: `@everyone ${club.timeslot.message ? club.timeslot.message : defaultReminder}`,
 				});
 			});
 			if (club.timeslot.periodCount) {

@@ -1,6 +1,6 @@
 const { Interaction } = require('discord.js');
 const ModalSubmission = require('../classes/ModalSubmission.js');
-const { getClubDictionary, updateClub, updateClubDetails, updateList, clubInviteBuilder } = require('../helpers.js');
+const { getClubDictionary, updateClub, updateClubDetails, updateList, clubInviteBuilder, clearClubReminder, cancelClubEvent, setClubReminder, createClubEvent, scheduleClubEvent } = require('../helpers.js');
 
 const id = "changeclubmeeting";
 module.exports = new ModalSubmission(id,
@@ -13,34 +13,41 @@ module.exports = new ModalSubmission(id,
 		const { fields } = interaction;
 		const errors = {};
 
-		if (fields.fields.has("timeslot.nextMeeting")) {
-			const unparsedValue = fields.getTextInputValue("timeslot.nextMeeting");
+		if (fields.fields.has("nextMeeting")) {
+			const unparsedValue = fields.getTextInputValue("nextMeeting");
 			const nextMeetingInput = parseInt(unparsedValue);
 			if (nextMeetingInput) {
-				club.timeslot.nextMeeting = nextMeetingInput;
+				club.timeslot.setNextMeeting(nextMeetingInput);
+				clearClubReminder(club.id);
+				cancelClubEvent(club.voiceChannelId, club.timeslot.eventId, interaction.guild.scheduledEvents);
+				setClubReminder(club, interaction.guild.channels);
+				createClubEvent(club, interaction.guild);
+				if (club.timeslot.periodCount && club.isRecruiting()) {
+					scheduleClubEvent(club, interaction.guild);
+				}
 			} else {
-				errors["timeslot.nextMeeting"] = `Could not interpret ${unparsedValue} as integer`;
+				errors["nextMeeting"] = `Could not interpret ${unparsedValue} as integer`;
 			}
 		}
-		if (fields.fields.has("timeslot.message")) {
-			const reminderMessageInput = fields.getTextInputValue("timeslot.message");
+		if (fields.fields.has("message")) {
+			const reminderMessageInput = fields.getTextInputValue("message");
 			club.timeslot.message = reminderMessageInput;
 		}
-		if (fields.fields.has("timeslot.periodCount")) {
-			const unparsedValue = fields.getTextInputValue("timeslot.periodCount");
+		if (fields.fields.has("periodCount")) {
+			const unparsedValue = fields.getTextInputValue("periodCount");
 			const periodCountInput = parseInt(unparsedValue);
 			if (periodCountInput) {
 				club.timeslot.periodCount = periodCountInput;
 			} else {
-				errors["timeslot.periodCount"] = `Could not interpret ${unparsedValue} as integer`;
+				errors["periodCount"] = `Could not interpret ${unparsedValue} as integer`;
 			}
 		}
-		if (fields.fields.has("timeslot.periodUnits")) {
-			const periodUnitsInput = fields.getTextInputValue("timeslot.periodUnits");
+		if (fields.fields.has("periodUnits")) {
+			const periodUnitsInput = fields.getTextInputValue("periodUnits");
 			if (["d", "w"].includes(periodUnitsInput)) {
 				club.timeslot.periodUnits = periodUnitsInput;
 			} else {
-				errors["timeslot.periodUnits"] = `Input ${periodUnitsInput} did not match "d" (days) or "w" (weeks)`;
+				errors["periodUnits"] = `Input ${periodUnitsInput} did not match "d" (days) or "w" (weeks)`;
 			}
 		}
 		updateClubDetails(club, interaction.channel);

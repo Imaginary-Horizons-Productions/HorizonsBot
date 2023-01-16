@@ -17,10 +17,9 @@ module.exports = new Button(id,
 				new ActionRowBuilder().addComponents(
 					new TextInputBuilder().setCustomId("nextMeeting")
 						.setLabel("Schedule Next Meeting")
-						.setValue(club.timeslot.nextMeeting ?? "")
+						.setValue(club.timeslot.nextMeeting.toString() ?? "")
 						.setStyle(TextInputStyle.Short)
-						.setMinLength(1)
-						.setMaxLength(100)
+						.setMaxLength(10) // number of digits in 2^32
 						.setRequired(false)
 						.setPlaceholder("The Unix Timestamp (seconds since Jan 1st 1970)")
 				),
@@ -31,7 +30,7 @@ module.exports = new Button(id,
 						.setStyle(TextInputStyle.Paragraph)
 						.setMaxLength(1990)
 						.setRequired(false)
-						.setPlaceholder("Default: 'Reminder: This club about this time tomorrow (<timezone converted time>)! <Link to voice>'")
+						.setPlaceholder("Default: 'Reminder: This club will meet at <timezone converted time> tomorrow! <Link to voice>'")
 				),
 				new ActionRowBuilder().addComponents(
 					new TextInputBuilder().setCustomId("periodCount")

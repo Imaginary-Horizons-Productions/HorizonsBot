@@ -9,6 +9,11 @@ for (const file of [
 	modalSubmissionDictionary[modalSubmission.name] = modalSubmission;
 }
 
+/**
+ * @param {string} mainId
+ * @param {import("discord.js").Interaction} interaction
+ * @param {string[]} args
+ */
 exports.callModalSubmission = function (mainId, interaction, args) {
 	modalSubmissionDictionary[mainId].execute(interaction, args);
 }

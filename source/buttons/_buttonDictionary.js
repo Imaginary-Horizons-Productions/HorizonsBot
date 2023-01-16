@@ -10,6 +10,11 @@ for (const file of [
 	buttonDictionary[button.name] = button;
 }
 
+/**
+ * @param {string} mainId
+ * @param {import("discord.js").Interaction} interaction
+ * @param {string[]} args
+ */
 exports.callButton = function (mainId, interaction, args) {
 	buttonDictionary[mainId].execute(interaction, args);
 }
