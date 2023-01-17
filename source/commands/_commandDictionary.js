@@ -6,7 +6,7 @@ exports.commandSets = [
 	new CommandSet("General Commands", "These commands are general use utilities for the server.", false,
 		["at-channel.js", "timestamp.js", "roll.js", "petition.js", "leave.js"]),
 	new CommandSet("Informantional Commands", "Use these commands to learn more about this server or HorizonsBot.", false,
-		["rules.js", "commands.js", "roles.js", "about.js", "version.js", "data-policy.js", "press-kit.js"]),
+		["rules.js", "commands.js", "roles.js", "list.js", "about.js", "version.js", "data-policy.js", "press-kit.js"]),
 	new CommandSet("Topic Commands", "This server has opt-in topic channels (hidden by default). New topics are automatically generated when enough members /petition for them.", false,
 		["topic-add.js"]),
 	new CommandSet("Club Commands", "Clubs are private text and voice channels that include organization utilities like automatic reminders.", false,

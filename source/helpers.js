@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Collection, MessageSelectMenu, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType } = require('discord.js');
+const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType, StringSelectMenuBuilder } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SIGNED_INT } = require('./constants');
 const { embedTemplateBuilder } = require('./engines/messageEngine');
@@ -248,7 +248,6 @@ function listSelectBuilder(listType) {
 			for (const petition of Object.keys(exports.getPetitions())) {
 				entries.push({
 					label: petition,
-					description: "",
 					value: petition
 				})
 			}
@@ -279,17 +278,16 @@ function listSelectBuilder(listType) {
 	}
 
 	return new ActionRowBuilder().addComponents(
-		new MessageSelectMenu()
+		new StringSelectMenuBuilder()
 			.setCustomId(selectCutomId)
 			.setPlaceholder(placeholderText)
-			.setDisabled(disableSelect)
+			.setDisabled(entries.length < 1)
 			.addOptions(entries.length > 0 ? entries : [{
 				label: "no entries",
-				description: "",
 				value: "no entries"
 			}])
 			.setMinValues(1)
-			.setMaxValues(entries.length)
+			.setMaxValues(entries.length > 0 ? entries.length : 1)
 	);
 }
 
@@ -352,7 +350,7 @@ exports.topicListBuilder = function (channelManager) {
 				.setFooter({ text: "Please do not make bounties to vote for your petitions." });
 
 			if (petitionNames.length > 0) {
-				embed.addField("Petitioned Channels", petitionText)
+				embed.addFields({ name: "Petitioned Channels", value: petitionText })
 			}
 			messageOptions.embeds = [embed];
 			messageOptions.files = [];
