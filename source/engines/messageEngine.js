@@ -23,7 +23,8 @@ exports.randomEmbedFooter = function () {
 		"Clubs and topics are hidden by default to reduce channel clutter. Use /list to see what you're missing!",
 		"Find out how to get roles on the server with /roles",
 		"Use /timestamp to get a string that Discord automatically converts into the reader's timezone!",
-		"Use /at-channel if you want to ping the channel (this lets us rate limit @here and @everyone)"
+		"Use /at-channel if you want to ping the channel (this lets us rate limit @here and @everyone)",
+		"The /timestamp command allows negative number inputs"
 	];
 	return {
 		text: tips[Math.floor(Math.random() * tips.length)],
