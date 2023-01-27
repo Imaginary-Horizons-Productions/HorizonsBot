@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
 
-
 module.exports = class Command {
 	/** IHP wrapper for slash commands
 	 * @param {string} nameInput
