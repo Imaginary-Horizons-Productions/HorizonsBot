@@ -370,7 +370,7 @@ exports.pinTopicsList = function (channelManager, channel) {
 				"messageId": message.id,
 				"channelId": message.channelId
 			}
-			exports.saveObject(exports.listMessages, "listMessageIDs.json");
+			exports.saveObject(exports.listMessages, "listMessageIds.json");
 			message.pin();
 		})
 	}).catch(console.error);
@@ -440,7 +440,7 @@ exports.pinClubList = function (channelManager, channel) {
 				"channelId": message.channelId
 			}
 			message.pin();
-			exports.saveObject(exports.listMessages, "listMessageIDs.json");
+			exports.saveObject(exports.listMessages, "listMessageIds.json");
 		})
 	}).catch(console.error);
 }
