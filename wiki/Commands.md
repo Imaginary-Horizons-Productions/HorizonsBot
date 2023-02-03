@@ -88,6 +88,12 @@ The petition to check
 (moderator) Delete a topic or club on a delay
 #### delay
 Number of hours to delay deleting the channel
+### /manage-mods
+(moderator) Promote/demote a user to moderator
+#### promote (optional)
+(moderator) Add a user to the moderator list
+#### demote (optional)
+(moderator) Remove a user from the moderator list
 ### /pin-list
 (moderator) Pin the topics or clubs list message in this channel
 #### list-type
