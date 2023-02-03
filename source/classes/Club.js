@@ -31,7 +31,7 @@ module.exports.ClubTimeslot = class {
 	nextMeeting = null;
 	message = null;
 	periodCount = 1; // Number of units between repeating meetings (eg 1 week)
-	periodUnits = "w";
+	periodUnits = "weeks";
 	eventId = null;
 
 	/** Stores the unix timestamp of the club's next meeting
@@ -50,7 +50,7 @@ module.exports.ClubTimeslot = class {
 
 	/** Stores the components of the club's repeat period
 	 * @param {number} count
-	 * @param {"d" | "w"} unit
+	 * @param {"days" | "weeks"} unit
 	 */
 	setMeetingRepeatPeriod(count, unit) {
 		this.periodCount = count;

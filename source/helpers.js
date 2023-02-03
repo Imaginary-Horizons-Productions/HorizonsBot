@@ -394,7 +394,7 @@ exports.clubListBuilder = function () {
 			description += `**Game**: ${club.system}\n`;
 		}
 		if (club.timeslot.nextMeeting) {
-			description += `**Next Meeting**: <t:${club.timeslot.nextMeeting}>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "w" ? "week(s)" : "day(s)"}`}\n`;
+			description += `**Next Meeting**: <t:${club.timeslot.nextMeeting}>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}`}\n`;
 		}
 	})
 
@@ -595,7 +595,7 @@ exports.clubInviteBuilder = function (club, includeJoinButton) {
 	if (club.timeslot.nextMeeting) {
 		fields.push({
 			name: "Next Meeting",
-			value: `<t:${club.timeslot.nextMeeting}:F>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "w" ? "week(s)" : "day(s)"}`}`
+			value: `<t:${club.timeslot.nextMeeting}:F>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}`}`
 		});
 	}
 
@@ -788,7 +788,7 @@ function reminderWaitLoop(club, channelManager) {
 				});
 			});
 			if (club.timeslot.periodCount) {
-				const timeGap = exports.timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits, "s");
+				const timeGap = exports.timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
 				club.timeslot.setNextMeeting(club.timeslot.nextMeeting + timeGap);
 				exports.scheduleClubEvent(club, channelManager.guild);
 				exports.setClubReminder(club, channelManager);

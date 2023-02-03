@@ -44,10 +44,10 @@ module.exports = new ModalSubmission(id,
 		}
 		if (fields.fields.has("periodUnits")) {
 			const periodUnitsInput = fields.getTextInputValue("periodUnits");
-			if (["d", "w"].includes(periodUnitsInput)) {
+			if (["days", "weeks"].includes(periodUnitsInput)) {
 				club.timeslot.periodUnits = periodUnitsInput;
 			} else {
-				errors["periodUnits"] = `Input ${periodUnitsInput} did not match "d" (days) or "w" (weeks)`;
+				errors["periodUnits"] = `Input ${periodUnitsInput} did not match "days" or "weeks"`;
 			}
 		}
 		updateClubDetails(club, interaction.channel);
