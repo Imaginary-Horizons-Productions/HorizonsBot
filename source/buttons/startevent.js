@@ -12,9 +12,8 @@ module.exports = new Button(id,
 		const { hostId, timeslot: { eventId } } = getClubDictionary()[interaction.message.channel.id];
 		if (isModerator(interaction.user.id) || interaction.user.id === hostId) {
 			interaction.guild.scheduledEvents.fetch(eventId).then(event => {
-				event.setStatus(GuildScheduledEventStatus.Active).catch(error => {
-					throw error;
-				});
+				return event.setStatus(GuildScheduledEventStatus.Active);
+			}).then(() => {
 				interaction.update({
 					components: [
 						new ActionRowBuilder({
