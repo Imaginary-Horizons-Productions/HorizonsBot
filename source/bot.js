@@ -78,11 +78,17 @@ client.on("ready", () => {
 			}).catch(console.error);
 		})
 
-		// Begin checking for club reminders
-		for (let club of Object.values(getClubDictionary())) {
-			if (club.timeslot.nextMeeting) {
+		// Start up club reminder and event scheduling
+		for (const club of Object.values(getClubDictionary())) {
+			const isNextMeetingInFuture = Date.now() < club.timeslot.nextMeeting * 1000;
+			if (isNextMeetingInFuture) {
 				setClubReminder(club, channelManager);
-				scheduleClubEvent(club, guild);
+				if (club.isRecruiting() && club.timeslot.periodCount) {
+					scheduleClubEvent(club, guild);
+				}
+			} else {
+				club.timeslot.setNextMeeting(null);
+				club.timeslot.setEventId(null);
 			}
 		}
 
