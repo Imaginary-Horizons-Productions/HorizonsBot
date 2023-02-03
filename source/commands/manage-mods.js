@@ -30,29 +30,23 @@ module.exports.execute = (interaction) => {
 		return;
 	}
 
-	if (interaction.options.getSubcommand() === "promote") {
-		// Add a Moderator: add to list, give role and channel permissions
-		let promotee = interaction.options.getMember("promotee");
-		if (!isModerator(promotee.id)) {
-			promotee.roles.add(modRoleId).catch(error => console.error(`HorizonsBot lacks permissions to add roles to ${promotee.displayName}, but internal state has been updated.`));
-			addModerator(promotee.id);
-			interaction.reply(`${promotee} has been promoted to Moderator.`)
-				.catch(console.error);
-		} else {
-			interaction.reply({ content: `${promotee} is already a Moderator.`, ephemeral: true })
-				.catch(console.error);
-		}
-	} else if (interaction.options.getSubcommand() === "demote") {
-		// Remove a Moderator: remove from list, remove role and channel permissions
-		let demotee = interaction.options.getMember("demotee");
-		if (isModerator(demotee.id)) {
-			demotee.roles.remove(modRoleId).catch(error => console.error(`HorizonsBot lacks permissions to remove roles from ${demotee.displayName}, but internal state has been updated.`));
-			removeModerator(demotee.id);
-			interaction.reply(`${demotee} has been demoted from Moderator.`)
-				.catch(console.error);
-		} else {
-			interaction.reply({ content: `${demotee} is already not a Moderator.`, ephemeral: true })
-				.catch(console.error);
-		}
+	const isPromote = interaction.options.getSubcommand() === "promote";
+	const targetUser = interaction.options.getMember("promotee") ?? interaction.options.getMember("demotee");
+	if (isPromote === isModerator(targetUser.id)) {
+		interaction.reply({ content: `${targetUser} is already ${isPromote ? "" : "not "}a Moderator.`, ephemeral: true })
+			.catch(console.error);
+		return;
+	}
+
+	if (isPromote) {
+		targetUser.roles.add(modRoleId).catch(error => console.error(`HorizonsBot lacks permissions to add roles to ${targetUser.displayName}, but internal state has been updated.`));
+		addModerator(targetUser.id);
+		interaction.reply(`${targetUser} has been promoted to Moderator.`)
+			.catch(console.error);
+	} else {
+		targetUser.roles.remove(modRoleId).catch(error => console.error(`HorizonsBot lacks permissions to remove roles from ${targetUser.displayName}, but internal state has been updated.`));
+		removeModerator(targetUser.id);
+		interaction.reply(`${targetUser} has been demoted from Moderator.`)
+			.catch(console.error);
 	}
 }
