@@ -676,9 +676,10 @@ exports.updateClubDetails = (club, channel) => {
  * @param {Guild} guild
  */
 exports.createClubEvent = function (club, guild) {
-	const YEAR_IN_SECONDS = 31556926;
-	if (club.timeslot.nextMeeting * 1000 > Date.now()) {
-		if (club.timeslot.nextMeeting * 1000 < Date.now() + (5 * YEAR_IN_SECONDS)) {
+	const YEAR_IN_MS = 31556926000;
+	const now = Date.now();
+	if (club.timeslot.nextMeeting * 1000 > now) {
+		if (club.timeslot.nextMeeting * 1000 < now + (5 * YEAR_IN_MS)) {
 			guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
 				return guild.scheduledEvents.create({
 					name: club.title,
