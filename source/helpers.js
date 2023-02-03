@@ -772,7 +772,7 @@ function reminderWaitLoop(club, channelManager) {
 				exports.scheduleClubEvent(club, channelManager.guild);
 				exports.setClubReminder(club, channelManager);
 			} else {
-				club.timeslot.setEventId("");
+				club.timeslot.setEventId(null);
 				exports.updateList(channelManager, "clubs");
 				exports.updateClub(club, channelManager);
 			}
