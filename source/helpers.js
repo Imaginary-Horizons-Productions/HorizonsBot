@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType, StringSelectMenuBuilder } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
-const { MAX_SIGNED_INT } = require('./constants');
+const { MAX_SET_TIMEOUT } = require('./constants');
 const { embedTemplateBuilder } = require('./engines/messageEngine');
 
 /** Convert an amount of time from a starting unit to a different one
@@ -713,7 +713,7 @@ exports.createClubEvent = function (club, guild) {
  */
 exports.scheduleClubEvent = function (club, guild) {
 	if (club.isRecruiting()) {
-		if ((club.timeslot.nextMeeting * 1000) - Date.now() <= MAX_SIGNED_INT) {
+		if ((club.timeslot.nextMeeting * 1000) - Date.now() <= MAX_SET_TIMEOUT) {
 			let timeout = setTimeout((clubId, timeoutGuild) => {
 				const club = exports.getClubDictionary()[clubId];
 				if (club?.isRecruiting()) {
@@ -725,7 +725,7 @@ exports.scheduleClubEvent = function (club, guild) {
 			const timeout = setTimeout((timeoutClub, timeoutGuild) => {
 				exports.scheduleClubEvent(timeoutClub, timeoutGuild);
 			},
-				MAX_SIGNED_INT,
+				MAX_SET_TIMEOUT,
 				club,
 				guild)
 			exports.eventTimeouts[club.voiceChannelId] = timeout;
@@ -770,7 +770,7 @@ exports.setClubReminder = async function (club, channelManager) {
  * @returns
  */
 function calculateReminderMS(timestamp) {
-	return Math.min((timestamp * 1000) - exports.timeConversion(1, "d", "ms") - Date.now(), MAX_SIGNED_INT);
+	return Math.min((timestamp * 1000) - exports.timeConversion(1, "d", "ms") - Date.now(), MAX_SET_TIMEOUT);
 }
 
 /** If the club reminder would be set for further than the a max signed int ms in the future (max allowable setTimeout duration), try to set the club reminder again later
@@ -779,7 +779,7 @@ function calculateReminderMS(timestamp) {
  */
 function reminderWaitLoop(club, channelManager) {
 	if (club.timeslot.nextMeeting) {
-		if (calculateReminderMS(club.timeslot.nextMeeting) < MAX_SIGNED_INT) {
+		if (calculateReminderMS(club.timeslot.nextMeeting) < MAX_SET_TIMEOUT) {
 			channelManager.fetch(club.id).then(async textChannel => {
 				// NOTE: defaultReminder.length (without interpolated length) must be less than or equal to 49 characters so it fits in the config modal placeholder with its wrapper (100 characters)
 				const defaultReminder = `Reminder: This club will meet at <t:${club.timeslot.nextMeeting}:t> tomorrow! <#${club.voiceChannelId}>`;

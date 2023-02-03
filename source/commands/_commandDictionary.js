@@ -12,7 +12,7 @@ exports.commandSets = [
 	new CommandSet("Club Commands", "Clubs are private text and voice channels that include organization utilities like automatic reminders.", false,
 		["club-add.js", "club-config.js", "club-promote-leader.js"]),
 	new CommandSet("Moderation Commands", "Commands for moderators. Required permissions are listed in (parenthesis) at the beginning of the description.", true,
-		["at-permission.js", "petition-check.js", "delete.js", "pin-list.js"])
+		["at-permission.js", "petition-check.js", "delete.js", "manage-mods.js", "pin-list.js"])
 ];
 
 exports.commandFiles = exports.commandSets.reduce((allFiles, set) => allFiles.concat(set.fileNames), []);
