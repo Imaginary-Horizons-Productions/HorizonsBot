@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType, StringSelectMenuBuilder } = require('discord.js');
+const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType, StringSelectMenuBuilder, ButtonStyle } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SET_TIMEOUT } = require('./constants');
 const { embedTemplateBuilder } = require('./engines/messageEngine');
@@ -784,9 +784,25 @@ function reminderWaitLoop(club, channelManager) {
 			channelManager.fetch(club.id).then(async textChannel => {
 				// NOTE: defaultReminder.length (without interpolated length) must be less than or equal to 49 characters so it fits in the config modal placeholder with its wrapper (100 characters)
 				const defaultReminder = `Reminder: This club will meet at <t:${club.timeslot.nextMeeting}:t> tomorrow! <#${club.voiceChannelId}>`;
-				textChannel.send({
+				const reminderPayload = {
 					content: `@everyone ${club.timeslot.message ? club.timeslot.message : defaultReminder}`,
-				});
+				};
+				if (club.timeslot.eventId) {
+					const event = await channelManager.guild.scheduledEvents.fetch(club.timeslot.eventId).catch(console.error);
+					if (event) {
+						reminderPayload.components = [new ActionRowBuilder({
+							components: [
+								new ButtonBuilder({
+									customId: 'startevent',
+									label: "Start Event",
+									emoji: "👑",
+									style: ButtonStyle.Primary,
+								})
+							]
+						})]
+					}
+				}
+				textChannel.send(reminderPayload);
 			});
 			if (club.timeslot.periodCount) {
 				const timeGap = exports.timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
