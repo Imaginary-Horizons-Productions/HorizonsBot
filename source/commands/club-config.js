@@ -1,6 +1,5 @@
 const { Interaction, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const Command = require('../classes/Command.js');
-const embed = require("../../config/embeds/about.json");
 const { getClubDictionary, clubInviteBuilder } = require("../helpers.js");
 const { SAFE_DELIMITER } = require('../constants.js');
 
