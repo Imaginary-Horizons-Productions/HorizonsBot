@@ -19,6 +19,10 @@ module.exports.execute = (interaction) => {
 		return interaction.reply({ content: "Promoting a club leader is restricted to the current club leader and Moderators.", ephemeral: true });
 	}
 
+	if (!club.timeslot.nextMeeting) {
+		return interaction.reply({ content: 'This club does not have a time set for its next meeting.', ephemeral: true });
+	}
+
 	sendClubReminder(club, interaction.guild.channels);
 	interaction.reply({ content: "Club reminder sent!", ephemeral: true });
 }
