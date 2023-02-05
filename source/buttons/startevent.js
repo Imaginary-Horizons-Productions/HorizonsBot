@@ -10,41 +10,41 @@ module.exports = new Button(id,
 	 */
 	(interaction, []) => {
 		const { hostId, timeslot: { eventId } } = getClubDictionary()[interaction.message.channel.id];
-		if (isModerator(interaction.user.id) || interaction.user.id === hostId) {
-			interaction.guild.scheduledEvents.fetch(eventId).then(event => {
-				return event.setStatus(GuildScheduledEventStatus.Active);
-			}).then(() => {
-				interaction.update({
-					components: [
-						new ActionRowBuilder({
-							components: [
-								new ButtonBuilder({
-									customId: 'startevent',
-									label: "Event Started!",
-									emoji: "👑",
-									style: ButtonStyle.Primary,
-									disabled: true
-								})
-							]
-						})
-					]
-				});
-			}).catch(error => {
-				switch (error.code) {
-					case 180000:
-						interaction.reply({ content: "This event has already ended.", ephemeral: true });
-						break;
-					case 10070:
-						console.error(`Event ${eventId} could not be started because the event was not found.`);
-						interaction.reply({ content: "HorizonsBot could not find the event, please start the event manually or contact a moderator.", ephemeral: true });
-						break;
-					default:
-						console.error(error);
-				}
-				interaction.message.edit({ components: [] });
-			});
-		} else {
-			interaction.reply({ content: "Only the club's leader or a moderator can start the event.", ephemeral: true });
+		if (!isModerator(interaction.user.id) && interaction.user.id !== hostId) {
+			return interaction.reply({ content: "Only the club's leader or a moderator can start the event.", ephemeral: true });
 		}
+
+		interaction.guild.scheduledEvents.fetch(eventId).then(event => {
+			return event.setStatus(GuildScheduledEventStatus.Active);
+		}).then(() => {
+			interaction.update({
+				components: [
+					new ActionRowBuilder({
+						components: [
+							new ButtonBuilder({
+								customId: 'startevent',
+								label: "Event Started!",
+								emoji: "👑",
+								style: ButtonStyle.Primary,
+								disabled: true
+							})
+						]
+					})
+				]
+			});
+		}).catch(error => {
+			switch (error.code) {
+				case 180000:
+					interaction.reply({ content: "This event has already ended.", ephemeral: true });
+					break;
+				case 10070:
+					console.error(`Event ${eventId} could not be started because the event was not found.`);
+					interaction.reply({ content: "HorizonsBot could not find the event, please start the event manually or contact a moderator.", ephemeral: true });
+					break;
+				default:
+					console.error(error);
+			}
+			interaction.message.edit({ components: [] });
+		});
 	}
 );
