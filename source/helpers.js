@@ -699,21 +699,10 @@ exports.createClubEvent = function (club, guild) {
  * @param {Guild} guild
  */
 exports.scheduleClubEvent = function (club, guild) {
-	const msToNextMeeting = (club.timeslot.nextMeeting * 1000) - Date.now();
-	if (msToNextMeeting <= MAX_SET_TIMEOUT) {
-		let timeout = setTimeout((clubId, timeoutGuild) => {
-			const club = exports.getClubDictionary()[clubId];
-			if (club?.isRecruiting()) {
-				exports.createClubEvent(club, timeoutGuild);
-			}
-		}, msToNextMeeting, club.id, guild);
-		exports.eventTimeouts[club.voiceChannelId] = timeout;
-	} else {
-		const timeout = setTimeout((timeoutClub, timeoutGuild) => {
-			exports.scheduleClubEvent(timeoutClub, timeoutGuild);
-		}, MAX_SET_TIMEOUT, club, guild);
-		exports.eventTimeouts[club.voiceChannelId] = timeout;
-	}
+	const timeout = setTimeout((timeoutClub, timeoutGuild) => {
+		exports.scheduleClubEvent(timeoutClub, timeoutGuild);
+	}, MAX_SET_TIMEOUT, club, guild);
+	exports.eventTimeouts[club.voiceChannelId] = timeout;
 }
 
 /** Delete the scheduled event associated with a club's next meeting
@@ -738,7 +727,7 @@ exports.cancelClubEvent = function (club, eventManager) {
 exports.setClubReminder = async function (club, channelManager) {
 	if (club.timeslot.nextMeeting) {
 		if (Date.now() - (club.timeslot.nextMeeting * 1000) < exports.timeConversion(1, "d", "ms")) {
-			sendClubReminder(club, channelManager);
+			exports.sendClubReminder(club, channelManager);
 		}
 		const timeout = setTimeout(
 			reminderWaitLoop,
@@ -766,7 +755,7 @@ function reminderWaitLoop(club, channelManager) {
 	if (club.timeslot.nextMeeting) {
 		if (calculateReminderMS(club.timeslot.nextMeeting) < MAX_SET_TIMEOUT) {
 			if (club.timeslot.periodCount) {
-				sendClubReminder(club, channelManager);
+				exports.sendClubReminder(club, channelManager);
 				const timeGap = exports.timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
 				club.timeslot.setNextMeeting(club.timeslot.nextMeeting + timeGap);
 				exports.scheduleClubEvent(club, channelManager.guild);
@@ -786,7 +775,7 @@ function reminderWaitLoop(club, channelManager) {
  * @param {Club} club
  * @param {ChannelManager} channelManager
  */
-function sendClubReminder(club, channelManager) {
+exports.sendClubReminder = (club, channelManager) => {
 	channelManager.fetch(club.id).then(async textChannel => {
 		// NOTE: defaultReminder.length (without interpolated length) must be less than or equal to 49 characters so it fits in the config modal placeholder with its wrapper (100 characters)
 		const defaultReminder = `Reminder: This club will meet at <t:${club.timeslot.nextMeeting}:t> tomorrow! <#${club.voiceChannelId}>`;
