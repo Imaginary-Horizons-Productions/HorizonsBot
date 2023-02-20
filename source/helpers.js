@@ -486,7 +486,7 @@ exports.checkPetition = function (guild, topicName, author = null) {
 exports.addTopicChannel = function (guild, topicName) {
 	return guild.channels.create({
 		name: topicName,
-		parent: "656186659758407691",
+		parent: "581886288102424592",
 		permissionOverwrites: [
 			{
 				id: guild.client.user.id,
