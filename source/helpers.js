@@ -232,7 +232,6 @@ function listSelectBuilder(listType) {
 			for (let i = 0; i < topicNames.length; i++) {
 				entries.push({
 					label: topicNames[i],
-					description: "",
 					value: topicIds[i]
 				})
 			}
@@ -507,7 +506,7 @@ exports.addTopicChannel = function (guild, topicName) {
 		],
 		type: ChannelType.GuildText
 	}).then(channel => {
-		var petitions = exports.getPetitions();
+		const petitions = exports.getPetitions();
 		if (!petitions[topicName]) {
 			petitions[topicName] = [];
 		}
@@ -542,10 +541,10 @@ exports.joinChannel = function (channel, user) {
 	if (!user.bot) {
 		const { id, permissionOverwrites, guild, name: channelName } = channel;
 		let permissionOverwrite = permissionOverwrites.resolve(user.id);
-		if (!permissionOverwrite || !permissionOverwrite.deny.has("VIEW_CHANNEL", false)) {
+		if (!permissionOverwrite || !permissionOverwrite.deny.has(PermissionsBitField.Flags.ViewChannel, false)) {
 			if (exports.getTopicIds().includes(id)) {
 				permissionOverwrites.create(user, {
-					"VIEW_CHANNEL": true
+					[PermissionsBitField.Flags.ViewChannel]: true
 				}).then(() => {
 					channel.send(`Welcome to ${channelName}, ${user}!`);
 				}).catch(console.error);
@@ -555,10 +554,10 @@ exports.joinChannel = function (channel, user) {
 					if (club.hostId != user.id && !club.userIds.includes(user.id)) {
 						club.userIds.push(user.id);
 						permissionOverwrites.create(user, {
-							"VIEW_CHANNEL": true
+							[PermissionsBitField.Flags.ViewChannel]: true
 						}).then(() => {
 							guild.channels.resolve(club.voiceChannelId).permissionOverwrites.create(user, {
-								"VIEW_CHANNEL": true
+								[PermissionsBitField.Flags.ViewChannel]: true
 							})
 							channel.send(`Welcome to ${channelName}, ${user}!`);
 						})
@@ -788,7 +787,7 @@ function reminderWaitLoop(club, channelManager) {
 				});
 			});
 			if (club.timeslot.periodCount) {
-				const timeGap = exports.timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits, "s");
+				const timeGap = exports.timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "m", "s");
 				club.timeslot.setNextMeeting(club.timeslot.nextMeeting + timeGap);
 				exports.scheduleClubEvent(club, channelManager.guild);
 				exports.setClubReminder(club, channelManager);
