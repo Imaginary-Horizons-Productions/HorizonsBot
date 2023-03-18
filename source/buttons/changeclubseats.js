@@ -1,4 +1,4 @@
-const { Interaction, ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const Button = require('../classes/Button.js');
 const { SAFE_DELIMITER } = require('../constants.js');
 const { getClubDictionary } = require('../helpers.js');
@@ -6,7 +6,7 @@ const { getClubDictionary } = require('../helpers.js');
 const id = "changeclubseats";
 module.exports = new Button(id,
 	/** Opens a modal to change the max seats and recruiting toggle of the club
-	 * @param {Interaction} interaction
+	 * @param {import('discord.js').Interaction} interaction
 	 * @param {Array<string>} args
 	 */
 	(interaction, [clubId]) => {
