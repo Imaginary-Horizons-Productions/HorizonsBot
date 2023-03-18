@@ -67,15 +67,15 @@ The new topic
 ## Club Commands
 Clubs are private text and voice channels that include organization utilities like automatic reminders.
 ### /club-add
-(moderator) Set up a club (a text and voice channel)
+(moderator) (moderator) Set up a club (a text and voice channel)
 #### club-leader
 The user's mention
 ### /club-send-reminder
-(club leader or moderator) Re-post the reminder message for the club's next meeting
+Re-post the reminder message for the club's next meeting
 ### /club-config
-(club leader or moderator) Change the configuration of the current club
+Change the configuration of the current club
 ### /club-promote-leader
-(club leader or moderator) Promote another user to club leader
+Promote another user to club leader
 #### user
 The user's mention
 ## Moderation Commands
@@ -87,7 +87,7 @@ Commands for moderators. Required permissions are listed in (parenthesis) at the
 #### allow (optional)
 (moderator) Re-allow a user to use /at-channel
 ### /petition-check
-(moderator) Check if a petition has passed in case of desync
+Check how many more petitions a topic needs
 #### topic
 The petition to check
 ### /delete
