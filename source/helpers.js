@@ -2,7 +2,7 @@ const fs = require('fs');
 const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType, StringSelectMenuBuilder, ButtonStyle, GuildMember } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SET_TIMEOUT } = require('./constants');
-const { embedTemplateBuilder } = require('./engines/messageEngine');
+const { embedTemplateBuilder, clubEmbedBuilder } = require('./engines/messageEngine');
 
 /** Convert an amount of time from a starting unit to a different one
  * @param {number} value
@@ -581,40 +581,6 @@ exports.joinChannel = function (channel, user) {
 	}
 }
 
-/** Generate the invite MessageOptions
- * @param {Club} club
- * @param {boolean} includeJoinButton
- * @returns {MessageOptions}
- */
-exports.clubInviteBuilder = function (club, includeJoinButton) {
-	// Generate Embed
-	const fields = [{ name: "Club Host", value: `<@${club.hostId}>` }];
-	if (club.system) {
-		fields.push({ name: "Game", value: club.system });
-	}
-	if (club.timeslot.nextMeeting) {
-		fields.push({
-			name: "Next Meeting",
-			value: `<t:${club.timeslot.nextMeeting}:F>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}`}`
-		});
-	}
-
-	const embed = embedTemplateBuilder()
-		.setTitle(`__**${club.title}**__ (${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members)`)
-		.setDescription(club.description)
-		.addFields(fields)
-		.setImage(club.imageURL || null)
-		.setColor(club.color || null);
-
-	// Generate Components
-	const uiComponents = [];
-	if (includeJoinButton) {
-		uiComponents.push(new ActionRowBuilder().addComponents(...new ButtonBuilder().setCustomId(`join-${club.id}`).setLabel(`Join ${club.title}`).setStyle("SUCCESS")));
-	}
-
-	return { embeds: [embed], components: uiComponents };
-}
-
 /** Send the recipient an invitation to the club
  * @param {Interaction} interaction
  * @param {string} clubId
@@ -628,7 +594,19 @@ exports.clubInvite = function (interaction, clubId, recipient) {
 		}
 		if (!recipient.bot) {
 			if (recipient.id !== club.hostId && !club.userIds.includes(recipient.id)) {
-				recipient.send(exports.clubInviteBuilder(club, true)).then(() => {
+				recipient.send({
+					embeds: [clubEmbedBuilder(club)], components: [new ActionRowBuilder(
+						{
+							components: [
+								new ButtonBuilder({
+									customId: `join-${club.id}`,
+									label: `Join ${club.title}`,
+									style: ButtonStyle.Success
+								})
+							]
+						}
+					)]
+				}).then(() => {
 					interaction.reply({ content: "Club details have been sent.", ephemeral: true });
 				}).catch(console.error);
 			} else {
@@ -648,8 +626,7 @@ exports.clubInvite = function (interaction, clubId, recipient) {
  */
 exports.updateClubDetails = (club, channel) => {
 	channel.messages.fetch(club.detailSummaryId).then(message => {
-		const { embeds, components } = exports.clubInviteBuilder(club, false);
-		message.edit({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds, components, fetchReply: true }).then(detailSummaryMessage => {
+		message.edit({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds: [clubEmbedBuilder(club)], fetchReply: true }).then(detailSummaryMessage => {
 			detailSummaryMessage.pin();
 			club.detailSummaryId = detailSummaryMessage.id;
 			exports.updateList(channel.guild.channels, "clubs");
@@ -658,8 +635,8 @@ exports.updateClubDetails = (club, channel) => {
 	}).catch(error => {
 		if (error.message === "Unknown Message") {
 			// message not found
-			const { embeds, components } = exports.clubInviteBuilder(club, false);
-			channel.send({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds, components, fetchReply: true }).then(detailSummaryMessage => {
+			const embeds = clubEmbedBuilder(club);
+			channel.send({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds, fetchReply: true }).then(detailSummaryMessage => {
 				detailSummaryMessage.pin();
 				club.detailSummaryId = detailSummaryMessage.id;
 				exports.updateList(channel.guild.channels, "clubs");

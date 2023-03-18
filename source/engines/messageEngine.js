@@ -32,6 +32,29 @@ exports.randomEmbedFooter = function () {
 	}
 }
 
+/** Generate the club's summary embed
+ * @param {Club} club
+ */
+exports.clubEmbedBuilder = function (club) {
+	const fields = [{ name: "Club Host", value: `<@${club.hostId}>` }];
+	if (club.system) {
+		fields.push({ name: "Game", value: club.system });
+	}
+	if (club.timeslot.nextMeeting) {
+		fields.push({
+			name: "Next Meeting",
+			value: `<t:${club.timeslot.nextMeeting}:F>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}`}`
+		});
+	}
+
+	return exports.embedTemplateBuilder()
+		.setTitle(`__**${club.title}**__ (${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members)`)
+		.setDescription(club.description)
+		.addFields(fields)
+		.setImage(club.imageURL || null)
+		.setColor(club.color || null);
+}
+
 /** The version embed should contain the last version's changes, known issues, and project links
  * @returns {EmbedBuilder}
  */
