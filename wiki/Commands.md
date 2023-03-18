@@ -70,6 +70,8 @@ Clubs are private text and voice channels that include organization utilities li
 (moderator) Set up a club (a text and voice channel)
 #### club-leader
 The user's mention
+### /club-send-reminder
+(club leader or moderator) Re-post the reminder message for the club's next meeting
 ### /club-config
 (club leader or moderator) Change the configuration of the current club
 ### /club-promote-leader
