@@ -11,7 +11,7 @@ module.exports = new Button(id,
 	(interaction, []) => {
 		const { hostId, timeslot: { eventId } } = getClubDictionary()[interaction.message.channel.id];
 		if (!isModerator(interaction.member) && interaction.user.id !== hostId) {
-			return interaction.reply({ content: "Only the club's leader or a moderator can start the event.", ephemeral: true });
+			return interaction.reply({ content: "Only the club's host or a moderator can start the event.", ephemeral: true });
 		}
 
 		interaction.guild.scheduledEvents.fetch(eventId).then(event => {

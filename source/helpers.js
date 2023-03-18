@@ -632,7 +632,7 @@ exports.clubInvite = function (interaction, clubId, recipient) {
 					interaction.reply({ content: "Club details have been sent.", ephemeral: true });
 				}).catch(console.error);
 			} else {
-				interaction.reply({ content: "If the club details are not pinned, the club leader can have them reposted and pinned with `/club-details`.", ephemeral: true })
+				interaction.reply({ content: "If the club details are not pinned, the club host can have them reposted and pinned with `/club-details`.", ephemeral: true })
 					.catch(console.error);
 			}
 		}

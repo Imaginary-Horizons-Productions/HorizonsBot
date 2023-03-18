@@ -3,15 +3,15 @@ const Command = require('../classes/Command.js');
 const { Club } = require('../classes/Club.js');
 const { modRoleId, updateClub, clubInviteBuilder, updateList } = require('../helpers.js');
 
-const options = [{ type: "User", name: "club-leader", description: "The user's mention", required: true, choices: [] }]
+const options = [{ type: "User", name: "club-host", description: "The user's mention", required: true, choices: [] }]
 const subcommands = [];
-module.exports = new Command("club-add", "(moderator) Set up a club (a text and voice channel)", "moderator", options, subcommands);
+module.exports = new Command("club-add", "Set up a club (a text and voice channel)", "moderator", options, subcommands);
 
 /** Create a new club including a text and voice channel in the receiving channel's category and set the mentioned user as host
  * @param {import('discord.js').Interaction} interaction
  */
 module.exports.execute = (interaction) => {
-	let host = interaction.options.getUser("club-leader");
+	let host = interaction.options.getUser("club-host");
 	let channelManager = interaction.guild.channels;
 	let categoryId = interaction.channel.parentId;
 
