@@ -1,15 +1,14 @@
 const Command = require('../classes/Command.js');
-const { Interaction } = require('discord.js');
 const { versionEmbedBuilder } = require('../engines/messageEngine.js');
 
 const options = [
 	{ type: "Boolean", name: "full-notes", description: "Get the file with the full version notes?", required: true, choices: [] }
 ];
 const subcomands = [];
-module.exports = new Command("version", "Get HorizonsBot's version notes", false, options, subcomands);
+module.exports = new Command("version", "Get HorizonsBot's version notes", "none", options, subcomands);
 
 /** Send version information
- * @param {Interaction} interaction
+ * @param {import('discord.js').Interaction} interaction
  */
 module.exports.execute = (interaction) => {
 	if (interaction.options.getBoolean("full-notes")) {

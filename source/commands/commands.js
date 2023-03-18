@@ -14,7 +14,7 @@ const options = [
 	}
 ];
 const subcommands = [];
-module.exports = new Command("commands", "List HorizonsBot's commands", false, options, subcommands);
+module.exports = new Command("commands", "List HorizonsBot's commands", "none", options, subcommands);
 
 let wikiPage;
 fs.readFile("wiki/Commands.md", { encoding: "utf-8" }, (error, data) => {

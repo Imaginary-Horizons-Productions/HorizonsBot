@@ -1,25 +1,17 @@
-const { Interaction, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const Command = require('../classes/Command.js');
-const { getClubDictionary, clubInviteBuilder, isModerator } = require("../helpers.js");
+const { getClubDictionary, clubInviteBuilder } = require("../helpers.js");
 const { SAFE_DELIMITER } = require('../constants.js');
 
 const options = [];
 const subcommands = [];
-module.exports = new Command("club-config", "(club leader or moderator) Change the configuration of the current club", false, options, subcommands);
+module.exports = new Command("club-config", "Change the configuration of the current club", "moderator/club host", options, subcommands);
 
 /** Send the user an ephemeral message containing club configuration controls
- * @param {Interaction} interaction
+ * @param {import('discord.js').Interaction} interaction
  */
 module.exports.execute = (interaction) => {
 	const club = getClubDictionary()[interaction.channelId];
-	if (!club) {
-		return interaction.reply({ content: "Please configure club settings from the club's text channel.", ephemeral: true });
-	}
-
-	if (!isModerator(interaction.user.id) && interaction.user.id !== club.hostId) {
-		return interaction.reply({ content: "Promoting a club leader is restricted to the current club leader and Moderators.", ephemeral: true });
-	}
-
 	const { embeds } = clubInviteBuilder(club);
 	const components = [new ActionRowBuilder().addComponents(
 		new ButtonBuilder().setCustomId(`changeclubinfo${SAFE_DELIMITER}${club.id}`)

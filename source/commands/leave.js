@@ -6,8 +6,11 @@ const { updateList, updateClub, getClubDictionary } = require('../helpers.js');
 
 const options = [];
 const subcomands = [];
-module.exports = new Command("leave", "Leave a topic or club", false, options, subcomands);
+module.exports = new Command("leave", "Leave a topic or club", "none", options, subcomands);
 
+/** Do cleanup associated with user leaving a club or topic
+ * @param {import('discord.js').Interaction} interaction
+ */
 module.exports.execute = (interaction) => {
 	const { user: { id: userId }, channelId } = interaction;
 	if (getManagedChannels().includes(channelId)) {

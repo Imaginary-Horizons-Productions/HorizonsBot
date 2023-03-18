@@ -5,7 +5,7 @@ const options = [
 	{ type: "String", name: "list-type", description: "The list to get", required: true, choices: [{ name: "Get the topic list", value: "topic" }, { name: "Get the club list", value: "club" }] },
 ];
 const subcomands = [];
-module.exports = new Command("list", "Get the topic or club list", false, options, subcomands);
+module.exports = new Command("list", "Get the topic or club list", "none", options, subcomands);
 
 /** Determine if user mentioned a topic or club, then provide appropriate permissions
  * @param {import('discord.js').Interaction} interaction

@@ -6,7 +6,7 @@ const options = [
 	{ type: "String", name: "channel", description: "The name/id of the topic or club to join", required: true, choices: [] },
 ];
 const subcomands = [];
-module.exports = new Command("join", "Join a topic or club", false, options, subcomands);
+module.exports = new Command("join", "Join a topic or club", "none", options, subcomands);
 
 /** Determine if user mentioned a topic or club, then provide appropriate permissions
  * @param {import('discord.js').Interaction} interaction

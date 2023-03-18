@@ -14,29 +14,30 @@ const options = [
 	{ type: "String", name: "label", description: "Text after the roll", required: false, choices: [] },
 ];
 const subcomands = [];
-module.exports = new Command("roll", "Roll any number of dice with any number of sides", false, options, subcomands);
+module.exports = new Command("roll", "Roll any number of dice with any number of sides", "none", options, subcomands);
 
 /** Roll the specified dice
  * @param {import('discord.js').Interaction} interaction
  */
 module.exports.execute = (interaction) => {
-	var rollInput = interaction.options.getString('dice');
-	var label = interaction.options.getString('label');
+	let rollInput = interaction.options.getString('dice');
+	const label = interaction.options.getString('label');
 	if (label) {
 		rollInput = rollInput.concat(` ${label}`);
 	}
+	let rollResult;
 	switch (interaction.options.getString('display')) {
 		case "max":
-			var rollResult = getRollString(rollInput, true, true);
+			rollResult = getRollString(rollInput, true, true);
 			break;
 		case "individual":
-			var rollResult = getRollString(rollInput, false, false);
+			rollResult = getRollString(rollInput, false, false);
 			break;
 		case "verbose":
-			var rollResult = getRollString(rollInput, true, false);
+			rollResult = getRollString(rollInput, true, false);
 			break;
 		default:
-			var rollResult = getRollString(rollInput, false, true);
+			rollResult = getRollString(rollInput, false, true);
 			break;
 	}
 	interaction.reply(`Roll Result:\n\`${rollResult}\``);

@@ -1,4 +1,3 @@
-const { Interaction } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { atIds, timeConversion, noAts } = require('../helpers.js');
 
@@ -7,10 +6,10 @@ const options = [
 	{ type: "String", name: "type", description: "Who to notify", required: false, choices: [{ name: "Only online users in this channel", value: "@here" }, { name: "All users in this channel", value: "@everyone" }] }
 ];
 const subcomands = [];
-module.exports = new Command("at-channel", "Send a ping to the current channel", false, options, subcomands);
+module.exports = new Command("at-channel", "Send a ping to the current channel", "none", options, subcomands);
 
 /** Send a rate-limited ping
- * @param {Interaction} interaction
+ * @param {import('discord.js').Interaction} interaction
  */
 module.exports.execute = (interaction) => {
 	if (!noAts.includes(interaction.user.id)) {

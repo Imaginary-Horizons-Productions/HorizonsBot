@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType, StringSelectMenuBuilder, ButtonStyle } = require('discord.js');
+const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType, StringSelectMenuBuilder, ButtonStyle, GuildMember } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SET_TIMEOUT } = require('./constants');
 const { embedTemplateBuilder } = require('./engines/messageEngine');
@@ -65,19 +65,20 @@ exports.saveModData = function () {
 	exports.saveObject({ modIds: moderatorIds, noAts: exports.noAts }, "modData.json");
 }
 
-/** Determines if the id belongs to a moderator
- * @param {string} id
- * @returns {boolean}
+/** Determines if the member is a moderator or can manage the bot
+ * @param {GuildMember} member
  */
-exports.isModerator = function (id) {
-	return moderatorIds.includes(id);
+exports.isModerator = function (member) {
+	return moderatorIds.includes(member.id) || !member.manageable;
 }
 
 /** Add a user's id to the list of moderator ids
  * @param {string} id
  */
 exports.addModerator = function (id) {
-	moderatorIds.push(id);
+	if (!moderatorIds.some(existingId => existingId === id)) {
+		moderatorIds.push(id);
+	}
 	exports.saveModData();
 }
 

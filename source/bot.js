@@ -7,9 +7,10 @@ const { callButton } = require("./buttons/_buttonDictionary.js");
 const { callModalSubmission } = require("./modalSubmissions/_modalSubmissionDictionary.js");
 const { callSelect } = require("./selects/_selectDictionary.js");
 const { versionEmbedBuilder } = require("./engines/messageEngine.js");
-const { listMessages, pinClubList, getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, scheduleClubEvent, setClubReminder } = require("./helpers.js");
+const { listMessages, pinClubList, getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, scheduleClubEvent, setClubReminder, isModerator } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
+const { isClubHostOrModerator } = require("./engines/channelEngine.js");
 //#endregion
 
 //#region Executing Code
@@ -106,12 +107,17 @@ client.on("ready", () => {
 client.on("interactionCreate", interaction => {
 	if (interaction.isCommand()) {
 		const command = getCommand(interaction.commandName);
-		if (!command.managerCommand || !interaction.member.manageable) {
-			command.execute(interaction);
-		} else {
-			interaction.reply(`The \`/${interaction.commandName}\` command is restricted to bot managers (users with permissions above the bot).`)
-				.catch(console.error);
+		if (command.permissionLevel === "moderator" && !isModerator(interaction.member)) {
+			interaction.reply(`\`/${interaction.commandName}\` is a moderator-only command.`);
+			return;
 		}
+
+		if (command.permissionLevel === "moderator/club host" && !isClubHostOrModerator(interaction.channel.id, interaction.member)) {
+			interaction.reply({ content: "\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.", ephemeral: true });
+			return;
+		}
+
+		command.execute(interaction);
 	} else {
 		const [mainId, ...args] = interaction.customId.split(SAFE_DELIMITER);
 		if (interaction.isButton()) {

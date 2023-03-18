@@ -10,7 +10,7 @@ module.exports = new Button(id,
 	 */
 	(interaction, []) => {
 		const { hostId, timeslot: { eventId } } = getClubDictionary()[interaction.message.channel.id];
-		if (!isModerator(interaction.user.id) && interaction.user.id !== hostId) {
+		if (!isModerator(interaction.member) && interaction.user.id !== hostId) {
 			return interaction.reply({ content: "Only the club's leader or a moderator can start the event.", ephemeral: true });
 		}
 

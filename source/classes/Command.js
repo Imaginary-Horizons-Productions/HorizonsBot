@@ -4,17 +4,26 @@ module.exports = class Command {
 	/** IHP wrapper for slash commands
 	 * @param {string} nameInput
 	 * @param {string} descriptionInput
-	 * @param {boolean} isManagerCommand
+	 * @param {"none" | "moderator" | "moderator/club host"} permissionLevelEnum
 	 * @param {Array} optionsInput
 	 * @param {Array} subcommandsInput
 	 */
-	constructor(nameInput, descriptionInput, isManagerCommand, optionsInput, subcommandsInput) {
+	constructor(nameInput, descriptionInput, permissionLevelEnum, optionsInput, subcommandsInput) {
 		this.name = nameInput;
-		this.description = descriptionInput;
-		this.managerCommand = isManagerCommand;
+		switch (permissionLevelEnum) {
+			case "moderator":
+				this.description = `(moderator) ${descriptionInput}`;
+				break;
+			case "moderator or club host":
+				this.description = `(moderator/club host) ${descriptionInput}`;
+				break;
+			default:
+				this.description = descriptionInput;
+		}
+		this.permissionLevel = permissionLevelEnum;
 		this.data = new SlashCommandBuilder()
 			.setName(nameInput)
-			.setDescription(descriptionInput);
+			.setDescription(this.description);
 		optionsInput.forEach(option => {
 			this.data[`add${option.type}Option`](built => {
 				built.setName(option.name).setDescription(option.description).setRequired(option.required);

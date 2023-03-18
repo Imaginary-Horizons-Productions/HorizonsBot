@@ -1,4 +1,3 @@
-const { Interaction } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { isModerator, addTopicChannel } = require('../helpers.js');
 
@@ -6,10 +5,10 @@ const options = [
 	{ type: "String", name: "topic-name", description: "The new topic", required: true, choices: [] },
 ];
 const subcomands = [];
-module.exports = new Command("topic-add", "(moderator) Set up a topic", true, options, subcomands);
+module.exports = new Command("topic-add", "Set up a topic", "moderator", options, subcomands);
 
 /** Creates a new opt-in text channel for the given topic, adds it to list of topic channels
- * @param {Interaction} interaction
+ * @param {import('discord.js').Interaction} interaction
  */
 module.exports.execute = (interaction) => {
 	if (isModerator(interaction.user.id)) {
