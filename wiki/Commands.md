@@ -24,12 +24,16 @@ The dice to roll in #d# format
 Choose output display option
 #### label (optional)
 Text after the roll
+### /join
+Join a topic or club
+#### channel
+The name/id of the topic or club to join
+### /leave
+Leave a topic or club
 ### /petition
 Petition for a topic text channel
 #### topic-name
 Make sure the topic doesn't already exist
-### /leave
-Leave a topic or club
 ## Informantional Commands
 Use these commands to learn more about this server or HorizonsBot.
 ### /rules
