@@ -67,15 +67,15 @@ The new topic
 ## Club Commands
 Clubs are private text and voice channels that include organization utilities like automatic reminders.
 ### /club-add
-(moderator) (moderator) Set up a club (a text and voice channel)
-#### club-leader
+(moderator) Set up a club (a text and voice channel)
+#### club-host
 The user's mention
 ### /club-send-reminder
 Re-post the reminder message for the club's next meeting
 ### /club-config
 Change the configuration of the current club
-### /club-promote-leader
-Promote another user to club leader
+### /club-update-host
+Promote another user to club host
 #### user
 The user's mention
 ## Moderation Commands
