@@ -635,8 +635,7 @@ exports.updateClubDetails = (club, channel) => {
 	}).catch(error => {
 		if (error.message === "Unknown Message") {
 			// message not found
-			const embeds = clubEmbedBuilder(club);
-			channel.send({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds, fetchReply: true }).then(detailSummaryMessage => {
+			channel.send({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds: [clubEmbedBuilder(club)], fetchReply: true }).then(detailSummaryMessage => {
 				detailSummaryMessage.pin();
 				club.detailSummaryId = detailSummaryMessage.id;
 				exports.updateList(channel.guild.channels, "clubs");
