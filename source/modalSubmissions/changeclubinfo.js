@@ -1,6 +1,7 @@
 const { Interaction } = require('discord.js');
 const ModalSubmission = require('../classes/ModalSubmission.js');
-const { getClubDictionary, updateClub, updateClubDetails, updateList, clubInviteBuilder } = require('../helpers.js');
+const { clubEmbedBuilder } = require('../engines/messageEngine.js');
+const { getClubDictionary, updateClub, updateClubDetails, updateList } = require('../helpers.js');
 
 const id = "changeclubinfo";
 module.exports = new ModalSubmission(id,
@@ -36,6 +37,5 @@ module.exports = new ModalSubmission(id,
 		updateList(interaction.guild.channels, "clubs");
 		updateClub(club);
 
-		const { embeds } = clubInviteBuilder(club, false);
-		interaction.update({embeds});
+		interaction.update({ embeds: [clubEmbedBuilder(club)] });
 	});

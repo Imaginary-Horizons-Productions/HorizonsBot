@@ -1,6 +1,7 @@
 const { Interaction } = require('discord.js');
 const ModalSubmission = require('../classes/ModalSubmission.js');
-const { getClubDictionary, updateClub, updateClubDetails, updateList, clubInviteBuilder } = require('../helpers.js');
+const { clubEmbedBuilder } = require('../engines/messageEngine.js');
+const { getClubDictionary, updateClub, updateClubDetails, updateList } = require('../helpers.js');
 
 const id = "changeclubseats";
 module.exports = new ModalSubmission(id,
@@ -29,8 +30,7 @@ module.exports = new ModalSubmission(id,
 		updateList(interaction.guild.channels, "clubs");
 		updateClub(club);
 
-		const { embeds } = clubInviteBuilder(club, false);
-		const payload = { embeds };
+		const payload = { embeds: [clubEmbedBuilder(club)] };
 		if (Object.keys(errors).length > 0) {
 			payload.content = Object.keys(errors).reduce((errorMessage, field) => {
 				return errorMessage + `${field} - ${errors[field]}`

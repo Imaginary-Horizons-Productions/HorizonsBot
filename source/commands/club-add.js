@@ -1,7 +1,8 @@
 const { PermissionFlagsBits: { ViewChannel, ManageMessages, ManageChannels, ManageEvents }, ChannelType } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { Club } = require('../classes/Club.js');
-const { modRoleId, updateClub, clubInviteBuilder, updateList } = require('../helpers.js');
+const { modRoleId, updateClub, updateList } = require('../helpers.js');
+const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 
 const options = [{ type: "User", name: "club-host", description: "The user's mention", required: true, choices: [] }]
 const subcommands = [];
@@ -72,8 +73,7 @@ module.exports.execute = (interaction) => {
 		}).then(voiceChannel => {
 			const club = new Club(textChannel.id, host.id, voiceChannel.id);
 			textChannel.send({ content: `Welcome to your new club's text channel ${host}! As club host, you can pin and delete messages in this channel and configure various settings with \`/club-config\`.` });
-			const { embeds } = clubInviteBuilder(club, false);
-			textChannel.send({ content: "When invites are sent with \`/club-invite\`, the invitee will be shown the following embed:", embeds, fetchReply: true }).then(invitePreviewMessage => {
+			textChannel.send({ content: "When invites are sent with \`/club-invite\`, the invitee will be shown the following embed:", embeds: [clubEmbedBuilder(club)], fetchReply: true }).then(invitePreviewMessage => {
 				invitePreviewMessage.pin();
 				club.detailSummaryId = invitePreviewMessage.id;
 				updateList(interaction.guild.channels, "clubs");
