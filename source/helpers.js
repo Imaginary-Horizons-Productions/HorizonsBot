@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType, StringSelectMenuBuilder } = require('discord.js');
+const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType, StringSelectMenuBuilder, ButtonStyle } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SET_TIMEOUT } = require('./constants');
 const { embedTemplateBuilder } = require('./engines/messageEngine');
@@ -393,7 +393,7 @@ exports.clubListBuilder = function () {
 			description += `**Game**: ${club.system}\n`;
 		}
 		if (club.timeslot.nextMeeting) {
-			description += `**Next Meeting**: <t:${club.timeslot.nextMeeting}>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "w" ? "week(s)" : "day(s)"}`}\n`;
+			description += `**Next Meeting**: <t:${club.timeslot.nextMeeting}>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}`}\n`;
 		}
 	})
 
@@ -594,7 +594,7 @@ exports.clubInviteBuilder = function (club, includeJoinButton) {
 	if (club.timeslot.nextMeeting) {
 		fields.push({
 			name: "Next Meeting",
-			value: `<t:${club.timeslot.nextMeeting}:F>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "w" ? "week(s)" : "day(s)"}`}`
+			value: `<t:${club.timeslot.nextMeeting}:F>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}`}`
 		});
 	}
 
@@ -670,39 +670,26 @@ exports.updateClubDetails = (club, channel) => {
 	});
 }
 
-/** If the club isn't recruiting or the next meeting time is in the past clear the next meeting time instead of creating a GuildScheduledEvent
+/** Create a GuildScheduledEvent for the club's next meeting
  * @param {Club} club
  * @param {Guild} guild
  */
 exports.createClubEvent = function (club, guild) {
-	const YEAR_IN_SECONDS = 31556926;
-	if (club.timeslot.nextMeeting * 1000 > Date.now()) {
-		if (club.timeslot.nextMeeting * 1000 < Date.now() + (5 * YEAR_IN_SECONDS)) {
-			guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
-				return guild.scheduledEvents.create({
-					name: club.title,
-					scheduledStartTime: club.timeslot.nextMeeting * 1000,
-					privacyLevel: 2,
-					entityType: GuildScheduledEventEntityType.Voice,
-					description: club.description,
-					channel: voiceChannel
-				})
-			}).then(event => {
-				club.timeslot.setEventId(event.id);
-				exports.updateList(guild.channels, "clubs");
-				exports.updateClub(club);
-			});
-		} else {
-			guild.channels.fetch(club.id).then(textChannel => {
-				textChannel.send("Discord does not allow the creation of events 5 years in the future. Please try to schedule your event closer to its start.");
+	if (club.isRecruiting()) {
+		return guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
+			return guild.scheduledEvents.create({
+				name: club.title,
+				scheduledStartTime: club.timeslot.nextMeeting * 1000,
+				privacyLevel: 2,
+				entityType: GuildScheduledEventEntityType.Voice,
+				description: club.description,
+				channel: voiceChannel
 			})
-		}
-	} else {
-		club.timeslot.setNextMeeting(null);
-		club.timeslot.setEventId("");
-		exports.updateList(guild.channels, "clubs");
-		exports.updateClub(club);
-		console.error(`Skipping scheduling Event in past via ${new Error().stack}`);
+		}).then(event => {
+			club.timeslot.setEventId(event.id);
+			exports.updateList(guild.channels, "clubs");
+			exports.updateClub(club);
+		});
 	}
 }
 
@@ -711,39 +698,35 @@ exports.createClubEvent = function (club, guild) {
  * @param {Guild} guild
  */
 exports.scheduleClubEvent = function (club, guild) {
-	if (club.isRecruiting()) {
-		if ((club.timeslot.nextMeeting * 1000) - Date.now() <= MAX_SET_TIMEOUT) {
-			let timeout = setTimeout((clubId, timeoutGuild) => {
-				const club = exports.getClubDictionary()[clubId];
-				if (club?.isRecruiting()) {
-					exports.createClubEvent(club, timeoutGuild);
-				}
-			}, (club.timeslot.nextMeeting * 1000) - Date.now(), club.id, guild);
-			exports.eventTimeouts[club.voiceChannelId] = timeout;
-		} else {
-			const timeout = setTimeout((timeoutClub, timeoutGuild) => {
-				exports.scheduleClubEvent(timeoutClub, timeoutGuild);
-			},
-				MAX_SET_TIMEOUT,
-				club,
-				guild)
-			exports.eventTimeouts[club.voiceChannelId] = timeout;
-		}
+	const msToNextMeeting = (club.timeslot.nextMeeting * 1000) - Date.now();
+	if (msToNextMeeting <= MAX_SET_TIMEOUT) {
+		let timeout = setTimeout((clubId, timeoutGuild) => {
+			const club = exports.getClubDictionary()[clubId];
+			if (club?.isRecruiting()) {
+				exports.createClubEvent(club, timeoutGuild);
+			}
+		}, msToNextMeeting, club.id, guild);
+		exports.eventTimeouts[club.voiceChannelId] = timeout;
+	} else {
+		const timeout = setTimeout((timeoutClub, timeoutGuild) => {
+			exports.scheduleClubEvent(timeoutClub, timeoutGuild);
+		}, MAX_SET_TIMEOUT, club, guild);
+		exports.eventTimeouts[club.voiceChannelId] = timeout;
 	}
 }
 
 /** Delete the scheduled event associated with a club's next meeting
- * @param {string} voiceChannelId
- * @param {string} eventId
+ * @param {Club} club
  * @param {GuildScheduledEventManager} eventManager
  */
-exports.cancelClubEvent = function (voiceChannelId, eventId, eventManager) {
-	if (eventId) {
-		eventManager.delete(eventId);
+exports.cancelClubEvent = function (club, eventManager) {
+	if (club.timeslot.eventId) {
+		eventManager.delete(club.timeslot.eventId).catch(console.error);
+		club.timeslot.eventId = null;
 	}
-	if (exports.eventTimeouts[voiceChannelId]) {
-		clearTimeout(exports.eventTimeouts[voiceChannelId]);
-		delete exports.eventTimeouts[voiceChannelId];
+	if (exports.eventTimeouts[club.voiceChannelId]) {
+		clearTimeout(exports.eventTimeouts[club.voiceChannelId]);
+		delete exports.eventTimeouts[club.voiceChannelId];
 	}
 }
 
@@ -766,7 +749,6 @@ exports.setClubReminder = async function (club, channelManager) {
 
 /** The number of ms until a day before the next meeting, but not more than the max allowable setTimeout duration
  * @param {number} timestamp The unix timestamp of the next meeting (in seconds)
- * @returns
  */
 function calculateReminderMS(timestamp) {
 	return Math.min((timestamp * 1000) - exports.timeConversion(1, "d", "ms") - Date.now(), MAX_SET_TIMEOUT);
@@ -779,20 +761,14 @@ function calculateReminderMS(timestamp) {
 function reminderWaitLoop(club, channelManager) {
 	if (club.timeslot.nextMeeting) {
 		if (calculateReminderMS(club.timeslot.nextMeeting) < MAX_SET_TIMEOUT) {
-			channelManager.fetch(club.id).then(async textChannel => {
-				// NOTE: defaultReminder.length (without interpolated length) must be less than or equal to 49 characters so it fits in the config modal placeholder with its wrapper (100 characters)
-				const defaultReminder = `Reminder: This club will meet at <t:${club.timeslot.nextMeeting}:t> tomorrow! <#${club.voiceChannelId}>`;
-				textChannel.send({
-					content: `@everyone ${club.timeslot.message ? club.timeslot.message : defaultReminder}`,
-				});
-			});
 			if (club.timeslot.periodCount) {
-				const timeGap = exports.timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "m", "s");
+				exports.sendClubReminder(club, channelManager);
+				const timeGap = exports.timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
 				club.timeslot.setNextMeeting(club.timeslot.nextMeeting + timeGap);
 				exports.scheduleClubEvent(club, channelManager.guild);
 				exports.setClubReminder(club, channelManager);
 			} else {
-				club.timeslot.setEventId("");
+				club.timeslot.setEventId(null);
 				exports.updateList(channelManager, "clubs");
 				exports.updateClub(club, channelManager);
 			}
@@ -800,6 +776,36 @@ function reminderWaitLoop(club, channelManager) {
 			exports.setClubReminder(club, channelManager);
 		}
 	}
+}
+
+/** Send a club reminder message
+ * @param {Club} club
+ * @param {ChannelManager} channelManager
+ */
+exports.sendClubReminder = (club, channelManager) => {
+	channelManager.fetch(club.id).then(async textChannel => {
+		// NOTE: defaultReminder.length (without interpolated length) must be less than or equal to 55 characters so it fits in the config modal placeholder with its wrapper (100 characters)
+		const defaultReminder = `Reminder: This club will meet at <t:${club.timeslot.nextMeeting}> in <#${club.voiceChannelId}>!`;
+		const reminderPayload = {
+			content: `@everyone ${club.timeslot.message ? club.timeslot.message : defaultReminder}`,
+		};
+		if (club.timeslot.eventId) {
+			const event = await channelManager.guild.scheduledEvents.fetch(club.timeslot.eventId).catch(console.error);
+			if (event) {
+				reminderPayload.components = [new ActionRowBuilder({
+					components: [
+						new ButtonBuilder({
+							customId: 'startevent',
+							label: "Start Event",
+							emoji: "👑",
+							style: ButtonStyle.Primary,
+						})
+					]
+				})]
+			}
+		}
+		textChannel.send(reminderPayload);
+	});
 }
 
 /** Clears the timeout for an upcoming club meeting reminder message

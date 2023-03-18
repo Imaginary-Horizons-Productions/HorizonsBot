@@ -17,7 +17,7 @@ module.exports = new Button(id,
 				new ActionRowBuilder().addComponents(
 					new TextInputBuilder().setCustomId("nextMeeting")
 						.setLabel("Schedule Next Meeting")
-						.setValue(club.timeslot.nextMeeting.toString() ?? "")
+						.setValue(club.timeslot.nextMeeting?.toString() ?? "")
 						.setStyle(TextInputStyle.Short)
 						.setMaxLength(10) // number of digits in 2^32
 						.setRequired(false)
@@ -47,7 +47,7 @@ module.exports = new Button(id,
 						.setValue(club.timeslot.periodUnits ?? "")
 						.setStyle(TextInputStyle.Short)
 						.setRequired(false)
-						.setPlaceholder('"d" for day(s) or "w" for week(s)') //TODONOW change periodUnit enum to "days" and "weeks"
+						.setPlaceholder('"days" or "weeks"')
 				)
 			);
 		interaction.showModal(modal);

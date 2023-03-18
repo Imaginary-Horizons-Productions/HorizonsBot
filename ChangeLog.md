@@ -3,6 +3,7 @@
  - Updated discord.js to v14
  - Embeds have random tips in their footer
  - Combined all club configuration under `/club-config` using Discord UI
+ - Removed the annoying behavior where the bot would send reminder messages for meetings less than a day away on start-up/configuration (use new slash command `/club-send-reminder` manually)
 #### HorizonsBot Version 1.17.2:
  - Fixed a crash
 #### HorizonsBot Version 1.17.1:
