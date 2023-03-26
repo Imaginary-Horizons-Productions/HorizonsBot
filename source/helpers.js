@@ -539,45 +539,6 @@ exports.joinChannel = function (channel, user) {
 	}
 }
 
-/** Send the recipient an invitation to the club
- * @param {Interaction} interaction
- * @param {string} clubId
- * @param {User} recipient
- */
-exports.clubInvite = function (interaction, clubId, recipient) {
-	let club = exports.getClubDictionary()[clubId];
-	if (club) {
-		if (!recipient) {
-			recipient = interaction.user;
-		}
-		if (!recipient.bot) {
-			if (recipient.id !== club.hostId && !club.userIds.includes(recipient.id)) {
-				recipient.send({
-					embeds: [clubEmbedBuilder(club)], components: [new ActionRowBuilder(
-						{
-							components: [
-								new ButtonBuilder({
-									customId: `join-${club.id}`,
-									label: `Join ${club.title}`,
-									style: ButtonStyle.Success
-								})
-							]
-						}
-					)]
-				}).then(() => {
-					interaction.reply({ content: "Club details have been sent.", ephemeral: true });
-				}).catch(console.error);
-			} else {
-				interaction.reply({ content: "If the club details are not pinned, the club host can have them reposted and pinned with `/club-details`.", ephemeral: true })
-					.catch(console.error);
-			}
-		}
-	} else {
-		interaction.reply({ content: `The club you indicated could not be found. Please check for typos!`, ephemeral: true })
-			.catch(console.error);
-	}
-}
-
 /** Update a club's details embed in the club text channel
  * @param {Club} club
  * @param {TextChannel} channel

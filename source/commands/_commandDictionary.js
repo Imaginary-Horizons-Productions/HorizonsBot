@@ -10,7 +10,7 @@ exports.commandSets = [
 	new CommandSet("Topic Commands", "This server has opt-in topic channels (hidden by default). New topics are automatically generated when enough members /petition for them.", false,
 		["topic-add.js", "topic-invite.js"]),
 	new CommandSet("Club Commands", "Clubs are private text and voice channels that include organization utilities like automatic reminders.", false,
-		["club-add.js", "club-send-reminder.js", "club-config.js", "club-promote-host.js"]),
+		["club-invite.js", "club-add.js", "club-send-reminder.js", "club-config.js", "club-promote-host.js"]),
 	new CommandSet("Moderation Commands", "Commands for moderators. Required permissions are listed in (parenthesis) at the beginning of the description.", true,
 		["at-permission.js", "petition-check.js", "delete.js", "manage-mods.js", "pin-list.js"])
 ];

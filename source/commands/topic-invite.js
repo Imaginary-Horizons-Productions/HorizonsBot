@@ -1,4 +1,5 @@
 const Command = require('../classes/Command.js');
+const { ButtonStyle } = require('discord.js');
 const { ButtonBuilder, ActionRowBuilder } = require('@discordjs/builders');
 const { embedTemplateBuilder } = require('../engines/messageEngine.js');
 const { getTopicIds } = require('../engines/channelEngine.js');
@@ -26,7 +27,7 @@ module.exports.execute = (interaction) => {
 					new ButtonBuilder()
 						.setCustomId(`join-${channel.id}`)
 						.setLabel(`Join ${channel.name}`)
-						.setStyle("SUCCESS")
+						.setStyle(ButtonStyle.Success)
 				);
 			invitee.send({ embeds: [embed], components: [joinButton] }).then(message => {
 				interaction.reply({ content: "An invite has been sent!", ephemeral: true });
