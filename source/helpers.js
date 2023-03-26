@@ -3,6 +3,7 @@ const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, M
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SET_TIMEOUT } = require('./constants');
 const { embedTemplateBuilder, clubEmbedBuilder } = require('./engines/messageEngine');
+const { getTopicIds, getTopicNames, addTopic } = require('./engines/channelEngine');
 
 /** Convert an amount of time from a starting unit to a different one
  * @param {number} value
@@ -100,49 +101,6 @@ exports.atIds = new Set(); // contains userIds
 // {[type]: {messageId: string, channelId: string}}
 exports.listMessages = require('../config/listMessageIds.json');
 
-// Collection <channelId, channelName>
-let topics = new Collection();
-
-/** Get the array of topic channel ids
- * @returns {string[]}
- */
-exports.getTopicIds = function () {
-	return Array.from(topics.keys());
-}
-
-/** Get the array of topic channel names
- * @returns {string[]}
- */
-exports.getTopicNames = function () {
-	return Array.from(topics.values());
-}
-
-/** Get the id of a topic channel with the given name
- * @param {string} channelName
- * @returns {string}
- */
-exports.findTopicId = function (channelName) {
-	return topics.findKey(checkedName => checkedName === channelName);
-}
-
-/** Add a new entry to the topic map
- * @param {string} id
- * @param {string} channelName
- */
-exports.addTopic = function (id, channelName) {
-	topics.set(id, channelName);
-}
-
-/** Clean up internal state to keep in sync with removing a topic channel
- * @param {string} channelId
- * @param {Guild} guild
- */
-exports.removeTopic = function (channelId, guild) {
-	topics.delete(channelId);
-	exports.saveObject(exports.getTopicIds(), 'topicList.json');
-	exports.updateList(guild.channels, "topics");
-}
-
 let petitions = require('../config/petitionList.json');
 /** Get the dictionary relating topic petitions to their arrays of petitioner ids
  * @returns {Record<string, string[]>} Record<petition, petitionerId[]>
@@ -228,8 +186,8 @@ function listSelectBuilder(listType) {
 		case "topics":
 			selectCutomId = "topicList";
 
-			let topicNames = exports.getTopicNames();
-			let topicIds = exports.getTopicIds();
+			let topicNames = getTopicNames();
+			let topicIds = getTopicIds();
 			for (let i = 0; i < topicNames.length; i++) {
 				entries.push({
 					label: topicNames[i],
@@ -303,7 +261,7 @@ exports.topicListBuilder = function (channelManager) {
 
 	// Generate Message Body
 	let description = "Here's a list of the opt-in topic channels for the server. Join them by using `/join` or by using the select menu under this message (jump to message in pins).\n";
-	let topics = exports.getTopicIds();
+	let topics = getTopicIds();
 
 	for (let i = 0; i < topics.length; i += 1) {
 		let id = topics[i];
@@ -526,8 +484,8 @@ exports.addTopicChannel = function (guild, topicName) {
 				channel.send(`This channel has been created thanks to: <@${petitions[topicName].join('> <@')}>`);
 			}
 			delete petitions[topicName];
-			exports.addTopic(channel.id, channel.name);
-			exports.saveObject(exports.getTopicIds(), 'topicList.json');
+			addTopic(channel.id, channel.name);
+			exports.saveObject(getTopicIds(), 'topicList.json');
 			exports.setPetitions(petitions, guild.channels);
 		})
 		return channel;
@@ -543,7 +501,7 @@ exports.joinChannel = function (channel, user) {
 		const { id, permissionOverwrites, guild, name: channelName } = channel;
 		let permissionOverwrite = permissionOverwrites.resolve(user.id);
 		if (!permissionOverwrite || !permissionOverwrite.deny.has(PermissionsBitField.Flags.ViewChannel, false)) {
-			if (exports.getTopicIds().includes(id)) {
+			if (getTopicIds().includes(id)) {
 				permissionOverwrites.create(user, {
 					[PermissionsBitField.Flags.ViewChannel]: true
 				}).then(() => {
