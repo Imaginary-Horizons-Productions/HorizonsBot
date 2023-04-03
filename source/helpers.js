@@ -60,6 +60,10 @@ exports.timeConversion = function (value, startingUnit, resultUnit) {
 //#region moderation
 let moderatorIds = require('../config/modData.json').modIds; // [userId]
 
+exports.getModIds = function () {
+	return moderatorIds;
+}
+
 /** Save the modData object to file
  */
 exports.saveModData = function () {
