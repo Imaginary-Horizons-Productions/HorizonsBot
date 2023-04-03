@@ -142,6 +142,7 @@ exports.updateClub = function (club) {
 exports.removeClub = function (id) {
 	delete clubDictionary[id];
 	exports.saveObject(clubDictionary, 'clubList.json');
+	exports.updateList(guild.channels, "clubs");
 }
 
 // {[textChannelId]: timeout}
