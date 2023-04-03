@@ -179,21 +179,18 @@ client.on('channelDelete', ({ id, guild }) => {
 					const textChannel = guild.channels.resolve(club.id);
 					if (textChannel) {
 						textChannel.delete();
-						removeClub(club.id);
+						removeClub(club.id, guild.channels);
 					}
 					break;
 				}
 			}
-		} else if (Object.keys(clubDictionary).includes(id)) {
+		} else if (id in clubDictionary) {
 			const voiceChannel = guild.channels.resolve(clubDictionary[id].voiceChannelId);
 			if (voiceChannel) {
 				voiceChannel.delete();
-				removeClub(id);
+				removeClub(id, guild.channels);
 			}
-		} else {
-			return;
 		}
-		updateList(guild.channels, "clubs"); //TODONOW move into removeClub?
 	}
 })
 //#endregion

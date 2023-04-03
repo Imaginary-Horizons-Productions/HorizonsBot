@@ -20,5 +20,5 @@ exports.isModerator = function (member) {
  */
 exports.isClubHostOrModerator = function (channelId, member) {
 	const club = getClubDictionary()[channelId];
-	return club && (club.hostId === userId || exports.isModerator(member));
+	return club && (club.hostId === member.id || exports.isModerator(member));
 }
