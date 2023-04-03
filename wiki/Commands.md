@@ -64,6 +64,12 @@ This server has opt-in topic channels (hidden by default). New topics are automa
 (moderator) Set up a topic
 #### topic-name
 The new topic
+### /remove-user
+(moderator) Remove a user from a topic or club
+#### target
+The user's mention
+#### ban (optional)
+Prevent the user from rejoining?
 ## Club Commands
 Clubs are private text and voice channels that include organization utilities like automatic reminders.
 ### /club-add
