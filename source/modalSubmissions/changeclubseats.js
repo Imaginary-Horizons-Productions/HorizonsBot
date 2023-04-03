@@ -25,7 +25,6 @@ module.exports = new ModalSubmission(id,
 				}
 			}
 		})
-		//TODONOW isRecruiting (cast to boolean)
 		updateClubDetails(club, interaction.channel);
 		updateList(interaction.guild.channels, "clubs");
 		updateClub(club);

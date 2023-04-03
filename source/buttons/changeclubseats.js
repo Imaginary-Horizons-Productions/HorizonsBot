@@ -22,14 +22,6 @@ module.exports = new Button(id,
 						.setRequired(false)
 						.setPlaceholder("Set to -1 to turn off")
 				),
-				// new ActionRowBuilder().addComponents(
-				// 	new TextInputBuilder().setCustomId("isRecruiting")
-				// 		.setLabel("Active Recruiting")
-				// 		.setValue(club.color) //TODONOW update Club type
-				// 		.setStyle(TextInputStyle.Short)
-				// 		.setMaxLength(7)
-				// 		.setRequired(false)
-				// )
 			);
 		interaction.showModal(modal);
 	});

@@ -13,19 +13,20 @@ module.exports = new ModalSubmission(id,
 		const club = getClubDictionary()[clubId];
 		const { fields } = interaction;
 
-		if (fields.fields.has("title")) {
-			const titleInput = fields.getTextInputValue("title");
-			club.title = titleInput;
+		if (fields.fields.has("title") || fields.fields.has("description")) {
 			const textChannel = await interaction.guild.channels.fetch(club.id);
-			textChannel.setName(titleInput);
-			const voiceChannel = await interaction.guild.channels.fetch(club.voiceChannelId);
-			voiceChannel.setName(titleInput + " Voice")
-		}
-		if (fields.fields.has("description")) {
-			const descriptionInput = fields.getTextInputValue("description");
-			club.description = descriptionInput;
-			const textChannel = await interaction.guild.channels.fetch(club.id);
-			textChannel.setTopic(descriptionInput);
+
+			if (fields.fields.has("title")) {
+				const titleInput = fields.getTextInputValue("title");
+				club.title = titleInput;
+				textChannel.setName(titleInput);
+				const voiceChannel = await interaction.guild.channels.fetch(club.voiceChannelId);
+				voiceChannel.setName(titleInput + " Voice");
+			} else {
+				const descriptionInput = fields.getTextInputValue("description");
+				club.description = descriptionInput;
+				textChannel.setTopic(descriptionInput);
+			}
 		}
 		["system", "imageURL", "color"].forEach(simpleStringKey => {
 			if (fields.fields.has(simpleStringKey)) {
