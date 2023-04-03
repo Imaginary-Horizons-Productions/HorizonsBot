@@ -3,6 +3,7 @@ const { ButtonStyle } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { getClubDictionary } = require('../helpers.js');
+const { SAFE_DELIMITER } = require('../constants.js');
 
 const options = [
 	// can't use channel mention because users can't mention channels that are invisible to them (even by constructing the mention manually)
@@ -31,7 +32,7 @@ module.exports.execute = (interaction) => {
 					{
 						components: [
 							new ButtonBuilder({
-								customId: `join-${club.id}`,
+								custom_id: `join${SAFE_DELIMITER}${club.id}`,
 								label: `Join ${club.title}`,
 								style: ButtonStyle.Success
 							})

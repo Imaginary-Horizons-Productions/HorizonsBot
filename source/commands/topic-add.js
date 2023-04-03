@@ -1,5 +1,6 @@
 const Command = require('../classes/Command.js');
-const { isModerator, addTopicChannel } = require('../helpers.js');
+const { isModerator } = require('../engines/permissionEngine.js');
+const { addTopicChannel } = require('../helpers.js');
 
 const options = [
 	{ type: "String", name: "topic-name", description: "The new topic", required: true, choices: [] },

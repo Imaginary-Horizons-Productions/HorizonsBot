@@ -66,13 +66,6 @@ exports.saveModData = function () {
 	exports.saveObject({ modIds: moderatorIds, noAts: exports.noAts }, "modData.json");
 }
 
-/** Determines if the member is a moderator or can manage the bot
- * @param {GuildMember} member
- */
-exports.isModerator = function (member) {
-	return moderatorIds.includes(member.id) || !member.manageable;
-}
-
 /** Add a user's id to the list of moderator ids
  * @param {string} id
  */

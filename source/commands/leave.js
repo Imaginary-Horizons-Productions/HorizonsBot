@@ -1,7 +1,7 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { SAFE_DELIMITER } = require('../constants.js');
-const { getManagedChannels } = require('../engines/channelEngine.js');
+const { getManagedChannels } = require('../engines/permissionEngine.js');
 const { updateList, updateClub, getClubDictionary } = require('../helpers.js');
 
 const options = [];

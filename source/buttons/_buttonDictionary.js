@@ -5,6 +5,7 @@ for (const file of [
 	"changeclubmeeting.js",
 	"changeclubseats.js",
 	"delete.js",
+	"join.js",
 	"startevent.js"
 ]) {
 	const button = require(`./${file}`);
