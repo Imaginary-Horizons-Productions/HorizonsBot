@@ -138,11 +138,12 @@ exports.updateClub = function (club) {
 
 /** Clean up club information after deletion
  * @param {string} id
+ * @param {ChannelManager} channelManager
  */
-exports.removeClub = function (id) {
+exports.removeClub = function (id, channelManager) {
 	delete clubDictionary[id];
 	exports.saveObject(clubDictionary, 'clubList.json');
-	exports.updateList(guild.channels, "clubs");
+	exports.updateList(channelManager, "clubs");
 }
 
 // {[textChannelId]: timeout}
