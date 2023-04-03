@@ -3,6 +3,7 @@ const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, M
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SET_TIMEOUT } = require('./constants');
 const { embedTemplateBuilder, clubEmbedBuilder } = require('./engines/messageEngine');
+const { getTopicIds, getTopicNames, addTopic } = require('./engines/channelEngine');
 
 /** Convert an amount of time from a starting unit to a different one
  * @param {number} value
@@ -59,17 +60,14 @@ exports.timeConversion = function (value, startingUnit, resultUnit) {
 //#region moderation
 let moderatorIds = require('../config/modData.json').modIds; // [userId]
 
+exports.getModIds = function () {
+	return moderatorIds;
+}
+
 /** Save the modData object to file
  */
 exports.saveModData = function () {
 	exports.saveObject({ modIds: moderatorIds, noAts: exports.noAts }, "modData.json");
-}
-
-/** Determines if the member is a moderator or can manage the bot
- * @param {GuildMember} member
- */
-exports.isModerator = function (member) {
-	return moderatorIds.includes(member.id) || !member.manageable;
 }
 
 /** Add a user's id to the list of moderator ids
@@ -99,49 +97,6 @@ exports.atIds = new Set(); // contains userIds
 
 // {[type]: {messageId: string, channelId: string}}
 exports.listMessages = require('../config/listMessageIds.json');
-
-// Collection <channelId, channelName>
-let topics = new Collection();
-
-/** Get the array of topic channel ids
- * @returns {string[]}
- */
-exports.getTopicIds = function () {
-	return Array.from(topics.keys());
-}
-
-/** Get the array of topic channel names
- * @returns {string[]}
- */
-exports.getTopicNames = function () {
-	return Array.from(topics.values());
-}
-
-/** Get the id of a topic channel with the given name
- * @param {string} channelName
- * @returns {string}
- */
-exports.findTopicId = function (channelName) {
-	return topics.findKey(checkedName => checkedName === channelName);
-}
-
-/** Add a new entry to the topic map
- * @param {string} id
- * @param {string} channelName
- */
-exports.addTopic = function (id, channelName) {
-	topics.set(id, channelName);
-}
-
-/** Clean up internal state to keep in sync with removing a topic channel
- * @param {string} channelId
- * @param {Guild} guild
- */
-exports.removeTopic = function (channelId, guild) {
-	topics.delete(channelId);
-	exports.saveObject(exports.getTopicIds(), 'topicList.json');
-	exports.updateList(guild.channels, "topics");
-}
 
 let petitions = require('../config/petitionList.json');
 /** Get the dictionary relating topic petitions to their arrays of petitioner ids
@@ -228,8 +183,8 @@ function listSelectBuilder(listType) {
 		case "topics":
 			selectCutomId = "topicList";
 
-			let topicNames = exports.getTopicNames();
-			let topicIds = exports.getTopicIds();
+			let topicNames = getTopicNames();
+			let topicIds = getTopicIds();
 			for (let i = 0; i < topicNames.length; i++) {
 				entries.push({
 					label: topicNames[i],
@@ -303,7 +258,7 @@ exports.topicListBuilder = function (channelManager) {
 
 	// Generate Message Body
 	let description = "Here's a list of the opt-in topic channels for the server. Join them by using `/join` or by using the select menu under this message (jump to message in pins).\n";
-	let topics = exports.getTopicIds();
+	let topics = getTopicIds();
 
 	for (let i = 0; i < topics.length; i += 1) {
 		let id = topics[i];
@@ -526,8 +481,8 @@ exports.addTopicChannel = function (guild, topicName) {
 				channel.send(`This channel has been created thanks to: <@${petitions[topicName].join('> <@')}>`);
 			}
 			delete petitions[topicName];
-			exports.addTopic(channel.id, channel.name);
-			exports.saveObject(exports.getTopicIds(), 'topicList.json');
+			addTopic(channel.id, channel.name);
+			exports.saveObject(getTopicIds(), 'topicList.json');
 			exports.setPetitions(petitions, guild.channels);
 		})
 		return channel;
@@ -543,7 +498,7 @@ exports.joinChannel = function (channel, user) {
 		const { id, permissionOverwrites, guild, name: channelName } = channel;
 		let permissionOverwrite = permissionOverwrites.resolve(user.id);
 		if (!permissionOverwrite || !permissionOverwrite.deny.has(PermissionsBitField.Flags.ViewChannel, false)) {
-			if (exports.getTopicIds().includes(id)) {
+			if (getTopicIds().includes(id)) {
 				permissionOverwrites.create(user, {
 					[PermissionsBitField.Flags.ViewChannel]: true
 				}).then(() => {
@@ -578,45 +533,6 @@ exports.joinChannel = function (channel, user) {
 			user.send(`You are currently banned from ${channelName}. Speak to a Moderator if you believe this is in error.`)
 				.catch(console.error);
 		}
-	}
-}
-
-/** Send the recipient an invitation to the club
- * @param {Interaction} interaction
- * @param {string} clubId
- * @param {User} recipient
- */
-exports.clubInvite = function (interaction, clubId, recipient) {
-	let club = exports.getClubDictionary()[clubId];
-	if (club) {
-		if (!recipient) {
-			recipient = interaction.user;
-		}
-		if (!recipient.bot) {
-			if (recipient.id !== club.hostId && !club.userIds.includes(recipient.id)) {
-				recipient.send({
-					embeds: [clubEmbedBuilder(club)], components: [new ActionRowBuilder(
-						{
-							components: [
-								new ButtonBuilder({
-									customId: `join-${club.id}`,
-									label: `Join ${club.title}`,
-									style: ButtonStyle.Success
-								})
-							]
-						}
-					)]
-				}).then(() => {
-					interaction.reply({ content: "Club details have been sent.", ephemeral: true });
-				}).catch(console.error);
-			} else {
-				interaction.reply({ content: "If the club details are not pinned, the club host can have them reposted and pinned with `/club-details`.", ephemeral: true })
-					.catch(console.error);
-			}
-		}
-	} else {
-		interaction.reply({ content: `The club you indicated could not be found. Please check for typos!`, ephemeral: true })
-			.catch(console.error);
 	}
 }
 

@@ -1,5 +1,5 @@
 const Command = require('../classes/Command.js');
-const { getManagedChannels } = require('../engines/channelEngine.js');
+const { getManagedChannels } = require('../engines/permissionEngine.js');
 
 const options = [{ type: "Integer", name: "delay", description: "Number of hours to delay deleting the channel", required: true, choices: [] }];
 const subcomands = [];

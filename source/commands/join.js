@@ -1,5 +1,6 @@
 const Command = require('../classes/Command.js');
-const { joinChannel, findTopicId, getClubDictionary } = require('../helpers.js');
+const { findTopicId } = require('../engines/channelEngine.js');
+const { joinChannel, getClubDictionary } = require('../helpers.js');
 
 const options = [
 	// can't use channel mention because users can't mention channels that are invisible to them (even by constructing the mention manually)

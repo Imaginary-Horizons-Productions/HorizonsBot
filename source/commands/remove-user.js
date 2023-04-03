@@ -1,6 +1,6 @@
 const { PermissionsBitField } = require('discord.js');
 const Command = require('../classes/Command.js');
-const { getManagedChannels } = require('../engines/channelEngine.js');
+const { getManagedChannels } = require('../engines/permissionEngine.js');
 const { updateList, updateClub, getClubDictionary } = require('../helpers.js');
 
 const options = [
@@ -23,7 +23,7 @@ module.exports.execute = (interaction) => {
 	const club = getClubDictionary()[interaction.channelId];
 	if (club) {
 		club.userIds = club.userIds.filter(memberId => memberId != user.id);
-		updateList(interaction.guild.chanels, "clubs");
+		updateList(interaction.guild.channels, "clubs");
 		updateClub(club);
 	}
 	if (interaction.options.getBoolean("ban")) {
