@@ -50,7 +50,7 @@ module.exports = new Button(id,
 				new ActionRowBuilder().addComponents(
 					new TextInputBuilder().setCustomId("color")
 						.setLabel("Color")
-						.setValue(club.color)
+						.setValue(club.color || "#6b81eb")
 						.setStyle(TextInputStyle.Short)
 						.setMinLength(7)
 						.setMaxLength(7)
