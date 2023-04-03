@@ -8,14 +8,14 @@ const options = [
 	{ type: "Boolean", name: "ban", description: "Prevent the user from rejoining?", required: false, choices: [] }
 ];
 const subcomands = [];
-module.exports = new Command("kick", "Remove a user from a topic or club", "moderator", options, subcomands);
+module.exports = new Command("remove-user", "Remove a user from a topic or club", "moderator", options, subcomands);
 
 /** Remove visibility of receiving channel from mentioned user
  * @param {import('discord.js').Interaction} interaction
  */
 module.exports.execute = (interaction) => {
 	if (!getManagedChannels().includes(interaction.channelId)) {
-		interaction.reply(`Please use the \`kick\` command from a topic or club channel.`)
+		interaction.reply(`Please use the \`remove-user\` command from a topic or club channel.`)
 			.catch(console.error);
 		return;
 	}
