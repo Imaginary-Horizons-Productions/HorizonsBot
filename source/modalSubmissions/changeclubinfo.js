@@ -16,14 +16,15 @@ module.exports = new ModalSubmission(id,
 		if (fields.fields.has("title") || fields.fields.has("description")) {
 			const textChannel = await interaction.guild.channels.fetch(club.id);
 
-			if (fields.fields.has("title")) {
-				const titleInput = fields.getTextInputValue("title");
+			const titleInput = fields.getTextInputValue("title");
+			if (club.title !== titleInput) {
 				club.title = titleInput;
 				textChannel.setName(titleInput);
 				const voiceChannel = await interaction.guild.channels.fetch(club.voiceChannelId);
 				voiceChannel.setName(titleInput + " Voice");
-			} else {
-				const descriptionInput = fields.getTextInputValue("description");
+			}
+			const descriptionInput = fields.getTextInputValue("description");
+			if (club.description !== descriptionInput) {
 				club.description = descriptionInput;
 				textChannel.setTopic(descriptionInput);
 			}
