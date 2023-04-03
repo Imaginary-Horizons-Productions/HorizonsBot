@@ -64,6 +64,12 @@ This server has opt-in topic channels (hidden by default). New topics are automa
 (moderator) Set up a topic
 #### topic-name
 The new topic
+### /topic-invite
+Invite a user to a topic
+#### invitee
+The user to invite (copy-paste from another channel)
+#### channel
+The topic channel
 ### /remove-user
 (moderator) Remove a user from a topic or club
 #### target
@@ -72,6 +78,12 @@ The user's mention
 Prevent the user from rejoining?
 ## Club Commands
 Clubs are private text and voice channels that include organization utilities like automatic reminders.
+### /club-invite
+Send a user (default: self) an invite to a club
+#### club-id (optional)
+The club text channel's id
+#### invitee (optional)
+The user's mention
 ### /club-add
 (moderator) Set up a club (a text and voice channel)
 #### club-host
