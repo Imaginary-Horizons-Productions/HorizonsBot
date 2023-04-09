@@ -1,5 +1,5 @@
 const { REST, Routes } = require('discord.js');
-const { token, testBotId, testGuildId } = require('./config/auth.json');
+const { token, botId, guildId } = require('./config/auth.json');
 const { commandFiles } = require('./source/commands/_commandDictionary');
 
 const commands = [];
@@ -18,7 +18,7 @@ const rest = new REST({ version: 10 }).setToken(token);
 		console.log('Started refreshing application (/) commands.');
 
 		await rest.put(
-			Routes.applicationGuildCommands(testBotId, testGuildId),
+			Routes.applicationGuildCommands(botId, guildId),
 			{ body: commands },
 		);
 
