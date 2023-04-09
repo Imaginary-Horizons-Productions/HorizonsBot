@@ -10,7 +10,6 @@ module.exports = new Command("press-kit", "Get info on Imaginary Horizons as a b
  * @param {import('discord.js').Interaction} interaction
  */
 module.exports.execute = (interaction) => {
-	//TODO banner
 	embed.footer = randomEmbedFooter();
 	interaction.reply({ embeds: [embed], ephemeral: true });
 }
