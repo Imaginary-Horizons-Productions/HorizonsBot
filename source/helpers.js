@@ -714,16 +714,16 @@ exports.clearClubReminder = async function (channelId) {
 	}
 }
 
-/** Stringify an entity to JSON then save it at `.\Config\${fileName}`
+/** Stringify an entity to JSON then save it at `.\config\${fileName}`
  * @param {*} entity
  * @param {string} fileName
  */
 exports.saveObject = function (entity, fileName) {
-	var filePath = `./`;
-	filePath += 'Config/' + fileName;
-	if (!fs.existsSync('./Config')) {
-		fs.mkdirSync('./Config');
+	let filePath = `./config/`;
+	if (!fs.existsSync(filePath)) {
+		fs.mkdirSync(filePath);
 	}
+	filePath += fileName;
 	let textToSave = '';
 	if (entity instanceof Collection) {
 		textToSave = [];
