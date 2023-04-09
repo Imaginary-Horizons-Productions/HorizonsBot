@@ -167,28 +167,30 @@ client.on('guildMemberRemove', ({ id: memberId, guild }) => {
 })
 
 client.on('channelDelete', ({ id, guild }) => {
-	const topics = getTopicIds();
-	const clubDictionary = getClubDictionary();
-	if (topics?.includes(id)) {
+	// Check if deleted channel is a topic
+	if (getTopicIds()?.includes(id)) {
 		removeTopic(id, guild);
-	} else if (clubDictionary) {
-		const clubs = Object.values(clubDictionary);
-		if (clubs.map(club => club.voiceChannelId).includes(id)) {
-			for (const club of clubs) {
-				if (club.voiceChannelId == id) {
-					const textChannel = guild.channels.resolve(club.id);
-					if (textChannel) {
-						textChannel.delete();
-						removeClub(club.id, guild.channels);
-					}
-					break;
-				}
-			}
-		} else if (id in clubDictionary) {
+	} else {
+		const clubDictionary = getClubDictionary();
+		// Check if deleted channel is a club's text channel
+		if (id in clubDictionary) {
 			const voiceChannel = guild.channels.resolve(clubDictionary[id].voiceChannelId);
 			if (voiceChannel) {
 				voiceChannel.delete();
 				removeClub(id, guild.channels);
+			}
+			return;
+		}
+
+		// Check if deleted channel is a club's voice channel
+		for (const club of Object.values(clubDictionary)) {
+			if (club.voiceChannelId === id) {
+				const textChannel = guild.channels.resolve(club.id);
+				if (textChannel) {
+					textChannel.delete();
+					removeClub(club.id, guild.channels);
+				}
+				return;
 			}
 		}
 	}
