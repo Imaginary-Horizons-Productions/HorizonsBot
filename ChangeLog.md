@@ -1,5 +1,6 @@
 # HorizonsBot Change Log
 #### HorizonsBot Version 2.0.1:
+- Clubs that aren't recruiting are filtered out of the club list select
 - Fixed selects (drop downs) crashing the bot
 - Fixed club reminder timestamp being for the next next meeting instead of the next meeting
 #### HorizonsBot Version 2.0.0:

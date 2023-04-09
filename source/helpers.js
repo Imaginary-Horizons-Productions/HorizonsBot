@@ -173,13 +173,13 @@ exports.updateList = async function (channelManager, listType) {
 }
 
 /** Create the ActionRowBuilder containing the selects for joining clubs/topics and adding to petitions
- * @param {"topics" | "clubs"} listType
+ * @param {"topics" | "petitions" | "clubs"} listType
  * @returns {ActionRowBuilder}
  */
 function listSelectBuilder(listType) {
 	let selectCutomId = "";
 	let placeholderText = "";
-	let entries = [];
+	const entries = [];
 
 	switch (listType) {
 		case "topics":
@@ -202,7 +202,7 @@ function listSelectBuilder(listType) {
 			break;
 		case "petitions":
 			selectCutomId = "petitionList";
-			for (const petition of Object.keys(exports.getPetitions())) {
+			for (const petition in exports.getPetitions()) {
 				entries.push({
 					label: petition,
 					value: petition
@@ -218,18 +218,20 @@ function listSelectBuilder(listType) {
 		case "clubs":
 			selectCutomId = "clubList";
 
-			entries = Object.values(exports.getClubDictionary()).map(club => {
-				return {
-					label: club.title,
-					description: `${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members`,
-					value: club.id
+			for (const club of Object.values(exports.getClubDictionary())) {
+				if (club.isRecruiting()) {
+					entries.push({
+						label: club.title,
+						description: `${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members`,
+						value: club.id
+					});
 				}
-			})
+			}
 
 			if (entries.length > 0) {
 				placeholderText = "Get club details...";
 			} else {
-				placeholderText = "No clubs yet";
+				placeholderText = "No clubs currently recruiting";
 			}
 			break;
 	}
