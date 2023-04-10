@@ -660,7 +660,8 @@ function reminderWaitLoop(club, channelManager) {
 		if (calculateReminderMS(club.timeslot.nextMeeting) < MAX_SET_TIMEOUT) {
 			if (club.timeslot.periodCount) {
 				exports.sendClubReminder(club, channelManager);
-				club.timeslot.setNextMeeting(club.timeslot.nextMeeting);
+				const timeGap = exports.timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
+				club.timeslot.setNextMeeting(club.timeslot.nextMeeting + timeGap);
 				exports.scheduleClubEvent(club, channelManager.guild);
 				exports.setClubReminder(club, channelManager);
 			} else {
