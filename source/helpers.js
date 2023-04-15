@@ -655,11 +655,11 @@ function calculateReminderMS(timestamp) {
  * @param {Club} club
  * @param {ChannelManager} channelManager
  */
-function reminderWaitLoop(club, channelManager) {
+async function reminderWaitLoop(club, channelManager) {
 	if (club.timeslot.nextMeeting) {
 		if (calculateReminderMS(club.timeslot.nextMeeting) < MAX_SET_TIMEOUT) {
 			if (club.timeslot.periodCount) {
-				exports.sendClubReminder(club, channelManager);
+				await exports.sendClubReminder(club, channelManager);
 				const timeGap = exports.timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
 				club.timeslot.setNextMeeting(club.timeslot.nextMeeting + timeGap);
 				exports.scheduleClubEvent(club, channelManager.guild);
@@ -679,30 +679,29 @@ function reminderWaitLoop(club, channelManager) {
  * @param {Club} club
  * @param {ChannelManager} channelManager
  */
-exports.sendClubReminder = (club, channelManager) => {
-	channelManager.fetch(club.id).then(async textChannel => {
-		// NOTE: defaultReminder.length (without interpolated length) must be less than or equal to 55 characters so it fits in the config modal placeholder with its wrapper (100 characters)
-		const defaultReminder = `Reminder: This club will meet at <t:${club.timeslot.nextMeeting}> in <#${club.voiceChannelId}>!`;
-		const reminderPayload = {
-			content: `@everyone ${club.timeslot.message ? club.timeslot.message : defaultReminder}`,
-		};
-		if (club.timeslot.eventId) {
-			const event = await channelManager.guild.scheduledEvents.fetch(club.timeslot.eventId).catch(console.error);
-			if (event) {
-				reminderPayload.components = [new ActionRowBuilder({
-					components: [
-						new ButtonBuilder({
-							customId: 'startevent',
-							label: "Start Event",
-							emoji: "👑",
-							style: ButtonStyle.Primary,
-						})
-					]
-				})]
-			}
+exports.sendClubReminder = async (club, channelManager) => {
+	const textChannel = await channelManager.fetch(club.id);
+	// NOTE: defaultReminder.length (without interpolated length) must be less than or equal to 55 characters so it fits in the config modal placeholder with its wrapper (100 characters)
+	const defaultReminder = `Reminder: This club will meet at <t:${club.timeslot.nextMeeting}> in <#${club.voiceChannelId}>!`;
+	const reminderPayload = {
+		content: `@everyone ${club.timeslot.message ? club.timeslot.message : defaultReminder}`,
+	};
+	if (club.timeslot.eventId) {
+		const event = await channelManager.guild.scheduledEvents.fetch(club.timeslot.eventId).catch(console.error);
+		if (event) {
+			reminderPayload.components = [new ActionRowBuilder({
+				components: [
+					new ButtonBuilder({
+						customId: 'startevent',
+						label: "Start Event",
+						emoji: "👑",
+						style: ButtonStyle.Primary,
+					})
+				]
+			})]
 		}
-		textChannel.send(reminderPayload);
-	});
+	}
+	return textChannel.send(reminderPayload);
 }
 
 /** Clears the timeout for an upcoming club meeting reminder message
