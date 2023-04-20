@@ -1,7 +1,9 @@
 const { Collection } = require("discord.js");
+const { updateList, saveObject, getPetitions, setPetitions } = require("../helpers");
+const { topicCategoryId } = require("../constants.js");
 
 // Collection <channelId, channelName>
-let topics = new Collection();
+const topics = new Collection();
 
 /** Get the array of topic channel ids
  * @returns {string[]}
@@ -15,14 +17,6 @@ exports.getTopicIds = function () {
  */
 exports.getTopicNames = function () {
 	return Array.from(topics.values());
-}
-
-/** Get the id of a topic channel with the given name
- * @param {string} channelName
- * @returns {string}
- */
-exports.findTopicId = function (channelName) {
-	return topics.findKey(checkedName => checkedName === channelName);
 }
 
 /** Add a new entry to the topic map
@@ -39,6 +33,33 @@ exports.addTopic = function (id, channelName) {
  */
 exports.removeTopic = function (channelId, guild) {
 	topics.delete(channelId);
-	exports.saveObject(exports.getTopicIds(), 'topicList.json');
-	exports.updateList(guild.channels, "topics");
+	saveObject(exports.getTopicIds(), 'topicList.json');
+	updateList(guild.channels, "petition");
+}
+
+/** Add the new topic channel topic list to prevent duplicate petitions
+ * @param {Guild} guild
+ * @param {string} topicName
+ * @returns {Promise<TextChannel>}
+ */
+exports.addTopicChannel = function (guild, topicName) {
+	return guild.channels.create({
+		name: topicName,
+		parent: topicCategoryId,
+		type: ChannelType.GuildText
+	}).then(channel => {
+		const petitions = getPetitions();
+		if (!petitions[topicName]) {
+			petitions[topicName] = [];
+		}
+
+		if (petitions[topicName].length > 0) {
+			channel.send(`This channel has been created thanks to: <@${petitions[topicName].join('> <@')}>`);
+		}
+		delete petitions[topicName];
+		addTopic(channel.id, channel.name);
+		saveObject(exports.getTopicIds(), 'topicList.json');
+		setPetitions(petitions, guild.channels);
+		return channel;
+	}).catch(console.error);
 }

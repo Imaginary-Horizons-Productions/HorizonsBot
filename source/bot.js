@@ -9,7 +9,7 @@ const { callSelect } = require("./selects/_selectDictionary.js");
 const { getTopicIds, addTopic, removeTopic } = require("./engines/channelEngine.js");
 const { versionEmbedBuilder } = require("./engines/messageEngine.js");
 const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
-const { listMessages, pinClubList, getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, removeClub, scheduleClubEvent, setClubReminder } = require("./helpers.js");
+const { getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, removeClub, scheduleClubEvent, setClubReminder } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion
@@ -94,13 +94,8 @@ client.on("ready", () => {
 		}
 
 		// Update pinned lists
-		if (listMessages.topics) {
-			updateList(channelManager, "topics");
-		}
-
-		if (listMessages.clubs) {
-			updateList(channelManager, "clubs");
-		}
+		updateList(channelManager, "petition");
+		updateList(channelManager, "club");
 	})
 })
 
@@ -130,22 +125,6 @@ client.on("interactionCreate", interaction => {
 	}
 })
 
-let clubBuriedness = 0;
-
-client.on("messageCreate", receivedMessage => {
-	//Bump the club list message if it gets buried
-	if (listMessages.clubs && receivedMessage.channelId == listMessages.clubs.id) {
-		clubBuriedness += 1;
-		if (clubBuriedness > 9) {
-			receivedMessage.channel.messages.fetch(listMessages.clubs.messageId).then(oldMessage => {
-				oldMessage.delete();
-			})
-			pinClubList(receivedMessage.guild.channels, receivedMessage.channel);
-			clubBuriedness = 0;
-		}
-	}
-})
-
 client.on('guildMemberRemove', ({ id: memberId, guild }) => {
 	// Remove member's clubs
 	for (const club of Object.values(getClubDictionary())) {
@@ -153,7 +132,7 @@ client.on('guildMemberRemove', ({ id: memberId, guild }) => {
 			guild.channels.resolve(club.id).delete("Club host left server");
 		} else if (club.userIds.includes(memberId)) {
 			club.userIds = club.userIds.filter(id => id != memberId);
-			updateList(guild.channels, "clubs");
+			updateList(guild.channels, "club");
 		}
 	}
 

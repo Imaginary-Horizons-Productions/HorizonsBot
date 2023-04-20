@@ -1,4 +1,15 @@
 # HorizonsBot Change Log
+#### HorizonsBot Version 2.1.0:
+- Removed opt-in topics handling, please use the Channel & Roles Browser instead
+   - Retained `/petition` for text channels
+   - Removed topic specific commands: `/join` (use `/club-invite` instead) and `/topic-invite`
+   - Renamed commands to indicate their club only functionality:
+      - `/leave` -> `/club-leave`
+	  - `/remove-user` -> `/club-kick` (this command has been made usable by club hosts)
+	  - `/delete` -> `/club-sunset` (this command has been made usable by club hosts)
+   - Replaced topic list with petition list in: `/list` and `/pin-list`
+- Updated `/press-kit`
+- Removed the functionality where HorizonsBot would bump the club list in #clubs-recruiting
 #### HorizonsBot Version 2.0.1:
 - Clubs that aren't recruiting are filtered out of the club list select
 - Fixed selects (drop downs) crashing the bot

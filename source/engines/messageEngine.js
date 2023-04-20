@@ -24,7 +24,8 @@ exports.randomEmbedFooter = function () {
 		"Find out how to get roles on the server with /roles",
 		"Use /timestamp to get a string that Discord automatically converts into the reader's timezone!",
 		"Use /at-channel if you want to ping the channel (this lets us rate limit @here and @everyone)",
-		"The /timestamp command allows negative number inputs"
+		"The /timestamp command allows negative number inputs",
+		"Please do not make bounties to vote for your petitions."
 	];
 	return {
 		text: tips[Math.floor(Math.random() * tips.length)],

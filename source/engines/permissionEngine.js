@@ -1,11 +1,5 @@
 const { GuildMember } = require("discord.js");
 const { getModIds, getClubDictionary } = require("../helpers");
-const { getTopicIds } = require("./channelEngine");
-
-/** Get the array of all club and topic text channel ids */
-exports.getManagedChannels = function () {
-	return getTopicIds().concat(Object.keys(getClubDictionary()));
-}
 
 /** Determines if the member is a moderator or can manage the bot
  * @param {GuildMember} member

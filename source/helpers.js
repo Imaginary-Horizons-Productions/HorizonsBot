@@ -3,7 +3,6 @@ const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, M
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SET_TIMEOUT } = require('./constants');
 const { embedTemplateBuilder, clubEmbedBuilder } = require('./engines/messageEngine');
-const { getTopicIds, getTopicNames, addTopic } = require('./engines/channelEngine');
 
 /** Convert an amount of time from a starting unit to a different one
  * @param {number} value
@@ -88,20 +87,22 @@ exports.removeModerator = function (removedId) {
 	exports.saveModData();
 }
 
-exports.modRoleId = require("../config/auth.json").modRoleId;
-
-exports.noAts = require("../config/modData.json").noAts; // [userId]
+const { noAts, modRoleId } = require("../config/modData.json");
+/** @type {string} */
+exports.modRoleId = modRoleId;
+/** @type {string[]} */
+exports.noAts = noAts;
 
 exports.atIds = new Set(); // contains userIds
 //#endregion
 
-// {[type]: {messageId: string, channelId: string}}
+/** @type {{petition: {channelId: string; messageId: string}, club: {channelId: string; messageId: string;}}} */
 exports.listMessages = require('../config/listMessageIds.json');
 
-let petitions = require('../config/petitionList.json');
-/** Get the dictionary relating topic petitions to their arrays of petitioner ids
- * @returns {Record<string, string[]>} Record<petition, petitionerId[]>
- */
+/**  key: topic, value: petitioner ids
+ * @type {Record<string, string[]>} */
+const petitions = require('../config/petitionList.json');
+
 exports.getPetitions = function () {
 	return petitions;
 }
@@ -113,7 +114,7 @@ exports.getPetitions = function () {
 exports.setPetitions = function (petitionListInput, channelManager) {
 	petitions = petitionListInput;
 	exports.saveObject(petitions, 'petitionList.json');
-	exports.updateList(channelManager, "topics");
+	exports.updateList(channelManager, "petition");
 }
 
 const clubDictionary = {};
@@ -143,7 +144,7 @@ exports.updateClub = function (club) {
 exports.removeClub = function (id, channelManager) {
 	delete clubDictionary[id];
 	exports.saveObject(clubDictionary, 'clubList.json');
-	exports.updateList(channelManager, "clubs");
+	exports.updateList(channelManager, "club");
 }
 
 // {[textChannelId]: timeout}
@@ -153,214 +154,87 @@ exports.reminderTimeouts = {};
 exports.eventTimeouts = {};
 
 // Functions
-/** Update the club or topics list message
- * @param {GuildChannelManager} channelManager
- * @param {"topics" | "clubs"} listType
- * @returns {Promise<Message>}
+/** Builds the MessageOptions for the specified list message
+ * @param {ChannelManager} channelManager
+ * @param {"petition" | "club"} listType
+ * @returns {Promise<MessageOptions>}
  */
-exports.updateList = async function (channelManager, listType) {
-	const { channelId, messageId } = exports.listMessages[listType];
-	if (channelId && messageId) {
-		const channel = await channelManager.fetch(channelId);
-		const message = await channel.messages.fetch(messageId);
-		const messageOptions = await (listType == "topics" ? exports.topicListBuilder : exports.clubListBuilder)(channelManager);
-		message.edit(messageOptions);
-		if (messageOptions.files.length === 0) {
-			message.removeAttachments();
-		}
-		return message;
-	}
-}
+exports.buildListMessagePayload = function (channelManager, listType) {
+	let description;
 
-/** Create the ActionRowBuilder containing the selects for joining clubs/topics and adding to petitions
- * @param {"topics" | "petitions" | "clubs"} listType
- * @returns {ActionRowBuilder}
- */
-function listSelectBuilder(listType) {
-	let selectCutomId = "";
-	let placeholderText = "";
-	const entries = [];
+	const messageOptions = {
+		components: [new ActionRowBuilder()]
+	}
+
+	const selectMenu = new StringSelectMenuBuilder().setCustomId(`${listType}List`)
+		.setMinValues(1);
 
 	switch (listType) {
-		case "topics":
-			selectCutomId = "topicList";
+		case "petition":
+			description = `Here are the topic channels that have been petitioned for. Note that petitions will be converted to lowercase to match with Discord text channels being all lowercase. They will automatically be added when reaching **${Math.ceil(channelManager.guild.memberCount * 0.05)} petitions** (5% of the server). You can sign onto an already open petition with the select menu under this message (jump to message in pins).\n`;
 
-			let topicNames = getTopicNames();
-			let topicIds = getTopicIds();
-			for (let i = 0; i < topicNames.length; i++) {
-				entries.push({
-					label: topicNames[i],
-					value: topicIds[i]
-				})
+			for (const topicName in petitions) {
+				description += `\n${topicName}: ${petitions[topicName].length} petitioner(s) so far`;
+				selectMenu.addOptions([{
+					label: topicName,
+					value: topicName
+				}]);
 			}
 
-			if (entries.length > 0) {
-				placeholderText = "Select a topic...";
+			if (selectMenu.options.length > 0) {
+				selectMenu.setPlaceholder("Select a petition...");
 			} else {
-				placeholderText = "No topics yet";
+				selectMenu.setPlaceholder("No open petitions");
 			}
 			break;
-		case "petitions":
-			selectCutomId = "petitionList";
-			for (const petition in exports.getPetitions()) {
-				entries.push({
-					label: petition,
-					value: petition
-				})
-			}
+		case "club":
+			description = "Here's a list of the clubs on the server. Learn more about one by typing `/club-invite (club ID)`.\n";
 
-			if (entries.length > 0) {
-				placeholderText = "Select a petition...";
-			} else {
-				placeholderText = "No open petitions";
-			}
-			break;
-		case "clubs":
-			selectCutomId = "clubList";
-
-			for (const club of Object.values(exports.getClubDictionary())) {
+			for (const id in clubDictionary) {
+				const club = clubDictionary[id];
+				description += `\n__**${club.title}**__ (${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members)\n**ID**: ${club.id}\n**Host**: <@${club.hostId}>\n`;
+				if (club.system) {
+					description += `**Game**: ${club.system}\n`;
+				}
+				if (club.timeslot.nextMeeting) {
+					description += `**Next Meeting**: <t:${club.timeslot.nextMeeting}>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}`}\n`;
+				}
 				if (club.isRecruiting()) {
-					entries.push({
-						label: club.title,
-						description: `${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members`,
-						value: club.id
-					});
+					selectMenu.addOptions([
+						{
+							label: club.title,
+							description: `${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members`,
+							value: club.id
+						}
+					])
 				}
 			}
 
-			if (entries.length > 0) {
-				placeholderText = "Get club details...";
+			if (selectMenu.options.length > 0) {
+				selectMenu.setPlaceholder("Get club details...");
 			} else {
-				placeholderText = "No clubs currently recruiting";
+				selectMenu.setPlaceholder("No clubs currently recruiting");
 			}
 			break;
 	}
 
-	return new ActionRowBuilder().addComponents(
-		new StringSelectMenuBuilder()
-			.setCustomId(selectCutomId)
-			.setPlaceholder(placeholderText)
-			.setDisabled(entries.length < 1)
-			.addOptions(entries.length > 0 ? entries : [{
+	if (selectMenu.options.length > 0) {
+		selectMenu.setMaxValues(selectMenu.options.length);
+	} else {
+		selectMenu.setDisabled(true)
+			.addOptions([{
 				label: "no entries",
 				value: "no entries"
 			}])
-			.setMinValues(1)
-			.setMaxValues(entries.length > 0 ? entries.length : 1)
-	);
-}
-
-/** Create the MessageOptions for the topic list message
- * @param {GuildChannelManager} channelManager
- * @returns {Promise<MessageOptions>}
- */
-exports.topicListBuilder = function (channelManager) {
-	const messageOptions = {};
-
-	// Select Menus
-	messageOptions.components = [listSelectBuilder("topics"), listSelectBuilder("petitions")];
-
-	// Generate Message Body
-	let description = "Here's a list of the opt-in topic channels for the server. Join them by using `/join` or by using the select menu under this message (jump to message in pins).\n";
-	let topics = getTopicIds();
-
-	for (let i = 0; i < topics.length; i += 1) {
-		let id = topics[i];
-		let channel = channelManager.resolve(id);
-		if (channel) {
-			description += `\n__${channel.name}__${channel.topic ? ` ${channel.topic}` : ""}`;
-		}
+			.setMaxValues(1);
 	}
 
-	let petitionNames = Object.keys(petitions);
-	let petitionText = `Here are the topic channels that have been petitioned for. Note that petitions will be converted to lowercase to match with Discord text channels being all lowercase. They will automatically be added when reaching **${Math.ceil(channelManager.guild.memberCount * 0.05)} petitions** (5% of the server). You can sign onto an already open petition with the select menu under this message (jump to message in pins).\n`;
-	if (petitionNames.length > 0) {
-		petitionNames.forEach(topicName => {
-			petitionText += `\n${topicName}: ${petitions[topicName].length} petitioner(s) so far`;
-		})
-	}
-
-	if (description.length > 2048 || petitionText.length > 1024) {
-		return new Promise((resolve, reject) => {
-			let fileText = description;
-			if (petitionNames.length > 0) {
-				fileText += `\n\n${petitionText}`;
-			}
-
-			fs.writeFile("data/TopicChannels.txt", fileText, "utf8", error => {
-				if (error) {
-					console.error(error);
-				}
-			});
-			resolve(messageOptions);
-		}).then(() => {
-			messageOptions.embeds = [];
-			messageOptions.files = [{
-				attachment: "data/TopicChannels.txt",
-				name: "TopicChannels.txt"
-			}];
-			return messageOptions;
-		})
-	} else {
-		return new Promise((resolve, reject) => {
-			let embed = embedTemplateBuilder()
-				.setTitle("Topic Channels")
-				.setDescription(description)
-				.setFooter({ text: "Please do not make bounties to vote for your petitions." });
-
-			if (petitionNames.length > 0) {
-				embed.addFields({ name: "Petitioned Channels", value: petitionText })
-			}
-			messageOptions.embeds = [embed];
-			messageOptions.files = [];
-			resolve(messageOptions);
-		})
-	}
-}
-
-/** Pin the topics list message
- * @param {GuildChannelManager} channelManager
- * @param {TextChannel} channel
- */
-exports.pinTopicsList = function (channelManager, channel) {
-	exports.topicListBuilder(channelManager).then(messageOptions => {
-		channel.send(messageOptions).then(message => {
-			exports.listMessages.topics = {
-				"messageId": message.id,
-				"channelId": message.channelId
-			}
-			exports.saveObject(exports.listMessages, "listMessageIds.json");
-			message.pin();
-		})
-	}).catch(console.error);
-}
-
-/** Create the MessageOptions for the club list message
- * @returns {Promise<MessageOptions>}
- */
-exports.clubListBuilder = function () {
-	const messageOptions = {};
-
-	messageOptions.components = [listSelectBuilder("clubs")];
-
-	let description = "Here's a list of the clubs on the server. Learn more about one by typing `/club-invite (club ID)`.\n";
-	let clubs = exports.getClubDictionary();
-
-	Object.keys(clubs).forEach(id => {
-		let club = clubs[id];
-		description += `\n__**${club.title}**__ (${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members)\n**ID**: ${club.id}\n**Host**: <@${club.hostId}>\n`;
-		if (club.system) {
-			description += `**Game**: ${club.system}\n`;
-		}
-		if (club.timeslot.nextMeeting) {
-			description += `**Next Meeting**: <t:${club.timeslot.nextMeeting}>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}`}\n`;
-		}
-	})
+	messageOptions.components[0].addComponents(selectMenu);
 
 	if (description.length > 2048) {
 		return new Promise((resolve, reject) => {
 			let fileText = description;
-			fs.writeFile("data/ClubChannels.txt", fileText, "utf8", error => {
+			fs.writeFile("data/listMessage.txt", fileText, "utf8", error => {
 				if (error) {
 					console.error(error);
 				}
@@ -368,8 +242,8 @@ exports.clubListBuilder = function () {
 			resolve(messageOptions);
 		}).then(messageOptions => {
 			messageOptions.files = [{
-				attachment: "data/ClubChannels.txt",
-				name: "ClubChannels.txt"
+				attachment: "data/listMessage.txt",
+				name: `${listType}List.txt`
 			}];
 			messageOptions.embeds = [];
 			return messageOptions;
@@ -378,7 +252,7 @@ exports.clubListBuilder = function () {
 		return new Promise((resolve, reject) => {
 			messageOptions.embeds = [
 				embedTemplateBuilder("#f07581")
-					.setTitle("Clubs")
+					.setTitle(`${listType.toUpperCase()} LIST`)
 					.setDescription(description)
 			];
 			messageOptions.files = [];
@@ -387,19 +261,39 @@ exports.clubListBuilder = function () {
 	}
 }
 
-/** Pin the club list message
+/** Update the club or petition list message
  * @param {GuildChannelManager} channelManager
- * @param {TextChannel} channel
+ * @param {"petition" | "club"} listType
+ * @returns {Promise<Message>}
  */
-exports.pinClubList = function (channelManager, channel) {
-	exports.clubListBuilder(channelManager).then(messageOptions => {
+exports.updateList = async function (channelManager, listType) {
+	const { channelId, messageId } = exports.listMessages[listType];
+	if (channelId && messageId) {
+		const channel = await channelManager.fetch(channelId);
+		const message = await channel.messages.fetch(messageId);
+		const messageOptions = await exports.buildListMessagePayload(channelManager, listType);
+		message.edit(messageOptions);
+		if (messageOptions.files.length === 0) {
+			message.removeAttachments();
+		}
+		return message;
+	}
+}
+
+/** Pins the specified list
+ * @param {ChannelManager} channelManager
+ * @param {TextChannel} channel
+ * @param {"petition" | "club"} listType
+ */
+exports.pinList = function (channelManager, channel, listType) {
+	exports.buildListMessagePayload(channelManager, listType).then(messageOptions => {
 		channel.send(messageOptions).then(message => {
-			exports.listMessages.clubs = {
+			exports.listMessages[listType] = {
 				"messageId": message.id,
 				"channelId": message.channelId
 			}
-			message.pin();
 			exports.saveObject(exports.listMessages, "listMessageIds.json");
+			message.pin();
 		})
 	}).catch(console.error);
 }
@@ -431,85 +325,24 @@ exports.checkPetition = function (guild, topicName, author = null) {
 	} else {
 		exports.setPetitions(petitions, guild.channels);
 	}
-	exports.updateList(guild.channels, "topics");
+	exports.updateList(guild.channels, "petition");
 	return {
 		petitions: petitionCount,
 		threshold
 	}
 }
 
-/** Create a topic channel
- * @param {Guild} guild
- * @param {string} topicName
- * @returns {Promise<TextChannel>}
- */
-exports.addTopicChannel = function (guild, topicName) {
-	return guild.channels.create({
-		name: topicName,
-		parent: "581886288102424592",
-		permissionOverwrites: [
-			{
-				id: guild.client.user.id,
-				allow: [PermissionsBitField.Flags.ViewChannel],
-				type: 1
-			},
-			{
-				id: exports.modRoleId,
-				allow: [PermissionsBitField.Flags.ViewChannel],
-				type: 0
-			},
-			{
-				id: guild.id,
-				deny: [PermissionsBitField.Flags.ViewChannel],
-				type: 0
-			}
-		],
-		type: ChannelType.GuildText
-	}).then(channel => {
-		const petitions = exports.getPetitions();
-		if (!petitions[topicName]) {
-			petitions[topicName] = [];
-		}
-
-		// Make channel viewable by petitioners, and BountyBot
-		guild.members.fetch({
-			user: petitions[topicName].concat(["536330483852771348"])
-		}).then(allowedCollection => {
-			allowedCollection.mapValues(member => {
-				channel.permissionOverwrites.create(member.user, {
-					[PermissionsBitField.Flags.ViewChannel]: true
-				});
-			})
-
-			if (petitions[topicName].length > 0) {
-				channel.send(`This channel has been created thanks to: <@${petitions[topicName].join('> <@')}>`);
-			}
-			delete petitions[topicName];
-			addTopic(channel.id, channel.name);
-			exports.saveObject(getTopicIds(), 'topicList.json');
-			exports.setPetitions(petitions, guild.channels);
-		})
-		return channel;
-	}).catch(console.error);
-}
-
-/** Add the user to the topic/club channel (syncing internal tracking and permissions)
+/** Add the user to the club (syncing internal tracking and permissions)
  * @param {TextChannel} channel
  * @param {User} user
  */
 exports.joinChannel = function (channel, user) {
 	if (!user.bot) {
 		const { id, permissionOverwrites, guild, name: channelName } = channel;
-		let permissionOverwrite = permissionOverwrites.resolve(user.id);
-		if (!permissionOverwrite || !permissionOverwrite.deny.has(PermissionsBitField.Flags.ViewChannel, false)) {
-			if (getTopicIds().includes(id)) {
-				permissionOverwrites.create(user, {
-					[PermissionsBitField.Flags.ViewChannel]: true
-				}).then(() => {
-					channel.send(`Welcome to ${channelName}, ${user}!`);
-				}).catch(console.error);
-			} else if (Object.keys(exports.getClubDictionary()).includes(id)) {
-				let club = exports.getClubDictionary()[id];
+		const permissionOverwrite = permissionOverwrites.resolve(user.id);
+		if (!permissionOverwrite.deny.has(PermissionsBitField.Flags.ViewChannel, false)) {
+			const club = exports.getClubDictionary()[id];
+			if (!club) {
 				if (club.seats === -1 || club.isRecruiting()) {
 					if (club.hostId != user.id && !club.userIds.includes(user.id)) {
 						club.userIds.push(user.id);
@@ -522,7 +355,7 @@ exports.joinChannel = function (channel, user) {
 							channel.send(`Welcome to ${channelName}, ${user}!`);
 						})
 						exports.updateClubDetails(club, channel);
-						exports.updateList(guild.channels, "clubs");
+						exports.updateList(guild.channels, "club");
 						exports.updateClub(club);
 					} else {
 						user.send(`You are already in ${club.title}.`)
@@ -549,7 +382,7 @@ exports.updateClubDetails = (club, channel) => {
 		message.edit({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds: [clubEmbedBuilder(club)], fetchReply: true }).then(detailSummaryMessage => {
 			detailSummaryMessage.pin();
 			club.detailSummaryId = detailSummaryMessage.id;
-			exports.updateList(channel.guild.channels, "clubs");
+			exports.updateList(channel.guild.channels, "club");
 			exports.updateClub(club);
 		});
 	}).catch(error => {
@@ -558,7 +391,7 @@ exports.updateClubDetails = (club, channel) => {
 			channel.send({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds: [clubEmbedBuilder(club)], fetchReply: true }).then(detailSummaryMessage => {
 				detailSummaryMessage.pin();
 				club.detailSummaryId = detailSummaryMessage.id;
-				exports.updateList(channel.guild.channels, "clubs");
+				exports.updateList(channel.guild.channels, "club");
 				exports.updateClub(club);
 			});
 		} else {
@@ -584,7 +417,7 @@ exports.createClubEvent = function (club, guild) {
 			})
 		}).then(event => {
 			club.timeslot.setEventId(event.id);
-			exports.updateList(guild.channels, "clubs");
+			exports.updateList(guild.channels, "club");
 			exports.updateClub(club);
 		});
 	}
@@ -639,7 +472,7 @@ exports.setClubReminder = async function (club, channelManager) {
 			club,
 			channelManager);
 		exports.reminderTimeouts[club.id] = timeout;
-		exports.updateList(channelManager, "clubs");
+		exports.updateList(channelManager, "club");
 		exports.updateClub(club);
 	}
 }
@@ -666,7 +499,7 @@ async function reminderWaitLoop(club, channelManager) {
 				exports.setClubReminder(club, channelManager);
 			} else {
 				club.timeslot.setEventId(null);
-				exports.updateList(channelManager, "clubs");
+				exports.updateList(channelManager, "club");
 				exports.updateClub(club, channelManager);
 			}
 		} else {

@@ -3,7 +3,7 @@ const { guildId } = require('../constants.js');
 const { joinChannel } = require('../helpers.js');
 
 module.exports = new Button("join",
-	/** Join the topic or club channel specified in args
+	/** Join the club specified in args
 	 * @param {import('discord.js').Interaction} interaction
 	 * @param {string[]} args
 	 */

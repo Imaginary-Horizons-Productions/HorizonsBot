@@ -1,5 +1,4 @@
 const Command = require('../classes/Command.js');
-const { isModerator } = require('../engines/permissionEngine.js');
 const { addTopicChannel } = require('../helpers.js');
 
 const options = [
@@ -8,18 +7,13 @@ const options = [
 const subcomands = [];
 module.exports = new Command("topic-add", "Set up a topic", "moderator", options, subcomands);
 
-/** Creates a new opt-in text channel for the given topic, adds it to list of topic channels
+/** Creates a new text channel and add it to list of topic channels (to prevent duplicate petitions)
  * @param {import('discord.js').Interaction} interaction
  */
 module.exports.execute = (interaction) => {
-	if (isModerator(interaction.user.id)) {
-		let channelName = interaction.options.getString('topic-name');
-		addTopicChannel(interaction.guild, channelName).then(channel => {
-			interaction.reply(`A new topic channel has been created: ${channel}`)
-				.catch(console.error);
-		});
-	} else {
-		interaction.reply(`The \`${interaction.commandName}\` command is restricted to moderators.`)
+	const channelName = interaction.options.getString('topic-name');
+	addTopicChannel(interaction.guild, channelName).then(channel => {
+		interaction.reply(`A new topic channel has been created: ${channel}`)
 			.catch(console.error);
-	}
+	});
 }
