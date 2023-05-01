@@ -83,9 +83,9 @@ client.on("ready", () => {
 		for (const club of Object.values(getClubDictionary())) {
 			const isNextMeetingInFuture = Date.now() < club.timeslot.nextMeeting * 1000;
 			if (isNextMeetingInFuture) {
-				setClubReminder(club, channelManager);
+				setClubReminder(club.id, club.timeslot.nextMeeting, channelManager);
 				if (club.isRecruiting() && club.timeslot.periodCount) {
-					scheduleClubEvent(club, guild);
+					scheduleClubEvent(club.id, club.voiceChannelId, club.timeslot.nextMeeting, guild);
 				}
 			} else {
 				club.timeslot.setNextMeeting(null);
