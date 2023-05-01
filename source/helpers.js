@@ -640,7 +640,6 @@ exports.setClubReminder = async function (club, channelManager) {
 			channelManager);
 		exports.reminderTimeouts[club.id] = timeout;
 		exports.updateList(channelManager, "clubs");
-		exports.updateClub(club);
 	}
 }
 
@@ -662,6 +661,7 @@ async function reminderWaitLoop(club, channelManager) {
 				await exports.sendClubReminder(club, channelManager);
 				const timeGap = exports.timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
 				club.timeslot.setNextMeeting(club.timeslot.nextMeeting + timeGap);
+				exports.updateClub(club);
 				exports.scheduleClubEvent(club, channelManager.guild);
 				exports.setClubReminder(club, channelManager);
 			} else {
