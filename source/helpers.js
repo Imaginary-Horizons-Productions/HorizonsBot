@@ -590,25 +590,43 @@ exports.createClubEvent = function (club, guild) {
 	}
 }
 
+/** The number of ms until the timestamp, but not more than the max allowable setTimeout duration
+ * @param {number} timestamp units: seconds
+ */
+function clampedTimestampToMS(timestamp) {
+	return Math.min((timestamp * 1000) - Date.now(), MAX_SET_TIMEOUT);
+}
+
+/** Checks if the given unix timestamp can be scheduled to with 1 setTimeout
+ * @param {number} timestamp units: seconds
+ */
+function isTimestampWithinOneTimeout(timestamp) {
+	return (timestamp * 1000) - Date.now() <= MAX_SET_TIMEOUT;
+}
+
 /** Create a timeout to create a scheduled event for a club after the current event passes
- * @param {Club} club
+ * @param {string} club
+ * @param {string} clubVoiceId
+ * @param {number | null} nextMeetingTimestamp
  * @param {Guild} guild
  */
-exports.scheduleClubEvent = function (club, guild) {
-	const msToNextMeeting = (club.timeslot.nextMeeting * 1000) - Date.now();
-	if (msToNextMeeting <= MAX_SET_TIMEOUT) {
-		let timeout = setTimeout((clubId, timeoutGuild) => {
-			const club = exports.getClubDictionary()[clubId];
+exports.scheduleClubEvent = function (clubId, clubVoiceId, nextMeetingTimestamp, guild) {
+	if (isTimestampWithinOneTimeout(nextMeetingTimestamp)) {
+		const timeout = setTimeout((timeoutClubId, timeoutGuild) => {
+			const club = exports.getClubDictionary()[timeoutClubId];
 			if (club?.isRecruiting()) {
 				exports.createClubEvent(club, timeoutGuild);
 			}
-		}, msToNextMeeting, club.id, guild);
-		exports.eventTimeouts[club.voiceChannelId] = timeout;
+		}, clampedTimestampToMS(nextMeetingTimestamp), clubId, guild);
+		exports.eventTimeouts[clubVoiceId] = timeout;
 	} else {
-		const timeout = setTimeout((timeoutClub, timeoutGuild) => {
-			exports.scheduleClubEvent(timeoutClub, timeoutGuild);
-		}, MAX_SET_TIMEOUT, club, guild);
-		exports.eventTimeouts[club.voiceChannelId] = timeout;
+		const timeout = setTimeout((timeoutClubId, timeoutGuild) => {
+			const club = exports.getClubDictionary()[timeoutClubId];
+			if (club) {
+				exports.scheduleClubEvent(club.id, club.voiceChannelId, club.timeslot.nextMeeting, timeoutGuild);
+			}
+		}, MAX_SET_TIMEOUT, clubId, guild);
+		exports.eventTimeouts[clubVoiceId] = timeout;
 	}
 }
 
@@ -628,50 +646,39 @@ exports.cancelClubEvent = function (club, eventManager) {
 }
 
 /** Set a timeout to send a reminder message to the given club a day before its next meeting
- * @param {Club} club
+ * @param {string} clubId
+ * @param {number | null} nextMeetingTimestamp
  * @param {ChannelManager} channelManager
  */
-exports.setClubReminder = async function (club, channelManager) {
-	if (club.timeslot.nextMeeting) {
+exports.setClubReminder = async function (clubId, nextMeetingTimestamp, channelManager) {
+	if (nextMeetingTimestamp) {
 		const timeout = setTimeout(
-			reminderWaitLoop,
-			calculateReminderMS(club.timeslot.nextMeeting),
-			club,
+			async (clubId, channelManager) => {
+				const club = exports.getClubDictionary()[clubId];
+				if (club.timeslot.nextMeeting) {
+					if (isTimestampWithinOneTimeout(club.timeslot.nextMeeting - exports.timeConversion(1, "d", "s"))) {
+						if (club.timeslot.periodCount) {
+							await exports.sendClubReminder(club, channelManager);
+							const timeGap = exports.timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
+							club.timeslot.setNextMeeting(club.timeslot.nextMeeting + timeGap);
+							exports.updateClub(club);
+							exports.scheduleClubEvent(club.id, club.voiceChannelId, club.timeslot.nextMeeting, channelManager.guild);
+							exports.setClubReminder(club.id, club.timeslot.nextMeeting, channelManager);
+						} else {
+							club.timeslot.setEventId(null);
+							exports.updateList(channelManager, "clubs");
+							exports.updateClub(club, channelManager);
+						}
+					} else {
+						exports.setClubReminder(club.id, club.timeslot.nextMeeting, channelManager);
+					}
+				}
+			},
+			clampedTimestampToMS(nextMeetingTimestamp - exports.timeConversion(1, "d", "s")),
+			clubId,
 			channelManager);
-		exports.reminderTimeouts[club.id] = timeout;
+		exports.reminderTimeouts[clubId] = timeout;
 		exports.updateList(channelManager, "clubs");
-		exports.updateClub(club);
-	}
-}
-
-/** The number of ms until a day before the next meeting, but not more than the max allowable setTimeout duration
- * @param {number} timestamp The unix timestamp of the next meeting (in seconds)
- */
-function calculateReminderMS(timestamp) {
-	return Math.min((timestamp * 1000) - exports.timeConversion(1, "d", "ms") - Date.now(), MAX_SET_TIMEOUT);
-}
-
-/** If the club reminder would be set for further than the a max signed int ms in the future (max allowable setTimeout duration), try to set the club reminder again later
- * @param {Club} club
- * @param {ChannelManager} channelManager
- */
-async function reminderWaitLoop(club, channelManager) {
-	if (club.timeslot.nextMeeting) {
-		if (calculateReminderMS(club.timeslot.nextMeeting) < MAX_SET_TIMEOUT) {
-			if (club.timeslot.periodCount) {
-				await exports.sendClubReminder(club, channelManager);
-				const timeGap = exports.timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
-				club.timeslot.setNextMeeting(club.timeslot.nextMeeting + timeGap);
-				exports.scheduleClubEvent(club, channelManager.guild);
-				exports.setClubReminder(club, channelManager);
-			} else {
-				club.timeslot.setEventId(null);
-				exports.updateList(channelManager, "clubs");
-				exports.updateClub(club, channelManager);
-			}
-		} else {
-			exports.setClubReminder(club, channelManager);
-		}
 	}
 }
 

@@ -34,9 +34,9 @@ module.exports = new ModalSubmission(id,
 
 					await createClubEvent(club, interaction.guild);
 					if (club.isRecruiting() && club.timeslot.periodCount) {
-						scheduleClubEvent(club, interaction.guild);
+						scheduleClubEvent(club.id, club.voiceChannelId, club.timeslot.nextMeeting, interaction.guild);
 					}
-					setClubReminder(club, interaction.guild.channels);
+					setClubReminder(club.id, club.timeslot.nextMeeting, interaction.guild.channels);
 				}
 			}
 
