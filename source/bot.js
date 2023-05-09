@@ -9,7 +9,7 @@ const { callSelect } = require("./selects/_selectDictionary.js");
 const { getTopicIds, addTopic, removeTopic } = require("./engines/channelEngine.js");
 const { versionEmbedBuilder } = require("./engines/messageEngine.js");
 const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
-const { getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, removeClub, scheduleClubEvent, setClubReminder } = require("./helpers.js");
+const { getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, removeClub, scheduleClubEvent, setClubReminder, listMessages } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion
@@ -94,8 +94,12 @@ client.on("ready", () => {
 		}
 
 		// Update pinned lists
-		updateList(channelManager, "petition");
-		updateList(channelManager, "club");
+		if (listMessages.petition) {
+			updateList(channelManager, "petition");
+		}
+		if (listMessages.club) {
+			updateList(channelManager, "club");
+		}
 	})
 })
 
