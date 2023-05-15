@@ -58,8 +58,8 @@ module.exports = new ModalSubmission(id,
 				errors.periodCount = `Could not interpret ${unparsedValue} as integer`;
 			}
 		}
-		if (fields.fields.has("periodUnits")) {
-			const periodUnitsInput = fields.getTextInputValue("periodUnits");
+		if (fields.fields.has("periodUnit")) {
+			const periodUnitsInput = fields.getTextInputValue("periodUnit");
 			if (["days", "weeks"].includes(periodUnitsInput)) {
 				club.timeslot.periodUnits = periodUnitsInput;
 			} else {
