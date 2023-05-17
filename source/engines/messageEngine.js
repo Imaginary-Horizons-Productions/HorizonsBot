@@ -19,12 +19,13 @@ exports.embedTemplateBuilder = function (color = "#6b81eb") {
 exports.randomEmbedFooter = function () {
 	const tips = [
 		"You can roll dice with the /roll command!",
-		"Once 5% of the server has used /petition for a topic, a text channel will automatically be created",
-		"Clubs and topics are hidden by default to reduce channel clutter. Use /list to see what you're missing!",
-		"Find out how to get roles on the server with /roles",
+		"Once 5% of the server has used /petition for a topic, a text channel will automatically be created.",
+		"Clubs are hidden by default to reduce channel clutter. Use /list to see what you're missing!",
+		"Find out how to get roles on the server with /roles.",
 		"Use /timestamp to get a string that Discord automatically converts into the reader's timezone!",
-		"Use /at-channel if you want to ping the channel (this lets us rate limit @here and @everyone)",
-		"The /timestamp command allows negative number inputs"
+		"Use /at-channel if you want to ping the channel (this lets us rate limit @here and @everyone).",
+		"The /timestamp command allows negative number inputs.",
+		"Some commands have optional inputs that are easy to miss. Don't forget to check for them!"
 	];
 	return {
 		text: tips[Math.floor(Math.random() * tips.length)],
