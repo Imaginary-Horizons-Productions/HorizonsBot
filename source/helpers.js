@@ -583,6 +583,7 @@ exports.createClubEvent = function (club, guild) {
 		exports.updateList(guild.channels, "clubs");
 		exports.updateClub(club);
 	});
+
 }
 
 /** Delete the scheduled event associated with a club's next meeting
