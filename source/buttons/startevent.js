@@ -9,8 +9,8 @@ module.exports = new Button(id,
 	 * @param {import('discord.js').Interaction} interaction
 	 * @param {Array<string>} args
 	 */
-	(interaction, []) => {
-		const { hostId, timeslot: { eventId } } = getClubDictionary()[interaction.message.channel.id];
+	(interaction, [eventId]) => {
+		const { hostId } = getClubDictionary()[interaction.message.channel.id];
 		if (!isModerator(interaction.member) && interaction.user.id !== hostId) {
 			return interaction.reply({ content: "Only the club's host or a moderator can start the event.", ephemeral: true });
 		}
