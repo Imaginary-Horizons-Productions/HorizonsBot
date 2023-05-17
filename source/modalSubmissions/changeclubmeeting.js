@@ -1,15 +1,14 @@
-const { Interaction } = require('discord.js');
 const ModalSubmission = require('../classes/ModalSubmission.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
-const { getClubDictionary, updateClub, updateClubDetails, updateList, clearClubReminder, cancelClubEvent, setClubReminder, createClubEvent, scheduleClubEvent } = require('../helpers.js');
+const { getClubDictionary, updateClub, updateClubDetails, updateList, clearClubReminder, cancelClubEvent, scheduleClubReminderAndEvent, createClubEvent } = require('../helpers.js');
 
 const YEAR_IN_MS = 31556926000;
 
 const id = "changeclubmeeting";
 module.exports = new ModalSubmission(id,
 	/** Set the meeting time/repetition properties for the club with provided id
-	 * @param {Interaction} interaction
-	 * @param {Array<string>} args
+	 * @param {import('discord.js').Interaction} interaction
+	 * @param {string[]} args
 	 */
 	async (interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
@@ -29,14 +28,6 @@ module.exports = new ModalSubmission(id,
 					errors.nextMeeting = "Discord does not allow the creation of events 5 years in the future. Please schedule your next meeting later.";
 				} else {
 					club.timeslot.setNextMeeting(nextMeetingInput);
-					clearClubReminder(club.id);
-					cancelClubEvent(club, interaction.guild.scheduledEvents);
-
-					await createClubEvent(club, interaction.guild);
-					if (club.isRecruiting() && club.timeslot.periodCount) {
-						scheduleClubEvent(club.id, club.voiceChannelId, club.timeslot.nextMeeting, interaction.guild);
-					}
-					setClubReminder(club.id, club.timeslot.nextMeeting, interaction.guild.channels);
 				}
 			}
 
@@ -58,14 +49,20 @@ module.exports = new ModalSubmission(id,
 				errors.periodCount = `Could not interpret ${unparsedValue} as integer`;
 			}
 		}
-		if (fields.fields.has("periodUnits")) {
-			const periodUnitsInput = fields.getTextInputValue("periodUnits");
+		if (fields.fields.has("periodUnit")) {
+			const periodUnitsInput = fields.getTextInputValue("periodUnit");
 			if (["days", "weeks"].includes(periodUnitsInput)) {
 				club.timeslot.periodUnits = periodUnitsInput;
 			} else {
 				errors.periodUnits = `Input ${periodUnitsInput} did not match "days" or "weeks"`;
 			}
 		}
+
+		cancelClubEvent(club, interaction.guild.scheduledEvents);
+		createClubEvent(club, interaction.guild);
+		clearClubReminder(club.id);
+		scheduleClubReminderAndEvent(club.id, club.timeslot.nextMeeting, interaction.guild.channels);
+
 		updateClubDetails(club, interaction.channel);
 		updateList(interaction.guild.channels, "clubs");
 		updateClub(club);
