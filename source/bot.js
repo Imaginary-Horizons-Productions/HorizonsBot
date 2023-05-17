@@ -1,5 +1,5 @@
 //#region Imports
-const { Client, REST, GatewayIntentBits, Routes } = require("discord.js");
+const { Client, REST, GatewayIntentBits, Routes, ActivityType, Events } = require("discord.js");
 const fsa = require("fs/promises");
 
 const { getCommand, slashData } = require("./commands/_commandDictionary.js");
@@ -18,7 +18,7 @@ const client = new Client({
 	retryLimit: 5,
 	presence: {
 		activities: [{
-			type: "LISTENING",
+			type: ActivityType.Listening,
 			name: "/commands"
 		}]
 	},
@@ -32,7 +32,7 @@ client.login(require(authPath).token)
 //#endregion
 
 //#region Event Handlers
-client.on("ready", () => {
+client.on(Events.ClientReady, () => {
 	console.log(`Connected as ${client.user.tag}`);
 
 	(async () => {
@@ -103,7 +103,7 @@ client.on("ready", () => {
 	})
 })
 
-client.on("interactionCreate", interaction => {
+client.on(Events.InteractionCreate, interaction => {
 	if (interaction.isCommand()) {
 		const command = getCommand(interaction.commandName);
 		if (command.permissionLevel === "moderator" && !isModerator(interaction.member)) {
@@ -129,7 +129,7 @@ client.on("interactionCreate", interaction => {
 	}
 })
 
-client.on('guildMemberRemove', ({ id: memberId, guild }) => {
+client.on(Events.GuildMemberRemove, ({ id: memberId, guild }) => {
 	// Remove member's clubs
 	for (const club of Object.values(getClubDictionary())) {
 		if (memberId == club.hostId) {
@@ -149,7 +149,7 @@ client.on('guildMemberRemove', ({ id: memberId, guild }) => {
 	}
 })
 
-client.on('channelDelete', ({ id, guild }) => {
+client.on(Events.ChannelDelete, ({ id, guild }) => {
 	// Check if deleted channel is a topic
 	if (getTopicIds()?.includes(id)) {
 		removeTopic(id, guild);
