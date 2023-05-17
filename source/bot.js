@@ -9,7 +9,7 @@ const { callSelect } = require("./selects/_selectDictionary.js");
 const { getTopicIds, addTopic, removeTopic } = require("./engines/channelEngine.js");
 const { versionEmbedBuilder } = require("./engines/messageEngine.js");
 const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
-const { getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, removeClub, scheduleClubEvent, setClubReminder, listMessages } = require("./helpers.js");
+const { getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, removeClub, scheduleClubReminderAndEvent, listMessages } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion
@@ -83,10 +83,7 @@ client.on(Events.ClientReady, () => {
 		for (const club of Object.values(getClubDictionary())) {
 			const isNextMeetingInFuture = Date.now() < club.timeslot.nextMeeting * 1000;
 			if (isNextMeetingInFuture) {
-				setClubReminder(club.id, club.timeslot.nextMeeting, channelManager);
-				if (club.isRecruiting() && club.timeslot.periodCount) {
-					scheduleClubEvent(club.id, club.voiceChannelId, club.timeslot.nextMeeting, guild);
-				}
+				scheduleClubReminderAndEvent(club.id, club.timeslot.nextMeeting, channelManager);
 			} else {
 				club.timeslot.setNextMeeting(null);
 				club.timeslot.setEventId(null);

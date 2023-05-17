@@ -14,6 +14,6 @@ module.exports.execute = (interaction) => {
 		return interaction.reply({ content: 'This club does not have a time set for its next meeting.', ephemeral: true });
 	}
 
-	sendClubReminder(club, interaction.guild.channels);
+	sendClubReminder(club.id, interaction.guild.channels);
 	interaction.reply({ content: "Club reminder sent!", ephemeral: true });
 }
