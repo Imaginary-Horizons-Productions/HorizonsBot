@@ -101,7 +101,7 @@ exports.listMessages = require('../config/listMessageIds.json');
 
 /**  key: topic, value: petitioner ids
  * @type {Record<string, string[]>} */
-const petitions = require('../config/petitionList.json');
+let petitions = require('../config/petitionList.json');
 
 exports.getPetitions = function () {
 	return petitions;
