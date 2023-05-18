@@ -10,6 +10,7 @@
    - Replaced topic list with petition list in: `/list` and `/pin-list`
 - Updated `/press-kit`
 - Removed the functionality where HorizonsBot would bump the club list in #clubs-recruiting
+- Various system and audit messages no longer send notifications
 - Fixed a bug where setting club meeting interval wasn't saving the units
 - Fixed a bug where club reminder start event buttons were starting the wrong event
 - Fixed a bug where club events wouldn't get updated after changing club settings

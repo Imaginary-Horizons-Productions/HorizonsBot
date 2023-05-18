@@ -1,4 +1,4 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { SAFE_DELIMITER } = require('../constants.js');
 const { updateList, updateClub, getClubDictionary } = require('../helpers.js');
@@ -31,7 +31,7 @@ module.exports.execute = (interaction) => {
 				.catch(console.error);
 			updateList(interaction.guild.channels, "club");
 			updateClub(club);
-			interaction.reply(`${interaction.user} has left this channel.`)
+			interaction.reply({ content: `${interaction.user} has left this channel.`, flags: MessageFlags.SuppressNotifications })
 				.catch(console.error);
 		}
 	} else {

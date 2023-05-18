@@ -1,3 +1,4 @@
+const { MessageFlags } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { getRollString } = require('../engines/rollEngine.js');
 
@@ -40,5 +41,5 @@ module.exports.execute = (interaction) => {
 			rollResult = getRollString(rollInput, false, true);
 			break;
 	}
-	interaction.reply(`Roll Result:\n\`${rollResult}\``);
+	interaction.reply({ content: `Roll Result:\n\`${rollResult}\``, flags: MessageFlags.SuppressNotifications });
 }

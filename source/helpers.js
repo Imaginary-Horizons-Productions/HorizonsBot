@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType, StringSelectMenuBuilder, ButtonStyle } = require('discord.js');
+const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType, StringSelectMenuBuilder, ButtonStyle, MessagePayload, MessageFlags } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SET_TIMEOUT, SAFE_DELIMITER } = require('./constants');
 const { embedTemplateBuilder, clubEmbedBuilder } = require('./engines/messageEngine');
@@ -154,12 +154,13 @@ exports.reminderTimeouts = {};
 /** Builds the MessageOptions for the specified list message
  * @param {ChannelManager} channelManager
  * @param {"petition" | "club"} listType
- * @returns {Promise<MessageOptions>}
+ * @returns {Promise<MessagePayload>}
  */
 exports.buildListMessagePayload = function (channelManager, listType) {
 	let description;
 
 	const messageOptions = {
+		flags: MessageFlags.SuppressNotifications,
 		components: [new ActionRowBuilder()]
 	}
 
