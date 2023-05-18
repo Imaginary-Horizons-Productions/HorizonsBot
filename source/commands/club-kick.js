@@ -1,4 +1,4 @@
-const { PermissionsBitField } = require('discord.js');
+const { PermissionsBitField, MessageFlags } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { updateList, updateClub, getClubDictionary } = require('../helpers.js');
 
@@ -17,7 +17,7 @@ module.exports.execute = (interaction) => {
 	const club = getClubDictionary()[interaction.channelId];
 	if (!club) {
 		interaction.reply(`Please use the \`/${id}\` command from the club's text channel.`)
-		.catch(console.error);
+			.catch(console.error);
 		return;
 	}
 
@@ -27,11 +27,11 @@ module.exports.execute = (interaction) => {
 	updateClub(club);
 	if (interaction.options.getBoolean("ban")) {
 		interaction.channel.permissionOverwrites.create(user.id, { [PermissionsBitField.Flags.ViewChannel]: false }, `Banned by ${interaction.user}`);
-		interaction.reply(`${user} has been banned from this club.`)
+		interaction.reply({ content: `${user} has been banned from this club.`, flags: MessageFlags.SuppressNotifications })
 			.catch(console.error);
 	} else {
 		interaction.channel.permissionOverwrites.delete(user, `Kicked by ${interaction.user}`);
-		interaction.reply(`${user} has been kicked from this club.`)
+		interaction.reply({ content: `${user} has been kicked from this club.`, flags: MessageFlags.SuppressNotifications })
 			.catch(console.error);
 	}
 }

@@ -1,3 +1,4 @@
+const { MessageFlags } = require('discord.js');
 const Button = require('../classes/Button.js');
 
 module.exports = new Button("delete",
@@ -6,7 +7,7 @@ module.exports = new Button("delete",
 	 * @param {Array<string>} args
 	 */
 	(interaction, [channelId]) => {
-		interaction.reply("This club is being deleted, its host has left.").then(() => {
+		interaction.reply({ content: "This club is being deleted, its host has left.", flags: MessageFlags.SuppressNotifications }).then(() => {
 			interaction.guild.channels.fetch(channelId).then(channel => channel.delete("Club host left"));
 		})
 	}
