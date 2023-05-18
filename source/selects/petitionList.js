@@ -1,5 +1,5 @@
 const Select = require('../classes/Select.js');
-const { checkPetition } = require('../helpers.js');
+const { checkPetition } = require('../engines/channelEngine.js');
 
 module.exports = new Select("petitionList",
 	/** Have the user petition for the selected topics

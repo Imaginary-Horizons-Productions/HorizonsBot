@@ -26,7 +26,7 @@ module.exports = new ModalSubmission(id,
 			}
 		})
 		updateClubDetails(club, interaction.channel);
-		updateList(interaction.guild.channels, "clubs");
+		updateList(interaction.guild.channels, "club");
 		updateClub(club);
 
 		const payload = { embeds: [clubEmbedBuilder(club)] };

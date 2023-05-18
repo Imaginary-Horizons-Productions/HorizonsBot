@@ -64,7 +64,7 @@ module.exports = new ModalSubmission(id,
 		scheduleClubReminderAndEvent(club.id, club.timeslot.nextMeeting, interaction.guild.channels);
 
 		updateClubDetails(club, interaction.channel);
-		updateList(interaction.guild.channels, "clubs");
+		updateList(interaction.guild.channels, "club");
 		updateClub(club);
 
 		const payload = { embeds: [clubEmbedBuilder(club)] };

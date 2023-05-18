@@ -2,8 +2,7 @@ const selectDictionary = {};
 
 for (const file of [
 	"clubList.js",
-	"petitionList.js",
-	"topicList.js"
+	"petitionList.js"
 ]) {
 	const select = require(`./${file}`);
 	selectDictionary[select.name] = select;

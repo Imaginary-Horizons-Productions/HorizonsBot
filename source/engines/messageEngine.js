@@ -25,6 +25,7 @@ exports.randomEmbedFooter = function () {
 		"Use /timestamp to get a string that Discord automatically converts into the reader's timezone!",
 		"Use /at-channel if you want to ping the channel (this lets us rate limit @here and @everyone).",
 		"The /timestamp command allows negative number inputs.",
+		"Please do not make bounties to vote for your petitions.",
 		"Some commands have optional inputs that are easy to miss. Don't forget to check for them!"
 	];
 	return {

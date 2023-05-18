@@ -76,7 +76,7 @@ module.exports.execute = (interaction) => {
 			textChannel.send({ content: "When invites are sent with \`/club-invite\`, the invitee will be shown the following embed:", embeds: [clubEmbedBuilder(club)], fetchReply: true }).then(invitePreviewMessage => {
 				invitePreviewMessage.pin();
 				club.detailSummaryId = invitePreviewMessage.id;
-				updateList(interaction.guild.channels, "clubs");
+				updateList(interaction.guild.channels, "club");
 				updateClub(club);
 			})
 			interaction.reply({ content: "The new club has been created.", ephemeral: true });
