@@ -1,4 +1,4 @@
-const { Collection, ChannelType } = require("discord.js");
+const { Collection, ChannelType, Guild, User } = require("discord.js");
 const { updateList, saveObject, getPetitions, setPetitions } = require("../helpers");
 const { topicCategoryId } = require("../constants.js");
 
