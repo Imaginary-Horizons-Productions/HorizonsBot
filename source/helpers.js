@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, ChannelType, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType, StringSelectMenuBuilder, ButtonStyle, GuildMember } = require('discord.js');
+const { Collection, TextChannel, ChannelManager, GuildChannelManager, Message, MessageOptions, Guild, PermissionsBitField, ActionRowBuilder, ButtonBuilder, GuildScheduledEventEntityType, StringSelectMenuBuilder, ButtonStyle } = require('discord.js');
 const { Club, ClubTimeslot } = require('./classes/Club');
 const { MAX_SET_TIMEOUT, SAFE_DELIMITER } = require('./constants');
 const { embedTemplateBuilder, clubEmbedBuilder } = require('./engines/messageEngine');
@@ -293,40 +293,6 @@ exports.pinList = function (channelManager, channel, listType) {
 			message.pin();
 		})
 	}).catch(console.error);
-}
-
-/** Create a topic channel for a petition if it has enough ids
- * @param {Guild} guild
- * @param {string} topicName
- * @param {User} author
- * @returns {{petitions: number, threshold: number}}
- */
-exports.checkPetition = function (guild, topicName, author = null) {
-	let petitions = exports.getPetitions();
-	if (!petitions[topicName]) {
-		petitions[topicName] = [];
-	}
-	if (author) {
-		if (!petitions[topicName].includes(author.id)) {
-			petitions[topicName].push(author.id);
-		} else {
-			author.send(`You have already petitioned for ${topicName}.`)
-				.catch(console.error)
-			return;
-		}
-	}
-	const petitionCount = petitions[topicName].length ?? 0;
-	const threshold = Math.ceil(guild.memberCount * 0.05) + 1;
-	if (petitionCount >= threshold) {
-		exports.addTopicChannel(guild, topicName);
-	} else {
-		exports.setPetitions(petitions, guild.channels);
-	}
-	exports.updateList(guild.channels, "petition");
-	return {
-		petitions: petitionCount,
-		threshold
-	}
 }
 
 /** Add the user to the club (syncing internal tracking and permissions)

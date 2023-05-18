@@ -1,6 +1,40 @@
-const { Collection } = require("discord.js");
+const { Collection, ChannelType } = require("discord.js");
 const { updateList, saveObject, getPetitions, setPetitions } = require("../helpers");
 const { topicCategoryId } = require("../constants.js");
+
+/** Create a topic channel for a petition if it has enough ids
+ * @param {Guild} guild
+ * @param {string} topicName
+ * @param {User} author
+ * @returns {{petitions: number, threshold: number}}
+ */
+exports.checkPetition = function (guild, topicName, author = null) {
+	let petitions = getPetitions();
+	if (!petitions[topicName]) {
+		petitions[topicName] = [];
+	}
+	if (author) {
+		if (!petitions[topicName].includes(author.id)) {
+			petitions[topicName].push(author.id);
+		} else {
+			author.send(`You have already petitioned for ${topicName}.`)
+				.catch(console.error)
+			return;
+		}
+	}
+	const petitionCount = petitions[topicName].length ?? 0;
+	const threshold = Math.ceil(guild.memberCount * 0.05) + 1;
+	if (petitionCount >= threshold) {
+		exports.addTopicChannel(guild, topicName);
+	} else {
+		setPetitions(petitions, guild.channels);
+	}
+	updateList(guild.channels, "petition");
+	return {
+		petitions: petitionCount,
+		threshold
+	}
+}
 
 // Collection <channelId, channelName>
 const topics = new Collection();
@@ -57,7 +91,7 @@ exports.addTopicChannel = function (guild, topicName) {
 			channel.send(`This channel has been created thanks to: <@${petitions[topicName].join('> <@')}>`);
 		}
 		delete petitions[topicName];
-		addTopic(channel.id, channel.name);
+		exports.addTopic(channel.id, channel.name);
 		saveObject(exports.getTopicIds(), 'topicList.json');
 		setPetitions(petitions, guild.channels);
 		return channel;

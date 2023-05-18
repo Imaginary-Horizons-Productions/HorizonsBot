@@ -1,6 +1,5 @@
 const Command = require('../classes/Command.js');
-const { getTopicNames } = require('../engines/channelEngine.js');
-const { checkPetition } = require('../helpers.js');
+const { checkPetition, getTopicNames } = require('../engines/channelEngine.js');
 
 const options = [
 	{ type: "String", name: "topic-name", description: "Make sure the topic doesn't already exist", required: true, choices: [] }

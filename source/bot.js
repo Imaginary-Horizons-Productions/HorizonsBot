@@ -6,10 +6,10 @@ const { getCommand, slashData } = require("./commands/_commandDictionary.js");
 const { callButton } = require("./buttons/_buttonDictionary.js");
 const { callModalSubmission } = require("./modalSubmissions/_modalSubmissionDictionary.js");
 const { callSelect } = require("./selects/_selectDictionary.js");
-const { getTopicIds, addTopic, removeTopic } = require("./engines/channelEngine.js");
+const { checkPetition, getTopicIds, addTopic, removeTopic } = require("./engines/channelEngine.js");
 const { versionEmbedBuilder } = require("./engines/messageEngine.js");
 const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
-const { getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, removeClub, scheduleClubReminderAndEvent, listMessages } = require("./helpers.js");
+const { getClubDictionary, updateList, getPetitions, setPetitions, removeClub, scheduleClubReminderAndEvent, listMessages } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion

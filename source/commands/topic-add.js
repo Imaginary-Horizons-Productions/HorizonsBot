@@ -1,5 +1,5 @@
 const Command = require('../classes/Command.js');
-const { addTopicChannel } = require('../helpers.js');
+const { addTopicChannel } = require('../engines/channelEngine.js');
 
 const options = [
 	{ type: "String", name: "topic-name", description: "The new topic", required: true, choices: [] },
