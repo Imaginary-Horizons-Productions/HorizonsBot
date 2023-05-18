@@ -4,6 +4,7 @@ Summary
 
 Local Tests Performed
 ---------------------
+- [ ] bot still turns on
 - (how did you ensure these changes don't break the code base and work as intended?)
 
 Issue

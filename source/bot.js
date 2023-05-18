@@ -1,15 +1,15 @@
 //#region Imports
-const { Client, REST, GatewayIntentBits, Routes } = require("discord.js");
+const { Client, REST, GatewayIntentBits, Routes, ActivityType, Events } = require("discord.js");
 const fsa = require("fs/promises");
 
 const { getCommand, slashData } = require("./commands/_commandDictionary.js");
 const { callButton } = require("./buttons/_buttonDictionary.js");
 const { callModalSubmission } = require("./modalSubmissions/_modalSubmissionDictionary.js");
 const { callSelect } = require("./selects/_selectDictionary.js");
-const { getTopicIds, addTopic, removeTopic } = require("./engines/channelEngine.js");
+const { checkPetition, getTopicIds, addTopic, removeTopic } = require("./engines/channelEngine.js");
 const { versionEmbedBuilder } = require("./engines/messageEngine.js");
 const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
-const { listMessages, pinClubList, getClubDictionary, updateList, getPetitions, setPetitions, checkPetition, removeClub, scheduleClubEvent, setClubReminder } = require("./helpers.js");
+const { getClubDictionary, updateList, getPetitions, setPetitions, removeClub, scheduleClubReminderAndEvent, listMessages } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion
@@ -18,7 +18,7 @@ const client = new Client({
 	retryLimit: 5,
 	presence: {
 		activities: [{
-			type: "LISTENING",
+			type: ActivityType.Listening,
 			name: "/commands"
 		}]
 	},
@@ -32,7 +32,7 @@ client.login(require(authPath).token)
 //#endregion
 
 //#region Event Handlers
-client.on("ready", () => {
+client.on(Events.ClientReady, () => {
 	console.log(`Connected as ${client.user.tag}`);
 
 	(async () => {
@@ -83,10 +83,7 @@ client.on("ready", () => {
 		for (const club of Object.values(getClubDictionary())) {
 			const isNextMeetingInFuture = Date.now() < club.timeslot.nextMeeting * 1000;
 			if (isNextMeetingInFuture) {
-				setClubReminder(club.id, club.timeslot.nextMeeting, channelManager);
-				if (club.isRecruiting() && club.timeslot.periodCount) {
-					scheduleClubEvent(club.id, club.voiceChannelId, club.timeslot.nextMeeting, guild);
-				}
+				scheduleClubReminderAndEvent(club.id, club.timeslot.nextMeeting, channelManager);
 			} else {
 				club.timeslot.setNextMeeting(null);
 				club.timeslot.setEventId(null);
@@ -94,17 +91,16 @@ client.on("ready", () => {
 		}
 
 		// Update pinned lists
-		if (listMessages.topics) {
-			updateList(channelManager, "topics");
+		if (listMessages.petition) {
+			updateList(channelManager, "petition");
 		}
-
-		if (listMessages.clubs) {
-			updateList(channelManager, "clubs");
+		if (listMessages.club) {
+			updateList(channelManager, "club");
 		}
 	})
 })
 
-client.on("interactionCreate", interaction => {
+client.on(Events.InteractionCreate, interaction => {
 	if (interaction.isCommand()) {
 		const command = getCommand(interaction.commandName);
 		if (command.permissionLevel === "moderator" && !isModerator(interaction.member)) {
@@ -130,30 +126,14 @@ client.on("interactionCreate", interaction => {
 	}
 })
 
-let clubBuriedness = 0;
-
-client.on("messageCreate", receivedMessage => {
-	//Bump the club list message if it gets buried
-	if (listMessages.clubs && receivedMessage.channelId == listMessages.clubs.id) {
-		clubBuriedness += 1;
-		if (clubBuriedness > 9) {
-			receivedMessage.channel.messages.fetch(listMessages.clubs.messageId).then(oldMessage => {
-				oldMessage.delete();
-			})
-			pinClubList(receivedMessage.guild.channels, receivedMessage.channel);
-			clubBuriedness = 0;
-		}
-	}
-})
-
-client.on('guildMemberRemove', ({ id: memberId, guild }) => {
+client.on(Events.GuildMemberRemove, ({ id: memberId, guild }) => {
 	// Remove member's clubs
 	for (const club of Object.values(getClubDictionary())) {
 		if (memberId == club.hostId) {
 			guild.channels.resolve(club.id).delete("Club host left server");
 		} else if (club.userIds.includes(memberId)) {
 			club.userIds = club.userIds.filter(id => id != memberId);
-			updateList(guild.channels, "clubs");
+			updateList(guild.channels, "club");
 		}
 	}
 
@@ -166,7 +146,7 @@ client.on('guildMemberRemove', ({ id: memberId, guild }) => {
 	}
 })
 
-client.on('channelDelete', ({ id, guild }) => {
+client.on(Events.ChannelDelete, ({ id, guild }) => {
 	// Check if deleted channel is a topic
 	if (getTopicIds()?.includes(id)) {
 		removeTopic(id, guild);

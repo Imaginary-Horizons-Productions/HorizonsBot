@@ -1,3 +1,4 @@
+const { MessageFlags } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { noAts, saveModData } = require('../helpers.js');
 
@@ -26,7 +27,7 @@ module.exports.execute = (interaction) => {
 		// Prevent the given user from using /at-channel
 		if (!noAts.includes(userId)) {
 			noAts.push(userId);
-			interaction.reply(`<@${userId}> can no longer use \`/at-channel\`.`);
+			interaction.reply({ content: `<@${userId}> can no longer use \`/at-channel\`.`, flags: MessageFlags.SuppressNotifications });
 			saveModData();
 		} else {
 			interaction.reply({ content: `<@${userId}> is already restricted from using \`/at-channel\`.`, ephemeral: true });
@@ -35,7 +36,7 @@ module.exports.execute = (interaction) => {
 		// Allow the given user from using /at-channel
 		if (noAts.includes(userId)) {
 			noAts.splice(noAts.findIndex(id => id === userId), 1);
-			interaction.reply(`<@${userId}> can use \`/at-channel\` again.`);
+			interaction.reply({ content: `@silent <@${userId}> can use \`/at-channel\` again.`, flags: MessageFlags.SuppressNotifications });
 			saveModData();
 		} else {
 			interaction.reply({ content: `<@${userId}> is not restricted from using \`/at-channel\`.`, ephemeral: true });

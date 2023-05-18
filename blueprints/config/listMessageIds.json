@@ -1,9 +1,9 @@
 {
-	"clubs": {
+	"club": {
 		"messageId": "",
 		"channelId": ""
 	},
-	"topics": {
+	"petition": {
 		"messageId": "",
 		"channelId": ""
 	}

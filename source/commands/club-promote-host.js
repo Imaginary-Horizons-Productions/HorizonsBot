@@ -22,6 +22,6 @@ module.exports.execute = (interaction) => {
 	interaction.reply(`This club is now hosted by ${newHost}.`)
 		.catch(console.error);
 	updateClubDetails(club, interaction.channel);
-	updateList(interaction.guild.channels, "clubs");
+	updateList(interaction.guild.channels, "club");
 	updateClub(club);
 }

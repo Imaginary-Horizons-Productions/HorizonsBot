@@ -1,4 +1,19 @@
 # HorizonsBot Change Log
+#### HorizonsBot Version 2.1.0:
+- Removed opt-in topics handling, please use the Channel & Roles Browser instead
+   - Retained `/petition` for text channels
+   - Removed topic specific commands: `/join` (use `/club-invite` instead) and `/topic-invite`
+   - Renamed commands to indicate their club only functionality:
+      - `/leave` -> `/club-leave`
+	  - `/remove-user` -> `/club-kick` (this command has been made usable by club hosts)
+	  - `/delete` -> `/club-sunset` (this command has been made usable by club hosts)
+   - Replaced topic list with petition list in: `/list` and `/pin-list`
+- Updated `/press-kit`
+- Removed the functionality where HorizonsBot would bump the club list in #clubs-recruiting
+- Various system and audit messages no longer send notifications
+- Fixed a bug where setting club meeting interval wasn't saving the units
+- Fixed a bug where club reminder start event buttons were starting the wrong event
+- Fixed a bug where club events wouldn't get updated after changing club settings
 #### HorizonsBot Version 2.0.2:
 - Fixed club events being scheduled for the current meeting instead of the next meeting
 #### HorizonsBot Version 2.0.1:
