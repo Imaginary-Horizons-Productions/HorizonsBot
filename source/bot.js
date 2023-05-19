@@ -35,17 +35,18 @@ client.login(require(authPath).token)
 client.on(Events.ClientReady, () => {
 	console.log(`Connected as ${client.user.tag}`);
 
-	(async () => {
-		try {
-			await new REST({ version: 9 }).setToken(require(authPath).token).put(
-				Routes.applicationCommands(client.user.id),
-				{ body: slashData }
-			)
-		} catch (error) {
-			console.error(error);
-		}
-	})()
-
+	if (process.argv[2] === "prod") {
+		(async () => {
+			try {
+				await new REST({ version: 9 }).setToken(require(authPath).token).put(
+					Routes.applicationCommands(client.user.id),
+					{ body: slashData }
+				)
+			} catch (error) {
+				console.error(error);
+			}
+		})()
+	}
 	client.guilds.fetch(guildId).then(guild => {
 		// Post version notes
 		if (versionData.patchNotesChannelId) {

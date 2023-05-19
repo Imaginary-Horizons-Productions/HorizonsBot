@@ -1,7 +1,6 @@
-const { Interaction } = require('discord.js');
 const Command = require('../classes/Command.js');
 
-const id = "name";
+const customId = "name";
 const options = [
 	{
 		type: "",
@@ -26,10 +25,10 @@ const subcommands = [
 		]
 	}
 ];
-module.exports = new Command(id, "description", false, false, options, subcommands);
+module.exports = new Command(customId, "description", false, false, options, subcommands);
 
 /** Command specifications go here
- * @param {Interaction} interaction
+ * @param {import('discord.js').Interaction} interaction
  */
 module.exports.execute = (interaction) => {
 
