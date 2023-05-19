@@ -13,7 +13,7 @@ module.exports.execute = (interaction) => {
 	const topicName = interaction.options.getString("topic-name").toLowerCase();
 	if (!getTopicNames().includes(topicName)) {
 		checkPetition(interaction.guild, topicName, interaction.user);
-		interaction.reply(`Your petition for **${topicName}** has been recorded!`)
+		interaction.reply(`Your petition for a **${topicName}** text channel has been recorded!`)
 			.catch(console.error);
 	} else {
 		interaction.reply({ content: `A channel for ${topicName} already exists, you can use the Channels & Roles Browser to make it visible.`, ephemeral: true })
