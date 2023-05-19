@@ -1,6 +1,6 @@
 const Button = require('../classes/Button.js');
 const { guildId } = require('../constants.js');
-const { joinChannel } = require('../helpers.js');
+const { joinChannel } = require('../engines/clubEngine.js');
 
 module.exports = new Button("join",
 	/** Join the club specified in args

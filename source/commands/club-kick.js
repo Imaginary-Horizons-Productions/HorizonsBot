@@ -1,6 +1,6 @@
 const { PermissionsBitField, MessageFlags } = require('discord.js');
 const Command = require('../classes/Command.js');
-const { updateList, updateClub, getClubDictionary } = require('../helpers.js');
+const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 
 const id = "club-kick";
 const options = [

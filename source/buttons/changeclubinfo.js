@@ -1,7 +1,7 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const Button = require('../classes/Button.js');
 const { SAFE_DELIMITER } = require('../constants.js');
-const { getClubDictionary } = require('../helpers.js');
+const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const id = "changeclubinfo";
 module.exports = new Button(id,

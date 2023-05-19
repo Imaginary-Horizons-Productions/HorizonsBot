@@ -1,5 +1,5 @@
 const Command = require('../classes/Command.js');
-const { modRoleId, addModerator, removeModerator } = require('../helpers.js');
+const { modRoleId, addModerator, removeModerator } = require('../engines/permissionEngine.js');
 
 const options = [];
 const subcomands = [

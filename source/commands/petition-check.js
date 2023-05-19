@@ -1,5 +1,5 @@
 const Command = require('../classes/Command.js');
-const { checkPetition } = require('../engines/channelEngine.js');
+const { checkPetition } = require('../engines/referenceEngine.js');
 
 const options = [
 	{ type: "String", name: "topic", description: "The petition to check", required: true, choices: [] },

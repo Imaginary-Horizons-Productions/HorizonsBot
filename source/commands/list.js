@@ -1,5 +1,5 @@
 const Command = require('../classes/Command.js');
-const { buildListMessagePayload } = require('../helpers.js');
+const { buildListMessagePayload } = require('../engines/referenceEngine.js');
 
 const id = "list";
 const options = [
@@ -13,7 +13,7 @@ module.exports = new Command(id, "Get the petition or club list", "none", option
  */
 module.exports.execute = (interaction) => {
 	const listType = interaction.options.getString("list-type").toLowerCase();
-	buildListMessagePayload(interaction.guild.channels, listType).then(messageOptions => {
+	buildListMessagePayload(interaction.guild.memberCount, listType).then(messageOptions => {
 		messageOptions.ephemeral = true;
 		interaction.reply(messageOptions);
 	}).catch(console.error);

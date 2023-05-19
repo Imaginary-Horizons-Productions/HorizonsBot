@@ -1,15 +1,13 @@
 const ModalSubmission = require('../classes/ModalSubmission.js');
+const { updateClubDetails, cancelClubEvent, createClubEvent, scheduleClubReminderAndEvent, clearClubReminder } = require('../engines/clubEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
-const { getClubDictionary, updateClub, updateClubDetails, updateList, clearClubReminder, cancelClubEvent, scheduleClubReminderAndEvent, createClubEvent } = require('../helpers.js');
+const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 
 const YEAR_IN_MS = 31556926000;
 
 const id = "changeclubmeeting";
 module.exports = new ModalSubmission(id,
-	/** Set the meeting time/repetition properties for the club with provided id
-	 * @param {import('discord.js').Interaction} interaction
-	 * @param {string[]} args
-	 */
+	/** Set the meeting time/repetition properties for the club with provided id */
 	async (interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
 		const { fields } = interaction;

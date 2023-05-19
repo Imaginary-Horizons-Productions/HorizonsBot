@@ -1,6 +1,6 @@
 const { MessageFlags } = require('discord.js');
 const Command = require('../classes/Command.js');
-const { noAts, saveModData } = require('../helpers.js');
+const { noAts, saveModData } = require('../engines/permissionEngine.js');
 
 const options = [];
 const subcomands = [

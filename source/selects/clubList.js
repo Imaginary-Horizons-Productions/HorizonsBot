@@ -1,6 +1,6 @@
 const { ButtonStyle, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const Select = require('../classes/Select.js');
-const { getClubDictionary } = require('../helpers.js');
+const { getClubDictionary } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { SAFE_DELIMITER } = require('../constants.js');
 
