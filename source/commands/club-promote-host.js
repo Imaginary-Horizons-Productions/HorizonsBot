@@ -1,6 +1,7 @@
 const { PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
-const { getClubDictionary, updateClub, updateList, updateClubDetails } = require('../helpers.js');
+const { updateClubDetails } = require('../engines/clubEngine.js');
+const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 
 const options = [{ type: "User", name: "user", description: "The user's mention", required: true, choices: [] }];
 const subcommands = [];

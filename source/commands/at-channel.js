@@ -1,5 +1,8 @@
 const Command = require('../classes/Command.js');
-const { atIds, timeConversion, noAts } = require('../helpers.js');
+const { noAts } = require('../engines/permissionEngine.js');
+const { timeConversion } = require('../helpers.js');
+
+const atIds = new Set(); // contains userIds
 
 const options = [
 	{ type: "String", name: "message", description: "The text of the notification", required: true, choices: [] },

@@ -1,14 +1,11 @@
 const { ButtonStyle, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const Select = require('../classes/Select.js');
-const { getClubDictionary } = require('../helpers.js');
+const { getClubDictionary } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { SAFE_DELIMITER } = require('../constants.js');
 
 module.exports = new Select("clubList",
-	/** Provide club details embed to the user for the selected clubs
-	 * @param {import('discord.js').Interaction} interaction
-	 * @param {string[]} args
-	 */
+	/** Provide club details embed to the user for the selected clubs */
 	(interaction, args) => {
 		const clubs = getClubDictionary();
 		interaction.values.forEach(channelId => {

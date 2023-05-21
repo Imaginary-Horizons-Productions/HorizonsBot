@@ -1,5 +1,5 @@
 const Command = require('../classes/Command.js');
-const { getClubDictionary } = require('../helpers.js');
+const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const id = "club-sunset";
 const options = [{ type: "Integer", name: "delay", description: "Number of hours to delay deleting the club", required: true, choices: [] }];

@@ -1,5 +1,6 @@
 const Command = require('../classes/Command.js');
-const { getClubDictionary, sendClubReminder } = require("../helpers.js");
+const { sendClubReminder } = require('../engines/clubEngine.js');
+const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const options = [];
 const subcommands = [];

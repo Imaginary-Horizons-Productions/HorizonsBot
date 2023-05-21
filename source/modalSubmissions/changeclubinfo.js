@@ -1,14 +1,12 @@
-const { Interaction } = require('discord.js');
 const ModalSubmission = require('../classes/ModalSubmission.js');
+const { updateClubDetails } = require('../engines/clubEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
-const { getClubDictionary, updateClub, updateClubDetails, updateList } = require('../helpers.js');
+const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
+
 
 const id = "changeclubinfo";
 module.exports = new ModalSubmission(id,
-	/** Set the name, description, game, image and/or color for the club with provided id
-	 * @param {Interaction} interaction
-	 * @param {Array<string>} args
-	 */
+	/** Set the name, description, game, image and/or color for the club with provided id */
 	async (interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
 		const { fields } = interaction;

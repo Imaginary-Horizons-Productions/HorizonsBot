@@ -1,8 +1,9 @@
 const { PermissionFlagsBits: { ViewChannel, ManageMessages, ManageChannels, ManageEvents }, ChannelType, MessageFlags } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { Club } = require('../classes/Club.js');
-const { modRoleId, updateClub, updateList } = require('../helpers.js');
+const { updateClub, updateList } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
+const { modRoleId } = require('../engines/permissionEngine.js');
 
 const options = [{ type: "User", name: "club-host", description: "The user's mention", required: true, choices: [] }]
 const subcommands = [];

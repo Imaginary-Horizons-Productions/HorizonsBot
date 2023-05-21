@@ -1,8 +1,8 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const Command = require('../classes/Command.js');
-const { getClubDictionary } = require("../helpers.js");
 const { SAFE_DELIMITER } = require('../constants.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
+const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const options = [];
 const subcommands = [];
