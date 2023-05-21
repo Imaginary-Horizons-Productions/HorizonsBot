@@ -5,10 +5,7 @@ const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { SAFE_DELIMITER } = require('../constants.js');
 
 module.exports = new Select("clubList",
-	/** Provide club details embed to the user for the selected clubs
-	 * @param {import('discord.js').Interaction} interaction
-	 * @param {string[]} args
-	 */
+	/** Provide club details embed to the user for the selected clubs */
 	(interaction, args) => {
 		const clubs = getClubDictionary();
 		interaction.values.forEach(channelId => {

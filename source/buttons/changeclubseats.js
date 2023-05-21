@@ -5,10 +5,7 @@ const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const id = "changeclubseats";
 module.exports = new Button(id,
-	/** Opens a modal to change the max seats and recruiting toggle of the club
-	 * @param {import('discord.js').Interaction} interaction
-	 * @param {Array<string>} args
-	 */
+	/** Opens a modal to change the max seats and recruiting toggle of the club */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
 		const modal = new ModalBuilder().setCustomId(`${id}${SAFE_DELIMITER}${clubId}`)

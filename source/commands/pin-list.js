@@ -1,6 +1,6 @@
 const Command = require('../classes/Command.js');
-const { listMessages, buildListMessagePayload } = require('../engines/referenceEngine.js');
 const { saveObject } = require('../helpers.js');
+const { listMessages, buildListMessagePayload } = require('../engines/referenceEngine.js');
 
 const id = "pin-list";
 const options = [

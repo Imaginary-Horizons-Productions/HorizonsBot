@@ -2,20 +2,20 @@ const { GuildMember } = require("discord.js");
 const { saveObject } = require("../helpers");
 const { getClubDictionary } = require("./referenceEngine");
 
-const { modIds: moderatorIds, noAts, modRoleId } = require("../../config/modData.json");
+let { modIds, noAts, modRoleId } = require("../../config/modData.json");
 
 /** Save the modData object to file
  */
 exports.saveModData = function () {
-	saveObject({ modIds: moderatorIds, noAts: exports.noAts }, "modData.json");
+	saveObject({ modIds: modIds, noAts: exports.noAts }, "modData.json");
 }
 
 /** Add a user's id to the list of moderator ids
  * @param {string} id
  */
 exports.addModerator = function (id) {
-	if (!moderatorIds.some(existingId => existingId === id)) {
-		moderatorIds.push(id);
+	if (!modIds.some(existingId => existingId === id)) {
+		modIds.push(id);
 	}
 	exports.saveModData();
 }
@@ -24,7 +24,7 @@ exports.addModerator = function (id) {
  * @param {string} removedId
  */
 exports.removeModerator = function (removedId) {
-	moderatorIds = moderatorIds.filter(id => id != removedId);
+	modIds = modIds.filter(id => id != removedId);
 	exports.saveModData();
 }
 
@@ -37,7 +37,7 @@ exports.noAts = noAts;
  * @param {GuildMember} member
  */
 exports.isModerator = function (member) {
-	return moderatorIds.includes(member.id) || !member.manageable;
+	return modIds.includes(member.id) || !member.manageable;
 }
 
 /** Determines if the user is host of the club with the provided text channel
