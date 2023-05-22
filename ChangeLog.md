@@ -1,4 +1,6 @@
 # HorizonsBot Change Log
+#### HorizonsBot Version 2.2.0:
+- Updated rules embed
 #### HorizonsBot Version 2.1.0:
 - Removed opt-in topics handling, please use the Channel & Roles Browser instead
    - Retained `/petition` for text channels

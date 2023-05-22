@@ -145,8 +145,8 @@ exports.removeClub = function (id, channelManager) {
 	exports.updateList(channelManager, "club");
 }
 
-/** @type {{petition: {channelId: string; messageId: string}, club: {channelId: string; messageId: string;}}} */
-exports.listMessages = require('../../config/listMessageIds.json');
+/** @type {{petition: {channelId: string; messageId: string}, club: {channelId: string; messageId: string;}, rules: {channelId: string; messageId: string;}}} */
+exports.referenceMessages = require('../../config/referenceMessageIds.json');
 
 /** Builds the MessageOptions for the specified list message
  * @param {number} memberCount
@@ -262,7 +262,7 @@ exports.buildListMessagePayload = function (memberCount, listType) {
  * @returns {Promise<Message>}
  */
 exports.updateList = async function (channelManager, listType) {
-	const { channelId, messageId } = exports.listMessages[listType];
+	const { channelId, messageId } = exports.referenceMessages[listType];
 	if (channelId && messageId) {
 		const channel = await channelManager.fetch(channelId);
 		const message = await channel.messages.fetch(messageId);
