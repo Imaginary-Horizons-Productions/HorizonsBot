@@ -39,6 +39,6 @@ module.exports.execute = async (interaction) => {
 		saveObject(listMessages, "referenceMessageIds.json");
 	}).catch(console.error);
 
-	interaction.reply({ content: `Pinning the ${listType} list succeded.`, ephemeral: true })
+	interaction.reply({ content: `The ${listType} reference has been posted.`, ephemeral: true })
 		.catch(console.error);
 }
