@@ -380,7 +380,7 @@ exports.createClubEvent = function (club, guild) {
 		})
 	}).then(event => {
 		club.timeslot.setEventId(event.id);
-		exports.updateList(guild.channels, "clubs");
+		exports.updateList(guild.channels, "club");
 		exports.updateClub(club);
 	});
 }
