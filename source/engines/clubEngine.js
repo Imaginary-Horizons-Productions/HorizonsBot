@@ -90,7 +90,7 @@ exports.createClubEvent = function (club, guild) {
 		})
 	}).then(event => {
 		club.timeslot.setEventId(event.id);
-		updateList(guild.channels, "clubs");
+		updateList(guild.channels, "club");
 		updateClub(club);
 	});
 }
