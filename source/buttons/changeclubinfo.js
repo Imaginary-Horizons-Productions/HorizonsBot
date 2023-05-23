@@ -52,7 +52,7 @@ module.exports = new Button(id,
 						.setLabel("Color")
 						.setValue(club.color || "#6b81eb")
 						.setStyle(TextInputStyle.Short)
-						.setMinLength(7)
+						.setMinLength(6)
 						.setMaxLength(7)
 						.setRequired(false)
 						.setPlaceholder("Hexcode format (eg #6b81eb)")
