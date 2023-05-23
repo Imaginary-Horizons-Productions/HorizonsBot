@@ -9,9 +9,11 @@ const { callSelect } = require("./selects/_selectDictionary.js");
 const { scheduleClubReminderAndEvent } = require("./engines/clubEngine.js");
 const { versionEmbedBuilder } = require("./engines/messageEngine.js");
 const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
-const { listMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
+const { referenceMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
+
+const rulesEmbed = require("../config/embeds/rules.json");
 //#endregion
 //#region Executing Code
 const client = new Client({
@@ -91,12 +93,19 @@ client.on(Events.ClientReady, () => {
 			}
 		}
 
-		// Update pinned lists
-		if (listMessages.petition) {
+		// Update reference messages
+		if (referenceMessages.petition) {
 			updateList(channelManager, "petition");
 		}
-		if (listMessages.club) {
+		if (referenceMessages.club) {
 			updateList(channelManager, "club");
+		}
+		if (referenceMessages.rules) {
+			channelManager.fetch(referenceMessages.rules.channelId).then(channel => {
+				channel.messages.fetch(referenceMessages.rules.messageId).then(message => {
+					message.edit({ embeds: [rulesEmbed] });
+				})
+			})
 		}
 	})
 })
