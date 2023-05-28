@@ -200,14 +200,4 @@ client.on(Events.ChannelDelete, ({ id, guild }) => {
 		}
 	}
 })
-
-client.on(Events.MessageDelete, ({ id: messageId }) => {
-	for (const messageType in referenceMessages) {
-		if (referenceMessages[messageType].messageId === messageId) {
-			referenceMessages[messageType].channelId = "";
-			referenceMessages[messageType].messageId = "";
-			saveObject(referenceMessages, "referenceMessageIds.json");
-		}
-	}
-})
 //#endregion
