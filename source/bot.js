@@ -10,6 +10,7 @@ const { scheduleClubReminderAndEvent } = require("./engines/clubEngine.js");
 const { versionEmbedBuilder } = require("./engines/messageEngine.js");
 const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
 const { referenceMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
+const { saveObject } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 
@@ -104,7 +105,21 @@ client.on(Events.ClientReady, () => {
 			channelManager.fetch(referenceMessages.rules.channelId).then(channel => {
 				channel.messages.fetch(referenceMessages.rules.messageId).then(message => {
 					message.edit({ embeds: [rulesEmbed] });
+				}).catch(error => {
+					if (error.code === 10008) { // Unknown Message
+						referenceMessages.rules.channelId = "";
+						referenceMessages.rules.messageId = "";
+						saveObject(referenceMessages, "referenceMessageIds.json");
+					}
+					console.error(error);
 				})
+			}).catch(error => {
+				if (error.code === 10003) { // Unknown Channel
+					referenceMessages.rules.channelId = "";
+					referenceMessages.rules.messageId = "";
+					saveObject(referenceMessages, "referenceMessageIds.json");
+				}
+				console.error(error);
 			})
 		}
 	})

@@ -264,12 +264,26 @@ exports.buildListMessagePayload = function (memberCount, listType) {
 exports.updateList = async function (channelManager, listType) {
 	const { channelId, messageId } = exports.referenceMessages[listType];
 	if (channelId && messageId) {
-		const channel = await channelManager.fetch(channelId);
-		const message = await channel.messages.fetch(messageId);
+		const channel = await channelManager.fetch(channelId).catch(error => {
+			if (error.code === 10003) { // Unknown Channel
+				exports.referenceMessages[listType].channelId = "";
+				exports.referenceMessages[listType].messageId = "";
+				saveObject(exports.referenceMessages, "referenceMessageIds.json");
+			}
+			console.error(error);
+		});
+		const message = await channel?.messages.fetch(messageId).catch(error => {
+			if (error.code === 10008) { // Unknown Message
+				exports.referenceMessages[listType].channelId = "";
+				exports.referenceMessages[listType].messageId = "";
+				saveObject(exports.referenceMessages, "referenceMessageIds.json");
+			}
+			console.error(error);
+		});
 		const messageOptions = await exports.buildListMessagePayload(channelManager.guild.memberCount, listType);
-		message.edit(messageOptions);
+		message?.edit(messageOptions);
 		if (messageOptions.files.length === 0) {
-			message.removeAttachments();
+			message?.removeAttachments();
 		}
 		return message;
 	}
