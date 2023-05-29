@@ -1,7 +1,9 @@
-const { Guild, User, PermissionsBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { Guild, User, PermissionsBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildScheduledEventEntityType } = require("discord.js");
 const { Club } = require("../classes/Club.js");
 const { timeConversion } = require("../helpers.js");
 const { getClubDictionary, updateClub, updateList } = require("./referenceEngine.js");
+const { clubEmbedBuilder } = require("./messageEngine.js");
+const { MAX_SET_TIMEOUT } = require("../constants.js");
 
 /** @type {{[clubId: string]: NodeJS.Timeout}} */
 const reminderTimeouts = {};
@@ -80,14 +82,18 @@ exports.updateClubDetails = (club, channel) => {
  */
 exports.createClubEvent = function (club, guild) {
 	return guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
-		return guild.scheduledEvents.create({
+		const eventPayload = {
 			name: club.title,
 			scheduledStartTime: club.timeslot.nextMeeting * 1000,
 			privacyLevel: 2,
 			entityType: GuildScheduledEventEntityType.Voice,
 			description: club.description,
 			channel: voiceChannel
-		})
+		};
+		if (club.imageURL) {
+			eventPayload.image = club.imageURL;
+		}
+		return guild.scheduledEvents.create(eventPayload);
 	}).then(event => {
 		club.timeslot.setEventId(event.id);
 		updateList(guild.channels, "club");
