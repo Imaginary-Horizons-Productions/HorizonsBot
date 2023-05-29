@@ -95,13 +95,13 @@ client.on(Events.ClientReady, () => {
 		}
 
 		// Update reference messages
-		if (referenceMessages.petition) {
+		if (referenceMessages.petition?.channelId && referenceMessages.petition?.messageId) {
 			updateList(channelManager, "petition");
 		}
-		if (referenceMessages.club) {
+		if (referenceMessages.club?.channelId && referenceMessages.club?.messageId) {
 			updateList(channelManager, "club");
 		}
-		if (referenceMessages.rules) {
+		if (referenceMessages.rules?.channelId && referenceMessages.rules?.messageId) {
 			channelManager.fetch(referenceMessages.rules.channelId).then(channel => {
 				channel.messages.fetch(referenceMessages.rules.messageId).then(message => {
 					message.edit({ embeds: [rulesEmbed] });
