@@ -3,7 +3,7 @@ const { Club } = require("../classes/Club.js");
 const { timeConversion } = require("../helpers.js");
 const { getClubDictionary, updateClub, updateList } = require("./referenceEngine.js");
 const { clubEmbedBuilder } = require("./messageEngine.js");
-const { MAX_SET_TIMEOUT } = require("../constants.js");
+const { MAX_SET_TIMEOUT, SAFE_DELIMITER } = require("../constants.js");
 
 /** @type {{[clubId: string]: NodeJS.Timeout}} */
 const reminderTimeouts = {};
