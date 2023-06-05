@@ -1,7 +1,7 @@
 const Command = require('../classes/Command.js');
 const { saveObject } = require('../helpers.js');
 const { referenceMessages: listMessages, buildListMessagePayload } = require('../engines/referenceEngine.js');
-const embed = require("../../config/embeds/rules.json");
+const { rulesEmbedBuilder } = require('../engines/messageEngine.js');
 
 const customId = "post-reference";
 const options = [
@@ -28,7 +28,7 @@ module.exports.execute = async (interaction) => {
 			messageOptions = await buildListMessagePayload(interaction.guild.memberCount, listType);
 			break;
 		case "rules":
-			messageOptions = { embeds: [embed] };
+			messageOptions = { embeds: [rulesEmbedBuilder()] };
 			break;
 	}
 	interaction.channel.send(messageOptions).then(message => {
