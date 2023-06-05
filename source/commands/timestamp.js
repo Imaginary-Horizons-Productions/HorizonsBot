@@ -8,7 +8,7 @@ const options = [
 	{ type: "Number", name: "minutes-from-start", description: "60 seconds", required: false, choices: [] }
 ];
 const subcomands = [];
-module.exports = new Command("timestamp", "Calculate the unix timestamp for a moment in time, which Discord displays with timezones applied", "none", options, subcomands);
+module.exports = new Command("timestamp", "Calculate the unix timestamp for a moment in time, which Discord displays with timezones applied", true, "none", options, subcomands);
 
 /** Calculate the unix timestamp given days, hours, minutes, and seconds from now (or the provided start)
  * @param {import('discord.js').Interaction} interaction

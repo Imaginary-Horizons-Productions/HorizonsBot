@@ -7,7 +7,7 @@ const { modRoleId } = require('../engines/permissionEngine.js');
 
 const options = [{ type: "User", name: "club-host", description: "The user's mention", required: true, choices: [] }]
 const subcommands = [];
-module.exports = new Command("club-add", "Set up a club (a text and voice channel)", "moderator", options, subcommands);
+module.exports = new Command("club-add", "Set up a club (a text and voice channel)", false, "moderator", options, subcommands);
 
 /** Create a new club including a text and voice channel in the receiving channel's category and set the mentioned user as host
  * @param {import('discord.js').Interaction} interaction

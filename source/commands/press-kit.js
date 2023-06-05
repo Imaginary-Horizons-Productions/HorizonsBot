@@ -4,7 +4,7 @@ const embed = require("../../config/embeds/press-kit.json");
 
 const options = [];
 const subcommands = [];
-module.exports = new Command("press-kit", "Get info on Imaginary Horizons as a brand", "none", options, subcommands);
+module.exports = new Command("press-kit", "Get info on Imaginary Horizons as a brand", true, "none", options, subcommands);
 
 /** Private message user with IHC brand info
  * @param {import('discord.js').Interaction} interaction

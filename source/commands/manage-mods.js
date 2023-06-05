@@ -18,7 +18,7 @@ const subcomands = [
 		]
 	}
 ];
-module.exports = new Command("manage-mods", "Promote/demote a user to moderator", "moderator", options, subcomands);
+module.exports = new Command("manage-mods", "Promote/demote a user to moderator", false, "moderator", options, subcomands);
 
 /**
  * @param {import('discord.js').Interaction} interaction

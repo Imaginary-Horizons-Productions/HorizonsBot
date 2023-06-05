@@ -5,7 +5,7 @@ const options = [
 	{ type: "Boolean", name: "full-notes", description: "Get the file with the full version notes?", required: true, choices: [] }
 ];
 const subcomands = [];
-module.exports = new Command("version", "Get HorizonsBot's version notes", "none", options, subcomands);
+module.exports = new Command("version", "Get HorizonsBot's version notes", true, "none", options, subcomands);
 
 /** Send version information
  * @param {import('discord.js').Interaction} interaction

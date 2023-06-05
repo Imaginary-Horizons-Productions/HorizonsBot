@@ -5,7 +5,7 @@ const options = [
 	{ type: "String", name: "topic-name", description: "The new topic", required: true, choices: [] },
 ];
 const subcomands = [];
-module.exports = new Command("topic-add", "Set up a topic", "moderator", options, subcomands);
+module.exports = new Command("topic-add", "Set up a topic", false, "moderator", options, subcomands);
 
 /** Creates a new text channel and add it to list of topic channels (to prevent duplicate petitions)
  * @param {import('discord.js').Interaction} interaction

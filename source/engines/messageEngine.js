@@ -26,7 +26,8 @@ exports.randomEmbedFooter = function () {
 		"Use /at-channel if you want to ping the channel (this lets us rate limit @here and @everyone).",
 		"The /timestamp command allows negative number inputs.",
 		"Please do not make bounties to vote for your petitions.",
-		"Some commands have optional inputs that are easy to miss. Don't forget to check for them!"
+		"Some commands have optional inputs that are easy to miss. Don't forget to check for them!",
+		"Some commands can be used from DMs, others are disabled."
 	];
 	return {
 		text: tips[Math.floor(Math.random() * tips.length)],

@@ -10,7 +10,7 @@ const options = [
 	{ type: "User", name: "invitee", description: "The user's mention", required: false, choices: [] }
 ];
 const subcommands = [];
-module.exports = new Command("club-invite", "Send a user (default: self) an invite to a club", "none", options, subcommands);
+module.exports = new Command("club-invite", "Send a user (default: self) an invite to a club", true, "none", options, subcommands);
 
 /** Provide full details on the given club
  * @param {import('discord.js').Interaction} interaction

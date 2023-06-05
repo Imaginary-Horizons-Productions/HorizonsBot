@@ -25,7 +25,7 @@ const subcommands = [
 		]
 	}
 ];
-module.exports = new Command(customId, "description", false, false, options, subcommands);
+module.exports = new Command(customId, "description", false, "none", options, subcommands);
 
 /** Command specifications go here
  * @param {import('discord.js').Interaction} interaction
