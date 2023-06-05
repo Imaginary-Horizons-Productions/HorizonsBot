@@ -10,6 +10,7 @@ const options = [
 			{ name: "the petiton list", value: "petition" },
 			{ name: "the club list", value: "club" },
 			{ name: "the rules embed", value: "rules" }
+			//TODONOW add /press-kit
 		]
 	}
 ];

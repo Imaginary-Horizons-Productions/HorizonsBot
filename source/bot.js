@@ -120,6 +120,8 @@ client.on(Events.ClientReady, () => {
 				console.error(error);
 			})
 		}
+		//TODONOW add /press-kit
+		//TODONOW add press-kit to referenceMessageIds.json
 	})
 })
 
