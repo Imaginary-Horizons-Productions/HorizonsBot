@@ -4,7 +4,7 @@ const embed = require("../../config/embeds/roles.json");
 
 const options = [];
 const subcommands = [];
-module.exports = new Command("roles", "Get a rundown of the server's roles", "none", options, subcommands);
+module.exports = new Command("roles", "Get a rundown of the server's roles", true, "none", options, subcommands);
 
 /** Private message the user with roles info
  * @param {import('discord.js').Interaction} interaction

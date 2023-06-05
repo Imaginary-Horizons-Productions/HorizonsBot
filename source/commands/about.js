@@ -4,7 +4,7 @@ const { randomEmbedFooter } = require('../engines/messageEngine.js');
 
 const options = [];
 const subcommands = [];
-module.exports = new Command("about", "Get the HorizonsBot credits", "none", options, subcommands);
+module.exports = new Command("about", "Get the HorizonsBot credits", true, "none", options, subcommands);
 
 /** Private message the user with a description of the bot and contributors
  * @param {import('discord.js').Interaction} interaction

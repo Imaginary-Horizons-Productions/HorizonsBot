@@ -4,7 +4,7 @@ const embed = require("../../config/embeds/rules.json");
 
 const options = [];
 const subcommands = [];
-module.exports = new Command("rules", "Get the server rules", "none", options, subcommands);
+module.exports = new Command("rules", "Get the server rules", true, "none", options, subcommands);
 
 /** Private message the server rules to the user
  * @param {import('discord.js').Interaction} interaction

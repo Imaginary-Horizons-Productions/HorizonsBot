@@ -8,7 +8,7 @@ module.exports = class Command {
 	 * @param {Array} optionsInput
 	 * @param {Array} subcommandsInput
 	 */
-	constructor(nameInput, descriptionInput, permissionLevelEnum, optionsInput, subcommandsInput) {
+	constructor(nameInput, descriptionInput, isDMCommand, permissionLevelEnum, optionsInput, subcommandsInput) {
 		this.name = nameInput;
 		switch (permissionLevelEnum) {
 			case "moderator":
@@ -23,7 +23,8 @@ module.exports = class Command {
 		this.permissionLevel = permissionLevelEnum;
 		this.data = new SlashCommandBuilder()
 			.setName(nameInput)
-			.setDescription(this.description);
+			.setDescription(this.description)
+			.setDMPermission(isDMCommand);
 		optionsInput.forEach(option => {
 			this.data[`add${option.type}Option`](built => {
 				built.setName(option.name).setDescription(option.description).setRequired(option.required);

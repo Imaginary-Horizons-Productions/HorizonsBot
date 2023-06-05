@@ -6,7 +6,7 @@ const { getClubDictionary, updateClub, updateList } = require('../engines/refere
 const id = "club-leave";
 const options = [];
 const subcomands = [];
-module.exports = new Command(id, "Leave this club", "none", options, subcomands);
+module.exports = new Command(id, "Leave this club", false, "none", options, subcomands);
 
 /** Do cleanup associated with user leaving a club or topic
  * @param {import('discord.js').Interaction} interaction
