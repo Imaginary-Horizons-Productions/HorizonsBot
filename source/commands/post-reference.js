@@ -1,7 +1,7 @@
 const Command = require('../classes/Command.js');
 const { saveObject } = require('../helpers.js');
 const { referenceMessages: listMessages, buildListMessagePayload } = require('../engines/referenceEngine.js');
-const { rulesEmbedBuilder } = require('../engines/messageEngine.js');
+const { rulesEmbedBuilder, pressKitEmbedBuilder } = require('../engines/messageEngine.js');
 
 const customId = "post-reference";
 const options = [
@@ -9,8 +9,8 @@ const options = [
 		type: "String", name: "reference", description: "which message to post", required: true, choices: [
 			{ name: "the petiton list", value: "petition" },
 			{ name: "the club list", value: "club" },
-			{ name: "the rules embed", value: "rules" }
-			//TODONOW add /press-kit
+			{ name: "the rules embed", value: "rules" },
+			{ name: "the press kit", value: "press-kit" }
 		]
 	}
 ];
@@ -30,6 +30,8 @@ module.exports.execute = async (interaction) => {
 			break;
 		case "rules":
 			messageOptions = { embeds: [rulesEmbedBuilder()] };
+		case "press-kit":
+			messageOptions = { embeds: [pressKitEmbedBuilder()] };
 			break;
 	}
 	interaction.channel.send(messageOptions).then(message => {

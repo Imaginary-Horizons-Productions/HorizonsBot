@@ -99,29 +99,29 @@ client.on(Events.ClientReady, () => {
 		if (referenceMessages.club?.channelId && referenceMessages.club?.messageId) {
 			updateList(channelManager, "club");
 		}
-		if (referenceMessages.rules?.channelId && referenceMessages.rules?.messageId) {
-			channelManager.fetch(referenceMessages.rules.channelId).then(channel => {
-				channel.messages.fetch(referenceMessages.rules.messageId).then(message => {
-					message.edit({ embeds: [rulesEmbedBuilder()] });
+		["rules", "press-kit"].forEach(reference => {
+			if (referenceMessages[reference]?.channelId && referenceMessages[reference]?.messageId) {
+				channelManager.fetch(referenceMessages[reference].channelId).then(channel => {
+					channel.messages.fetch(referenceMessages[reference].messageId).then(message => {
+						message.edit({ embeds: [rulesEmbedBuilder()] });
+					}).catch(error => {
+						if (error.code === 10008) { // Unknown Message
+							referenceMessages[reference].channelId = "";
+							referenceMessages[reference].messageId = "";
+							saveObject(referenceMessages, "referenceMessageIds.json");
+						}
+						console.error(error);
+					})
 				}).catch(error => {
-					if (error.code === 10008) { // Unknown Message
-						referenceMessages.rules.channelId = "";
-						referenceMessages.rules.messageId = "";
+					if (error.code === 10003) { // Unknown Channel
+						referenceMessages[reference].channelId = "";
+						referenceMessages[reference].messageId = "";
 						saveObject(referenceMessages, "referenceMessageIds.json");
 					}
 					console.error(error);
 				})
-			}).catch(error => {
-				if (error.code === 10003) { // Unknown Channel
-					referenceMessages.rules.channelId = "";
-					referenceMessages.rules.messageId = "";
-					saveObject(referenceMessages, "referenceMessageIds.json");
-				}
-				console.error(error);
-			})
-		}
-		//TODONOW add /press-kit
-		//TODONOW add press-kit to referenceMessageIds.json
+			}
+		})
 	})
 })
 

@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const Command = require('../classes/Command.js');
-const { randomEmbedFooter, rulesEmbedBuilder } = require('../engines/messageEngine.js');
+const { randomEmbedFooter, rulesEmbedBuilder, pressKitEmbedBuilder } = require('../engines/messageEngine.js');
 
 const customId = "info";
 const options = [];
@@ -111,25 +111,7 @@ module.exports.execute = (interaction) => {
 				).setFooter(randomEmbedFooter());
 			break;
 		case "press-kit":
-			embed.setColor(7045611)
-				.setAuthor({
-					"name": "Click here to visit HorizonsBot's GitHub",
-					"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png",
-					"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
-				})
-				.setTitle("Imaginary Horizons Branding")
-				.setThumbnail("https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png")
-				.addFields({
-					"name": "Colors",
-					"value": "Salmon - #f07581\nPeriwinkle - #6b81eb\nSpring Green - #b0ffe8\nWhite - #ffffff"
-				},
-					{
-						"name": "Links",
-						"value": "Server Invite - discord.gg/5EPWvu4\ntop.gg vote page - https://top.gg/servers/353575133157392385/vote"
-					}
-				)
-				.setImage("https://cdn.discordapp.com/attachments/812099861084241982/1094738237169340558/Patreon_Banner_Final.jpg")
-				.setFooter(randomEmbedFooter());
+			embed = pressKitEmbedBuilder();
 			break;
 	}
 	interaction.reply({ embeds: [embed], ephemeral: true });

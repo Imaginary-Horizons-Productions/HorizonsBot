@@ -101,7 +101,7 @@ exports.rulesEmbedBuilder = function () {
 			"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png",
 			"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 		})
-		.setTitle("Server Rules")
+		.setTitle("Server Rules (/info rules)")
 		.setThumbnail("https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png")
 		.setDescription("Imaginary Horizons is an community that values dignity, creativity, and diversity. Here are our server's rules:")
 		.addFields({
@@ -121,5 +121,27 @@ exports.rulesEmbedBuilder = function () {
 				"value": "- Start your message with `@silent` to prevent it from waking people up in the middle of the night.\n- Surround text with `||` to mark it a spoiler. ||example||"
 			}
 		)
+		.setFooter(exports.randomEmbedFooter());
+}
+
+exports.pressKitEmbedBuilder = function () {
+	return new EmbedBuilder().setColor(7045611)
+		.setAuthor({
+			"name": "Click here to visit HorizonsBot's GitHub",
+			"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png",
+			"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
+		})
+		.setTitle("Imaginary Horizons Branding (/info press-kit)")
+		.setThumbnail("https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png")
+		.addFields({
+			"name": "Colors",
+			"value": "Salmon - #f07581\nPeriwinkle - #6b81eb\nSpring Green - #b0ffe8\nWhite - #ffffff"
+		},
+			{
+				"name": "Links",
+				"value": "Server Invite - discord.gg/5EPWvu4\ntop.gg vote page - https://top.gg/servers/353575133157392385/vote"
+			}
+		)
+		.setImage("https://cdn.discordapp.com/attachments/812099861084241982/1094738237169340558/Patreon_Banner_Final.jpg")
 		.setFooter(exports.randomEmbedFooter());
 }
