@@ -2,6 +2,7 @@ const Command = require('../classes/Command.js');
 const { saveObject } = require('../helpers.js');
 const { referenceMessages: listMessages, buildListMessagePayload } = require('../engines/referenceEngine.js');
 const { rulesEmbedBuilder, pressKitEmbedBuilder } = require('../engines/messageEngine.js');
+const { MessageFlags } = require('discord.js');
 
 const customId = "post-reference";
 const options = [
@@ -29,9 +30,9 @@ module.exports.execute = async (interaction) => {
 			messageOptions = await buildListMessagePayload(interaction.guild.memberCount, listType);
 			break;
 		case "rules":
-			messageOptions = { embeds: [rulesEmbedBuilder()] };
+			messageOptions = { embeds: [rulesEmbedBuilder()], flags: MessageFlags.SuppressNotifications };
 		case "press-kit":
-			messageOptions = { embeds: [pressKitEmbedBuilder()] };
+			messageOptions = { embeds: [pressKitEmbedBuilder()], flags: MessageFlags.SuppressNotifications };
 			break;
 	}
 	interaction.channel.send(messageOptions).then(message => {
