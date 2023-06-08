@@ -7,14 +7,12 @@ const { callButton } = require("./buttons/_buttonDictionary.js");
 const { callModalSubmission } = require("./modalSubmissions/_modalSubmissionDictionary.js");
 const { callSelect } = require("./selects/_selectDictionary.js");
 const { scheduleClubReminderAndEvent } = require("./engines/clubEngine.js");
-const { versionEmbedBuilder } = require("./engines/messageEngine.js");
+const { versionEmbedBuilder, rulesEmbedBuilder } = require("./engines/messageEngine.js");
 const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
 const { referenceMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
 const { saveObject } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
-
-const rulesEmbed = require("../config/embeds/rules.json");
 //#endregion
 //#region Executing Code
 const client = new Client({
@@ -101,27 +99,29 @@ client.on(Events.ClientReady, () => {
 		if (referenceMessages.club?.channelId && referenceMessages.club?.messageId) {
 			updateList(channelManager, "club");
 		}
-		if (referenceMessages.rules?.channelId && referenceMessages.rules?.messageId) {
-			channelManager.fetch(referenceMessages.rules.channelId).then(channel => {
-				channel.messages.fetch(referenceMessages.rules.messageId).then(message => {
-					message.edit({ embeds: [rulesEmbed] });
+		["rules", "press-kit"].forEach(reference => {
+			if (referenceMessages[reference]?.channelId && referenceMessages[reference]?.messageId) {
+				channelManager.fetch(referenceMessages[reference].channelId).then(channel => {
+					channel.messages.fetch(referenceMessages[reference].messageId).then(message => {
+						message.edit({ embeds: [rulesEmbedBuilder()] });
+					}).catch(error => {
+						if (error.code === 10008) { // Unknown Message
+							referenceMessages[reference].channelId = "";
+							referenceMessages[reference].messageId = "";
+							saveObject(referenceMessages, "referenceMessageIds.json");
+						}
+						console.error(error);
+					})
 				}).catch(error => {
-					if (error.code === 10008) { // Unknown Message
-						referenceMessages.rules.channelId = "";
-						referenceMessages.rules.messageId = "";
+					if (error.code === 10003) { // Unknown Channel
+						referenceMessages[reference].channelId = "";
+						referenceMessages[reference].messageId = "";
 						saveObject(referenceMessages, "referenceMessageIds.json");
 					}
 					console.error(error);
 				})
-			}).catch(error => {
-				if (error.code === 10003) { // Unknown Channel
-					referenceMessages.rules.channelId = "";
-					referenceMessages.rules.messageId = "";
-					saveObject(referenceMessages, "referenceMessageIds.json");
-				}
-				console.error(error);
-			})
-		}
+			}
+		})
 	})
 })
 

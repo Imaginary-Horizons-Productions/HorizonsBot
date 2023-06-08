@@ -10,5 +10,9 @@
 	"rules": {
 		"messageId": "",
 		"channelId": ""
+	},
+	"press-kit": {
+		"messageId": "",
+		"channelId": ""
 	}
 }

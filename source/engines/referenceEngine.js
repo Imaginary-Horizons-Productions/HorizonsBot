@@ -247,7 +247,7 @@ exports.buildListMessagePayload = function (memberCount, listType) {
 		return new Promise((resolve, reject) => {
 			messageOptions.embeds = [
 				embedTemplateBuilder("#f07581")
-					.setTitle(`${listType.toUpperCase()} LIST`)
+					.setTitle(`${listType.toUpperCase()} LIST (/list)`)
 					.setDescription(description)
 			];
 			messageOptions.files = [];
