@@ -3,6 +3,7 @@
 - Updated rules and data policy
 - Combined `/about`, `/data-policy`, `/press-kit`, `/roles`, & `/rules` into `/info`
 - Club events now use the club's image
+- Ported `/petition-veto`
 #### HorizonsBot Version 2.1.0:
 - Removed opt-in topics handling, please use the Channel & Roles Browser instead
    - Retained `/petition` for text channels
