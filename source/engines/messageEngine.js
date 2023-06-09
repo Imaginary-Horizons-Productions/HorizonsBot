@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { EmbedBuilder } = require("discord.js");
+const { imaginaryHorizonsIconURL, discordIconURL } = require('../constants');
 
 /** Create a Message Embed with common settings (author, timestamp, color)
  * @param {string} color
@@ -9,30 +10,33 @@ exports.embedTemplateBuilder = function (color = "#6b81eb") {
 	return new EmbedBuilder().setColor(color)
 		.setAuthor({
 			name: "Click here to visit HorizonsBot's GitHub",
-			iconURL: "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png",
+			iconURL: imaginaryHorizonsIconURL,
 			url: "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 		})
 		.setFooter(exports.randomEmbedFooter())
 		.setTimestamp();
 }
 
+const discordTips = [
+	{ text: "Message starting with @silent don't send notifications. This is good for when everyone's asleep.", iconURL: discordIconURL },
+	{ text: "Surround your message with || to mark it a spoiler (not shown until reader clicks on it).", iconURL: discordIconURL },
+	{ text: "Surround a part of your messag with ~~ to add strikethrough styling.", iconURL: discordIconURL },
+	{ text: "Don't forget to check slash commands for optional arguments.", iconURL: discordIconURL },
+	{ text: "Some slash commands can be used in DMs, others can't.", iconURL: discordIconURL }
+];
+const horizonsBotTips = [
+	{ text: "You can roll dice with the /roll command!", iconURL: imaginaryHorizonsIconURL },
+	{ text: "Once 5% of the server has used /petition for a topic, a text channel will automatically be created.", iconURL: imaginaryHorizonsIconURL },
+	{ text: "Clubs are hidden by default to reduce channel clutter. Use /list to see what you're missing!", iconURL: imaginaryHorizonsIconURL },
+	{ text: "Find out how to get roles on the server with /roles.", iconURL: imaginaryHorizonsIconURL },
+	{ text: "Use /timestamp to get a string that Discord automatically converts into the reader's timezone!", iconURL: imaginaryHorizonsIconURL },
+	{ text: "Use /at-channel if you want to ping the channel (this lets us rate limit @here and @everyone).", iconURL: imaginaryHorizonsIconURL },
+	{ text: "The /timestamp command allows negative number inputs.", iconURL: imaginaryHorizonsIconURL },
+	{ text: "Please do not make bounties to vote for your petitions.", iconURL: imaginaryHorizonsIconURL }
+];
+const tipPool = horizonsBotTips.concat(horizonsBotTips, discordTips);
 exports.randomEmbedFooter = function () {
-	const tips = [
-		"You can roll dice with the /roll command!",
-		"Once 5% of the server has used /petition for a topic, a text channel will automatically be created.",
-		"Clubs are hidden by default to reduce channel clutter. Use /list to see what you're missing!",
-		"Find out how to get roles on the server with /roles.",
-		"Use /timestamp to get a string that Discord automatically converts into the reader's timezone!",
-		"Use /at-channel if you want to ping the channel (this lets us rate limit @here and @everyone).",
-		"The /timestamp command allows negative number inputs.",
-		"Please do not make bounties to vote for your petitions.",
-		"Some commands have optional inputs that are easy to miss. Don't forget to check for them!",
-		"Some commands can be used from DMs, others are disabled."
-	];
-	return {
-		text: tips[Math.floor(Math.random() * tips.length)],
-		iconURL: 'https://media.discordapp.net/attachments/789323338946183188/1048075545017065562/light-bulb.png?width=468&height=468'
-	}
+	return tipPool[Math.floor(Math.random() * tipPool.length)];
 }
 
 /** Generate the club's summary embed
@@ -98,11 +102,11 @@ exports.rulesEmbedBuilder = function () {
 	return new EmbedBuilder().setColor(7045611)
 		.setAuthor({
 			"name": "Click here to visit HorizonsBot's GitHub",
-			"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png",
+			"iconURL": imaginaryHorizonsIconURL,
 			"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 		})
 		.setTitle("Server Rules (/info rules)")
-		.setThumbnail("https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png")
+		.setThumbnail(imaginaryHorizonsIconURL)
 		.setDescription("Imaginary Horizons is an community that values dignity, creativity, and diversity. Here are our server's rules:")
 		.addFields({
 			"name": "Give the Benefit of the Doubt",
@@ -128,11 +132,11 @@ exports.pressKitEmbedBuilder = function () {
 	return new EmbedBuilder().setColor(7045611)
 		.setAuthor({
 			"name": "Click here to visit HorizonsBot's GitHub",
-			"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png",
+			"iconURL": imaginaryHorizonsIconURL,
 			"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 		})
 		.setTitle("Imaginary Horizons Branding (/info press-kit)")
-		.setThumbnail("https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png")
+		.setThumbnail(imaginaryHorizonsIconURL)
 		.addFields({
 			"name": "Colors",
 			"value": "Salmon - #f07581\nPeriwinkle - #6b81eb\nSpring Green - #b0ffe8\nWhite - #ffffff"

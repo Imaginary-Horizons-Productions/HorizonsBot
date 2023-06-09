@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { randomEmbedFooter, rulesEmbedBuilder, pressKitEmbedBuilder } = require('../engines/messageEngine.js');
+const { imaginaryHorizonsIconURL } = require('../constants.js');
 
 const customId = "info";
 const options = [];
@@ -43,7 +44,7 @@ module.exports.execute = (interaction) => {
 			embed.setColor(7045611)
 				.setAuthor({
 					"name": "Click here to visit HorizonsBot's GitHub",
-					"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png",
+					"iconURL": imaginaryHorizonsIconURL,
 					"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 				})
 				.setTitle("HorizonsBot v2.2.0")
@@ -66,7 +67,7 @@ module.exports.execute = (interaction) => {
 			embed.setColor(7045611)
 				.setAuthor({
 					"name": "Click here to visit HorizonsBot's GitHub",
-					"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png",
+					"iconURL": imaginaryHorizonsIconURL,
 					"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 				})
 				.setTitle("Imaginary Horizons Data Policy")
@@ -83,14 +84,14 @@ module.exports.execute = (interaction) => {
 				)
 				.setFooter({
 					"text": "Updated: HorizonsBot version 2.2.0",
-					"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png"
+					"iconURL": imaginaryHorizonsIconURL
 				})
 			break;
 		case "roles-rundown":
 			embed.setColor(7045611)
 				.setAuthor({
 					"name": "Click here to visit HorizonsBot's GitHub",
-					"iconURL": "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png",
+					"iconURL": imaginaryHorizonsIconURL,
 					"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 				})
 				.setTitle("Roles Rundown")
