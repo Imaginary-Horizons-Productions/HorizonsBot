@@ -1,6 +1,6 @@
 const Command = require('../classes/Command.js');
 const { saveObject } = require('../helpers.js');
-const { referenceMessages: listMessages, buildListMessagePayload } = require('../engines/referenceEngine.js');
+const { referenceMessages, buildListMessagePayload } = require('../engines/referenceEngine.js');
 const { rulesEmbedBuilder, pressKitEmbedBuilder } = require('../engines/messageEngine.js');
 const { MessageFlags } = require('discord.js');
 
@@ -36,11 +36,11 @@ module.exports.execute = async (interaction) => {
 			break;
 	}
 	interaction.channel.send(messageOptions).then(message => {
-		listMessages[listType] = {
+		referenceMessages[listType] = {
 			"messageId": message.id,
 			"channelId": message.channelId
 		}
-		saveObject(listMessages, "referenceMessageIds.json");
+		saveObject(referenceMessages, "referenceMessageIds.json");
 	}).catch(console.error);
 
 	interaction.reply({ content: `The ${listType} reference has been posted.`, ephemeral: true })
