@@ -32,7 +32,7 @@ module.exports = new Button(id,
 				new ActionRowBuilder().addComponents(
 					new TextInputBuilder().setCustomId("periodCount")
 						.setLabel("Repeating Meetings Count")
-						.setValue(club.timeslot.periodCount.toString() ?? "")
+						.setValue((club.timeslot.periodCount ?? "").toString())
 						.setStyle(TextInputStyle.Short)
 						.setMaxLength(1024)
 						.setRequired(false)
