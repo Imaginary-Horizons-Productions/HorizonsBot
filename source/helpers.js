@@ -304,9 +304,9 @@ exports.joinChannel = function (channel, user) {
 	if (!user.bot) {
 		const { id, permissionOverwrites, guild, name: channelName } = channel;
 		const permissionOverwrite = permissionOverwrites.resolve(user.id);
-		if (!permissionOverwrite.deny.has(PermissionsBitField.Flags.ViewChannel, false)) {
+		if (!permissionOverwrite?.deny.has(PermissionsBitField.Flags.ViewChannel, false)) {
 			const club = exports.getClubDictionary()[id];
-			if (!club) {
+			if (club) {
 				if (club.seats === -1 || club.isRecruiting()) {
 					if (club.hostId != user.id && !club.userIds.includes(user.id)) {
 						club.userIds.push(user.id);
