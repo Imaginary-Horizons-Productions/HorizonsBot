@@ -1,7 +1,7 @@
 const { GuildChannelManager, Guild, User, Collection, ChannelType, ActionRowBuilder, StringSelectMenuBuilder, Message, MessageFlags } = require('discord.js');
 const { Club, ClubTimeslot } = require("../classes/Club.js");
 const { topicCategoryId } = require('../constants');
-const { saveObject } = require('../helpers');
+const { ensuredPathSave } = require('../helpers');
 const { embedTemplateBuilder } = require("./messageEngine.js");
 
 /**  key: topic, value: petitioner ids
@@ -18,7 +18,7 @@ exports.getPetitions = function () {
  */
 exports.setPetitions = function (petitionListInput, channelManager) {
 	petitions = petitionListInput;
-	saveObject(petitions, 'petitionList.json');
+	ensuredPathSave(petitions, 'petitionList.json');
 	exports.updateList(channelManager, "petition");
 }
 
@@ -86,7 +86,7 @@ exports.addTopic = function (id, channelName) {
  */
 exports.removeTopic = function (channelId, guild) {
 	topics.delete(channelId);
-	saveObject(topics, 'topicList.json');
+	ensuredPathSave(topics, 'topicList.json');
 	exports.updateList(guild.channels, "petition");
 }
 
@@ -110,7 +110,7 @@ exports.addTopicChannel = function (guild, topicName) {
 		}
 		delete petitions[topicName];
 		exports.addTopic(channel.id, channel.name);
-		saveObject(topics, 'topicList.json');
+		ensuredPathSave(topics, 'topicList.json');
 		exports.setPetitions(petitions, guild.channels);
 		return channel;
 	}).catch(console.error);
@@ -132,7 +132,7 @@ exports.getClubDictionary = function () {
  */
 exports.updateClub = function (club) {
 	clubDictionary[club.id] = club;
-	saveObject(clubDictionary, 'clubList.json');
+	ensuredPathSave(clubDictionary, 'clubList.json');
 }
 
 /** Clean up club information after deletion
@@ -141,7 +141,7 @@ exports.updateClub = function (club) {
  */
 exports.removeClub = function (id, channelManager) {
 	delete clubDictionary[id];
-	saveObject(clubDictionary, 'clubList.json');
+	ensuredPathSave(clubDictionary, 'clubList.json');
 	exports.updateList(channelManager, "club");
 }
 
@@ -268,7 +268,7 @@ exports.updateList = async function (channelManager, listType) {
 			if (error.code === 10003) { // Unknown Channel
 				exports.referenceMessages[listType].channelId = "";
 				exports.referenceMessages[listType].messageId = "";
-				saveObject(exports.referenceMessages, "referenceMessageIds.json");
+				ensuredPathSave(exports.referenceMessages, "referenceMessageIds.json");
 			}
 			console.error(error);
 		});
@@ -276,7 +276,7 @@ exports.updateList = async function (channelManager, listType) {
 			if (error.code === 10008) { // Unknown Message
 				exports.referenceMessages[listType].channelId = "";
 				exports.referenceMessages[listType].messageId = "";
-				saveObject(exports.referenceMessages, "referenceMessageIds.json");
+				ensuredPathSave(exports.referenceMessages, "referenceMessageIds.json");
 			}
 			console.error(error);
 		});
