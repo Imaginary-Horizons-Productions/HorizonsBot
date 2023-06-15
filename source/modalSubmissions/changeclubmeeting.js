@@ -44,7 +44,7 @@ module.exports = new ModalSubmission(id,
 			if (periodCountInput) {
 				club.timeslot.periodCount = periodCountInput;
 			} else if (unparsedValue === "") {
-				club.timeslot.periodCount = null;
+				club.timeslot.periodCount = 0;
 			} else {
 				errors.periodCount = `Could not interpret ${unparsedValue} as integer`;
 			}

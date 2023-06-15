@@ -30,7 +30,7 @@ module.exports.Club = class {
 module.exports.ClubTimeslot = class {
 	nextMeeting = null;
 	message = null;
-	periodCount = null;
+	periodCount = 0; // Number of units between repeating meetings (eg 1 week), 0 for off
 	periodUnits = "weeks";
 	eventId = null;
 
