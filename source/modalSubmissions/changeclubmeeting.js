@@ -43,6 +43,8 @@ module.exports = new ModalSubmission(id,
 			const periodCountInput = parseInt(unparsedValue);
 			if (periodCountInput) {
 				club.timeslot.periodCount = periodCountInput;
+			} else if (unparsedValue === "") {
+				club.timeslot.periodCount = 0;
 			} else {
 				errors.periodCount = `Could not interpret ${unparsedValue} as integer`;
 			}
@@ -57,7 +59,9 @@ module.exports = new ModalSubmission(id,
 		}
 
 		cancelClubEvent(club, interaction.guild.scheduledEvents);
-		createClubEvent(club, interaction.guild);
+		if (club.isRecruiting()) {
+			createClubEvent(club, interaction.guild);
+		}
 		clearClubReminder(club.id);
 		scheduleClubReminderAndEvent(club.id, club.timeslot.nextMeeting, interaction.guild.channels);
 

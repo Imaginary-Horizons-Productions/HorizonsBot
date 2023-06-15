@@ -1,5 +1,5 @@
 const Command = require('../classes/Command.js');
-const { saveObject } = require('../helpers.js');
+const { ensuredPathSave } = require('../helpers.js');
 const { referenceMessages, buildListMessagePayload } = require('../engines/referenceEngine.js');
 const { rulesEmbedBuilder, pressKitEmbedBuilder } = require('../engines/messageEngine.js');
 const { MessageFlags } = require('discord.js');
@@ -40,7 +40,7 @@ module.exports.execute = async (interaction) => {
 			"messageId": message.id,
 			"channelId": message.channelId
 		}
-		saveObject(referenceMessages, "referenceMessageIds.json");
+		ensuredPathSave(referenceMessages, "referenceMessageIds.json");
 	}).catch(console.error);
 
 	interaction.reply({ content: `The ${listType} reference has been posted.`, ephemeral: true })

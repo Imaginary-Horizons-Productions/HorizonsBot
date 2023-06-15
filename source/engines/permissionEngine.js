@@ -1,5 +1,5 @@
 const { GuildMember } = require("discord.js");
-const { saveObject } = require("../helpers");
+const { ensuredPathSave } = require("../helpers");
 const { getClubDictionary } = require("./referenceEngine");
 
 let { modIds, noAts, modRoleId } = require("../../config/modData.json");
@@ -7,7 +7,7 @@ let { modIds, noAts, modRoleId } = require("../../config/modData.json");
 /** Save the modData object to file
  */
 exports.saveModData = function () {
-	saveObject({ modIds: modIds, noAts: exports.noAts }, "modData.json");
+	ensuredPathSave({ modIds: modIds, noAts: exports.noAts }, "modData.json");
 }
 
 /** Add a user's id to the list of moderator ids

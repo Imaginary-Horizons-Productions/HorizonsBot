@@ -53,16 +53,16 @@ exports.timeConversion = function (value, startingUnit, resultUnit) {
 	}
 }
 
-/** Stringify an entity to JSON then save it at `.\config\${fileName}`
- * @param {unknown} entity
- * @param {string} fileName
+/** Generate parent directories if necessary, and save a file.
+ * Keeps a backup of the fileName that may be replaced, until writing succeeds
+ * @param {unknown} entity unserialized data to be written to the file
+ * @param {string} fileName name of the file to be saved
  */
-exports.saveObject = function (entity, fileName) {
-	let filePath = `./config/`;
-	if (!fs.existsSync(filePath)) {
-		fs.mkdirSync(filePath);
-	}
-	filePath += fileName;
+exports.ensuredPathSave = async function (entity, fileName) {
+	const dirPath = "./config/";
+	const filePath = dirPath + fileName;
+	const backupFilePath = filePath + ".bak";
+
 	let textToSave = '';
 	if (entity instanceof Collection) {
 		textToSave = [];
@@ -76,9 +76,10 @@ exports.saveObject = function (entity, fileName) {
 		textToSave = entity;
 	}
 
-	fs.writeFile(filePath, textToSave, 'utf8', (error) => {
-		if (error) {
-			console.error(error);
-		}
-	})
+	fs.promises.mkdir(dirPath, { recursive: true }) // (idempotently) establish prerequisite directory, in advance
+		.then(() => fs.promises.rename(filePath, backupFilePath)) // save previous file as backup
+		.catch((err) => err.code === 'ENOENT' ? undefined : Promise.reject(err)) // ignore ENOENT (file not found) for rename if save didn't already exist
+		.then(() => fs.promises.writeFile(filePath, textToSave, { encoding: "utf8" })
+			.catch((err) => Promise.reject(new Error("writeFile failed", { cause: err })))) // promote errors (including ENOENT) for writeFile)
+		.catch(console.error) // log error, and avoid fatally crashing
 }

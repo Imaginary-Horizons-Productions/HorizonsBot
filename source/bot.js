@@ -10,7 +10,7 @@ const { scheduleClubReminderAndEvent } = require("./engines/clubEngine.js");
 const { versionEmbedBuilder, rulesEmbedBuilder } = require("./engines/messageEngine.js");
 const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
 const { referenceMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
-const { saveObject } = require("./helpers.js");
+const { ensuredPathSave } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion
@@ -108,7 +108,7 @@ client.on(Events.ClientReady, () => {
 						if (error.code === 10008) { // Unknown Message
 							referenceMessages[reference].channelId = "";
 							referenceMessages[reference].messageId = "";
-							saveObject(referenceMessages, "referenceMessageIds.json");
+							ensuredPathSave(referenceMessages, "referenceMessageIds.json");
 						}
 						console.error(error);
 					})
@@ -116,7 +116,7 @@ client.on(Events.ClientReady, () => {
 					if (error.code === 10003) { // Unknown Channel
 						referenceMessages[reference].channelId = "";
 						referenceMessages[reference].messageId = "";
-						saveObject(referenceMessages, "referenceMessageIds.json");
+						ensuredPathSave(referenceMessages, "referenceMessageIds.json");
 					}
 					console.error(error);
 				})
