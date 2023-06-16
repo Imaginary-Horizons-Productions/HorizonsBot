@@ -11,9 +11,13 @@ commandSets.forEach(commandSet => {
 	commandSet.fileNames.forEach(filename => {
 		/** @type {Command} */
 		const command = require(`./../commands/${filename}`);
-		text += `### /${command.customId}\n${command.description}\n`;
+		text += `### /${command.customId}\n> Cooldown: ${command.cooldown / 1000} second(s)\n\n${command.description}\n`;
 		for (const optionData of command.data.options) {
-			text += `#### ${optionData.name}${optionData.required ? "" : " (optional)"}\n${optionData.description}\n`;
+			text += `#### ${optionData.name}${optionData.required ? "" : " (optional)"}\n`;
+			if (optionData.choices?.length > 0) {
+				text += `> Choices: ${optionData.choices.map(choice => choice.name).join(", ")}\n`;
+			}
+			text += `\n${optionData.description}\n`;
 		}
 	})
 })
