@@ -10,6 +10,17 @@ module.exports = new Button("join",
 				joinChannel(channel, interaction.user);
 				interaction.message.edit({ components: [] });
 				interaction.reply(`You have joined ${channel}!`);
+			}).catch(error => {
+				if (error.code === "ChannelNotCached") {
+					interaction.client.guilds.fetch(guildId).then(guild => {
+						return guild.channels.fetch(channelId);
+					}).then(clubChannel => {
+						guild.channels.fetch(interaction.channelId).then(channel => {
+							interaction.message.edit({ components: [] });
+							interaction.reply(`You have joined ${clubChannel}!`);
+						})
+					})
+				}
 			})
 		})
 	});
