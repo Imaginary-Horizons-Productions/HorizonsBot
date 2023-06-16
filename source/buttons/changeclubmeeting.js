@@ -4,7 +4,7 @@ const { SAFE_DELIMITER } = require('../constants.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const id = "changeclubmeeting";
-module.exports = new Button(id,
+module.exports = new Button(id, 3000,
 	/** Opens a modal to change the meeting time/repetition the club */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];

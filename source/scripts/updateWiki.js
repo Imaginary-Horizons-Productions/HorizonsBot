@@ -11,7 +11,7 @@ commandSets.forEach(commandSet => {
 	commandSet.fileNames.forEach(filename => {
 		/** @type {Command} */
 		const command = require(`./../commands/${filename}`);
-		text += `### /${command.name}\n${command.description}\n`;
+		text += `### /${command.customId}\n${command.description}\n`;
 		for (const optionData of command.data.options) {
 			text += `#### ${optionData.name}${optionData.required ? "" : " (optional)"}\n${optionData.description}\n`;
 		}

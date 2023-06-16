@@ -5,7 +5,7 @@ const { getClubDictionary, updateClub, updateList } = require('../engines/refere
 
 
 const id = "changeclubinfo";
-module.exports = new ModalSubmission(id,
+module.exports = new ModalSubmission(id, 3000,
 	/** Set the name, description, game, image and/or color for the club with provided id */
 	async (interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];

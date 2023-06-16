@@ -2,7 +2,7 @@ const Button = require('../classes/Button.js');
 const { guildId } = require('../constants.js');
 const { joinChannel } = require('../engines/clubEngine.js');
 
-module.exports = new Button("join",
+module.exports = new Button("join", 3000,
 	/** Join the club specified in args */
 	(interaction, [channelId]) => {
 		interaction.client.guilds.fetch(guildId).then(guild => {

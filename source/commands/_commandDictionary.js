@@ -19,7 +19,7 @@ exports.slashData = [];
 
 for (const file of exports.commandFiles) {
 	const command = require(`./${file}`);
-	commandDictionary[command.name] = command;
+	commandDictionary[command.customId] = command;
 	exports.slashData.push(command.data.toJSON());
 }
 

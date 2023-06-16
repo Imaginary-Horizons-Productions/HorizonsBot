@@ -6,6 +6,7 @@
 - Ported `/petition-veto`
 - Fixed slash commands being shown twice in the menu
 - Some slash commands can now be used in DMs
+- All bot interactions now have cooldowns (3s default)
 #### HorizonsBot Version 2.1.0:
 - Removed opt-in topics handling, please use the Channel & Roles Browser instead
    - Retained `/petition` for text channels
