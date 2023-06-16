@@ -6,7 +6,7 @@ const { getCommand, slashData } = require("./commands/_commandDictionary.js");
 const { callButton } = require("./buttons/_buttonDictionary.js");
 const { callModalSubmission } = require("./modalSubmissions/_modalSubmissionDictionary.js");
 const { callSelect } = require("./selects/_selectDictionary.js");
-const { scheduleClubReminderAndEvent } = require("./engines/clubEngine.js");
+const { scheduleClubReminderAndEvent, updateClubDetails } = require("./engines/clubEngine.js");
 const { versionEmbedBuilder, rulesEmbedBuilder } = require("./engines/messageEngine.js");
 const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
 const { referenceMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
@@ -154,12 +154,15 @@ client.on(Events.InteractionCreate, interaction => {
 client.on(Events.GuildMemberRemove, ({ id: memberId, guild }) => {
 	// Remove member's clubs
 	for (const club of Object.values(getClubDictionary())) {
-		if (memberId == club.hostId) {
-			guild.channels.resolve(club.id).delete("Club host left server");
-		} else if (club.userIds.includes(memberId)) {
-			club.userIds = club.userIds.filter(id => id != memberId);
-			updateList(guild.channels, "club");
-		}
+		guild.channels.fetch(club.id).then(clubTextChannel => {
+			if (memberId == club.hostId) {
+				clubTextChannel.delete("Club host left server");
+				removeClub(club.id, guild.channels);
+			} else if (club.userIds.includes(memberId)) {
+				club.userIds = club.userIds.filter(id => id != memberId);
+				updateClubDetails(club, clubTextChannel);
+			}
+		})
 	}
 
 	// Remove member from petitions and check if member leaving completes any petitions

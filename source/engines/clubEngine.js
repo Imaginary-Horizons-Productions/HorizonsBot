@@ -129,10 +129,11 @@ exports.scheduleClubReminderAndEvent = async function (clubId, nextMeetingTimest
 					if (club.timeslot.periodCount && club.timeslot.periodUnits) {
 						const nextTimestamp = club.timeslot.nextMeeting + timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
 						club.timeslot.setNextMeeting(nextTimestamp);
-						updateClub(club);
 						if (club?.isRecruiting()) {
-							exports.createClubEvent(club, channelManager.guild);
+							await exports.createClubEvent(club, channelManager.guild);
 						}
+						const clubTextChannel = await channelManager.fetch(club.id);
+						exports.updateClubDetails(club, clubTextChannel);
 						exports.scheduleClubReminderAndEvent(clubId, nextTimestamp, channelManager);
 					} else {
 						delete reminderTimeouts[clubId];
