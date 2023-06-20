@@ -7,7 +7,7 @@ Send a ping to the current channel
 #### message
 The text of the notification
 #### type (optional)
-> Choices: Only online users in this channel, All users in this channel
+> Choices: `Only online users in this channel`, `All users in this channel`
 
 Who to notify
 ### /timestamp
@@ -29,7 +29,7 @@ Roll any number of dice with any number of sides
 #### dice
 The dice to roll in #d# format
 #### display (optional)
-> Choices: Result only, Compare to max total roll, Result for each die, Compare each die to max roll
+> Choices: `Result only`, `Compare to max total roll`, `Result for each die`, `Compare each die to max roll`
 
 Choose output display option
 #### label (optional)
@@ -54,22 +54,22 @@ Use these commands to learn more about this server or HorizonsBot.
 > Cooldown: 3 second(s)
 
 Get info about the server or HorizonsBot
-#### horizonsbot-credits (optional)
+#### horizonsbot-credits
 Get the HorizonsBot credits
-#### server-rules (optional)
+#### server-rules
 Get the server rules
-#### horizonsbot-data-policy (optional)
+#### horizonsbot-data-policy
 See what data HorizonsBot collects and what it does with it
-#### roles-rundown (optional)
+#### roles-rundown
 See what the roles on the server mean and how to get them
-#### press-kit (optional)
+#### press-kit
 Get info on Imaginary Horizons as a brand
 ### /commands
 > Cooldown: 3 second(s)
 
 List HorizonsBot's commands
 #### page (optional)
-> Choices: General Commands, Informational Commands, Topic Commands, Club Commands, Moderation Commands
+> Choices: `General Commands`, `Informational Commands`, `Topic Commands`, `Club Commands`, `Moderation Commands`
 
 Pick a single page of commands to view
 ### /list
@@ -77,7 +77,7 @@ Pick a single page of commands to view
 
 Get the petition or club list
 #### list-type
-> Choices: Get the list of open topic petitions, Get the list of clubs on the server
+> Choices: `Get the list of open topic petitions`, `Get the list of clubs on the server`
 
 The list to get
 ### /version
@@ -146,9 +146,9 @@ Commands for moderators. Required permissions are listed in (parenthesis) at the
 > Cooldown: 3 second(s)
 
 (moderator) Disallow/Re-allow a user to use /at-channel
-#### disallow (optional)
+#### disallow
 (moderator) Prevent a user from using /at-channel
-#### allow (optional)
+#### allow
 (moderator) Re-allow a user to use /at-channel
 ### /petition-veto
 > Cooldown: 3 second(s)
@@ -166,15 +166,15 @@ The new topic
 > Cooldown: 3 second(s)
 
 (moderator) Promote/demote a user to moderator
-#### promote (optional)
+#### promote
 (moderator) Add a user to the moderator list
-#### demote (optional)
+#### demote
 (moderator) Remove a user from the moderator list
 ### /post-reference
 > Cooldown: 3 second(s)
 
 (moderator) Post a reference message in this channel
 #### reference
-> Choices: the petiton list, the club list, the rules embed, the press kit
+> Choices: `the petiton list`, `the club list`, `the rules embed`, `the press kit`
 
 which message to post
