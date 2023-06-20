@@ -101,23 +101,26 @@ client.on(Events.ClientReady, () => {
 		if (referenceMessages.club?.channelId && referenceMessages.club?.messageId) {
 			updateList(channelManager, "club");
 		}
-		["rules", "press-kit"].forEach(reference => {
-			if (referenceMessages[reference]?.channelId && referenceMessages[reference]?.messageId) {
-				channelManager.fetch(referenceMessages[reference].channelId).then(channel => {
-					channel.messages.fetch(referenceMessages[reference].messageId).then(message => {
-						message.edit({ embeds: [reference === "rules" ? rulesEmbedBuilder() : pressKitEmbedBuilder()] });
+		Object.entries({
+			"rules": rulesEmbedBuilder(),
+			"press-kit": pressKitEmbedBuilder()
+		}).forEach(([referenceType, embed]) => {
+			if (referenceMessages[referenceType]?.channelId && referenceMessages[referenceType]?.messageId) {
+				channelManager.fetch(referenceMessages[referenceType].channelId).then(channel => {
+					channel.messages.fetch(referenceMessages[referenceType].messageId).then(message => {
+						message.edit({ embeds: [embed] });
 					}).catch(error => {
 						if (error.code === 10008) { // Unknown Message
-							referenceMessages[reference].channelId = "";
-							referenceMessages[reference].messageId = "";
+							referenceMessages[referenceType].channelId = "";
+							referenceMessages[referenceType].messageId = "";
 							ensuredPathSave(referenceMessages, "referenceMessageIds.json");
 						}
 						console.error(error);
 					})
 				}).catch(error => {
 					if (error.code === 10003) { // Unknown Channel
-						referenceMessages[reference].channelId = "";
-						referenceMessages[reference].messageId = "";
+						referenceMessages[referenceType].channelId = "";
+						referenceMessages[referenceType].messageId = "";
 						ensuredPathSave(referenceMessages, "referenceMessageIds.json");
 					}
 					console.error(error);
