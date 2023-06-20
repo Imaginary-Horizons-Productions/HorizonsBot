@@ -1,5 +1,5 @@
 const Command = require('../classes/Command.js');
-const { modRoleId, addModerator, removeModerator } = require('../helpers.js');
+const { modRoleId, addModerator, removeModerator } = require('../engines/permissionEngine.js');
 
 const options = [];
 const subcomands = [
@@ -18,7 +18,7 @@ const subcomands = [
 		]
 	}
 ];
-module.exports = new Command("manage-mods", "Promote/demote a user to moderator", "moderator", options, subcomands);
+module.exports = new Command("manage-mods", "Promote/demote a user to moderator", false, "moderator", 3000, options, subcomands);
 
 /**
  * @param {import('discord.js').Interaction} interaction

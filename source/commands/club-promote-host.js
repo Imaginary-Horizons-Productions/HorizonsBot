@@ -1,10 +1,11 @@
 const { PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
-const { getClubDictionary, updateClub, updateList, updateClubDetails } = require('../helpers.js');
+const { updateClubDetails } = require('../engines/clubEngine.js');
+const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 
 const options = [{ type: "User", name: "user", description: "The user's mention", required: true, choices: [] }];
 const subcommands = [];
-module.exports = new Command("club-update-host", "Promote another user to club host", "moderator/club host", options, subcommands);
+module.exports = new Command("club-update-host", "Promote another user to club host", false, "moderator/club host", 3000, options, subcommands);
 
 /** Update the club's host to the given user
  * @param {import('discord.js').Interaction} interaction

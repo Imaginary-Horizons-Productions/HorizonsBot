@@ -2,11 +2,13 @@ const { Interaction } = require('discord.js');
 
 module.exports = class Select {
 	/** IHP wrapper for select menus (drop downs)
-	 * @param {string} nameInput
+	 * @param {string} customIdInput
+	 * @param {number} cooldownInMS
 	 * @param {(interaction: Interaction, args: Array<string>) => void} executeFunction
 	 */
-	constructor(nameInput, executeFunction) {
-		this.name = nameInput;
+	constructor(customIdInput, cooldownInMS, executeFunction) {
+		this.customId = customIdInput;
+		this.cooldown = cooldownInMS;
 		this.execute = executeFunction;
 	}
 }

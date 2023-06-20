@@ -1,11 +1,8 @@
 const Select = require('../classes/Select.js');
-const { checkPetition } = require('../engines/channelEngine.js');
+const { checkPetition } = require('../engines/referenceEngine.js');
 
-module.exports = new Select("petitionList",
-	/** Have the user petition for the selected topics
-	 * @param {import('discord.js').Interaction} interaction
-	 * @param {string[]} args
-	 */
+module.exports = new Select("petitionList", 3000,
+	/** Have the user petition for the selected topics */
 	(interaction, args) => {
 		interaction.values.forEach(petition => {
 			checkPetition(interaction.guild, petition, interaction.user);

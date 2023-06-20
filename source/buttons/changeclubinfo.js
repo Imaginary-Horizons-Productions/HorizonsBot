@@ -1,14 +1,11 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const Button = require('../classes/Button.js');
 const { SAFE_DELIMITER } = require('../constants.js');
-const { getClubDictionary } = require('../helpers.js');
+const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const id = "changeclubinfo";
-module.exports = new Button(id,
-	/** Opens a modal to change the name, description, game, imageURL, or color of the club
-	 * @param {import('discord.js').Interaction} interaction
-	 * @param {Array<string>} args
-	 */
+module.exports = new Button(id, 3000,
+	/** Opens a modal to change the name, description, game, imageURL, or color of the club */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
 		const modal = new ModalBuilder().setCustomId(`${id}${SAFE_DELIMITER}${clubId}`)

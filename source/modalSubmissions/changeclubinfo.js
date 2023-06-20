@@ -1,17 +1,16 @@
-const { Interaction } = require('discord.js');
 const ModalSubmission = require('../classes/ModalSubmission.js');
+const { updateClubDetails } = require('../engines/clubEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
-const { getClubDictionary, updateClub, updateClubDetails, updateList } = require('../helpers.js');
+const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
+
 
 const id = "changeclubinfo";
-module.exports = new ModalSubmission(id,
-	/** Set the name, description, game, image and/or color for the club with provided id
-	 * @param {Interaction} interaction
-	 * @param {Array<string>} args
-	 */
+module.exports = new ModalSubmission(id, 3000,
+	/** Set the name, description, game, image and/or color for the club with provided id */
 	async (interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
 		const { fields } = interaction;
+		const errors = {};
 
 		if (fields.fields.has("title") || fields.fields.has("description")) {
 			const textChannel = await interaction.guild.channels.fetch(club.id);
@@ -29,7 +28,17 @@ module.exports = new ModalSubmission(id,
 				textChannel.setTopic(descriptionInput);
 			}
 		}
-		["system", "imageURL", "color"].forEach(simpleStringKey => {
+		if (fields.fields.has("imageURL")) {
+			const unvalidatedURL = fields.getTextInputValue("imageURL");
+			try {
+				new URL(unvalidatedURL);
+				club.imageURL = unvalidatedURL;
+			} catch (error) {
+				errors.imageURL = error.message;
+			}
+		}
+
+		["system", "color"].forEach(simpleStringKey => {
 			if (fields.fields.has(simpleStringKey)) {
 				const value = fields.getTextInputValue(simpleStringKey);
 				club[simpleStringKey] = value;
@@ -39,5 +48,11 @@ module.exports = new ModalSubmission(id,
 		updateList(interaction.guild.channels, "club");
 		updateClub(club);
 
-		interaction.update({ embeds: [clubEmbedBuilder(club)] });
+		const payload = { embeds: [clubEmbedBuilder(club)] };
+		if (Object.keys(errors).length > 0) {
+			payload.content = Object.keys(errors).reduce((errorMessage, field) => {
+				return errorMessage + `${field} - ${errors[field]}`
+			}, "The following settings were not set because they encountered errors:\n")
+		}
+		interaction.update(payload);
 	});

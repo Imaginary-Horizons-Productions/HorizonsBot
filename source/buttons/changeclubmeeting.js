@@ -1,14 +1,11 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const Button = require('../classes/Button.js');
 const { SAFE_DELIMITER } = require('../constants.js');
-const { getClubDictionary } = require('../helpers.js');
+const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const id = "changeclubmeeting";
-module.exports = new Button(id,
-	/** Opens a modal to change the meeting time/repetition the club
-	 * @param {import('discord.js').Interaction} interaction
-	 * @param {Array<string>} args
-	 */
+module.exports = new Button(id, 3000,
+	/** Opens a modal to change the meeting time/repetition the club */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
 		const modal = new ModalBuilder().setCustomId(`${id}${SAFE_DELIMITER}${clubId}`)
@@ -35,7 +32,7 @@ module.exports = new Button(id,
 				new ActionRowBuilder().addComponents(
 					new TextInputBuilder().setCustomId("periodCount")
 						.setLabel("Repeating Meetings Count")
-						.setValue(club.timeslot.periodCount.toString() ?? "")
+						.setValue((club.timeslot.periodCount ?? "").toString())
 						.setStyle(TextInputStyle.Short)
 						.setMaxLength(1024)
 						.setRequired(false)

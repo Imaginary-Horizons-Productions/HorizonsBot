@@ -1,6 +1,6 @@
 const { MessageFlags } = require('discord.js');
 const Command = require('../classes/Command.js');
-const { noAts, saveModData } = require('../helpers.js');
+const { noAts, saveModData } = require('../engines/permissionEngine.js');
 
 const options = [];
 const subcomands = [
@@ -19,7 +19,7 @@ const subcomands = [
 		]
 	}
 ];
-module.exports = new Command("at-permission", "Disallow/Re-allow a user to use /at-channel", "moderator", options, subcomands);
+module.exports = new Command("at-permission", "Disallow/Re-allow a user to use /at-channel", true, "moderator", 3000, options, subcomands);
 
 module.exports.execute = (interaction) => {
 	const userId = interaction.options.getUser("user").id;

@@ -6,14 +6,12 @@ for (const file of [
 	"changeclubseats.js"
 ]) {
 	const modalSubmission = require(`./${file}`);
-	modalSubmissionDictionary[modalSubmission.name] = modalSubmission;
+	modalSubmissionDictionary[modalSubmission.customId] = modalSubmission;
 }
 
 /**
  * @param {string} mainId
- * @param {import("discord.js").Interaction} interaction
- * @param {string[]} args
  */
-exports.callModalSubmission = function (mainId, interaction, args) {
-	modalSubmissionDictionary[mainId].execute(interaction, args);
+exports.getModal = function (mainId) {
+	return modalSubmissionDictionary[mainId];
 }

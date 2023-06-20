@@ -1,15 +1,13 @@
 const ModalSubmission = require('../classes/ModalSubmission.js');
+const { updateClubDetails, cancelClubEvent, createClubEvent, scheduleClubReminderAndEvent, clearClubReminder } = require('../engines/clubEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
-const { getClubDictionary, updateClub, updateClubDetails, updateList, clearClubReminder, cancelClubEvent, scheduleClubReminderAndEvent, createClubEvent } = require('../helpers.js');
+const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 
 const YEAR_IN_MS = 31556926000;
 
 const id = "changeclubmeeting";
-module.exports = new ModalSubmission(id,
-	/** Set the meeting time/repetition properties for the club with provided id
-	 * @param {import('discord.js').Interaction} interaction
-	 * @param {string[]} args
-	 */
+module.exports = new ModalSubmission(id, 3000,
+	/** Set the meeting time/repetition properties for the club with provided id */
 	async (interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
 		const { fields } = interaction;
@@ -45,6 +43,8 @@ module.exports = new ModalSubmission(id,
 			const periodCountInput = parseInt(unparsedValue);
 			if (periodCountInput) {
 				club.timeslot.periodCount = periodCountInput;
+			} else if (unparsedValue === "") {
+				club.timeslot.periodCount = 0;
 			} else {
 				errors.periodCount = `Could not interpret ${unparsedValue} as integer`;
 			}
@@ -59,7 +59,9 @@ module.exports = new ModalSubmission(id,
 		}
 
 		cancelClubEvent(club, interaction.guild.scheduledEvents);
-		createClubEvent(club, interaction.guild);
+		if (club.isRecruiting()) {
+			createClubEvent(club, interaction.guild);
+		}
 		clearClubReminder(club.id);
 		scheduleClubReminderAndEvent(club.id, club.timeslot.nextMeeting, interaction.guild.channels);
 

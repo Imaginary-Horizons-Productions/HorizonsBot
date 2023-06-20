@@ -3,17 +3,20 @@ const { Client, REST, GatewayIntentBits, Routes, ActivityType, Events } = requir
 const fsa = require("fs/promises");
 
 const { getCommand, slashData } = require("./commands/_commandDictionary.js");
-const { callButton } = require("./buttons/_buttonDictionary.js");
-const { callModalSubmission } = require("./modalSubmissions/_modalSubmissionDictionary.js");
-const { callSelect } = require("./selects/_selectDictionary.js");
-const { checkPetition, getTopicIds, addTopic, removeTopic } = require("./engines/channelEngine.js");
-const { versionEmbedBuilder } = require("./engines/messageEngine.js");
+const { getButton } = require("./buttons/_buttonDictionary.js");
+const { getModal } = require("./modalSubmissions/_modalSubmissionDictionary.js");
+const { getSelect } = require("./selects/_selectDictionary.js");
+const { scheduleClubReminderAndEvent, updateClubDetails } = require("./engines/clubEngine.js");
+const { versionEmbedBuilder, rulesEmbedBuilder } = require("./engines/messageEngine.js");
 const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
-const { getClubDictionary, updateList, getPetitions, setPetitions, removeClub, scheduleClubReminderAndEvent, listMessages } = require("./helpers.js");
+const { referenceMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
+const { ensuredPathSave } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion
 //#region Executing Code
+const cooldowns = new Map();
+
 const client = new Client({
 	retryLimit: 5,
 	presence: {
@@ -35,17 +38,18 @@ client.login(require(authPath).token)
 client.on(Events.ClientReady, () => {
 	console.log(`Connected as ${client.user.tag}`);
 
-	(async () => {
-		try {
-			await new REST({ version: 9 }).setToken(require(authPath).token).put(
-				Routes.applicationCommands(client.user.id),
-				{ body: slashData }
-			)
-		} catch (error) {
-			console.error(error);
-		}
-	})()
-
+	if (process.argv[2] === "prod") {
+		(async () => {
+			try {
+				await new REST({ version: 9 }).setToken(require(authPath).token).put(
+					Routes.applicationCommands(client.user.id),
+					{ body: slashData }
+				)
+			} catch (error) {
+				console.error(error);
+			}
+		})()
+	}
 	client.guilds.fetch(guildId).then(guild => {
 		// Post version notes
 		if (versionData.patchNotesChannelId) {
@@ -90,15 +94,65 @@ client.on(Events.ClientReady, () => {
 			}
 		}
 
-		// Update pinned lists
-		if (listMessages.petition) {
+		// Update reference messages
+		if (referenceMessages.petition?.channelId && referenceMessages.petition?.messageId) {
 			updateList(channelManager, "petition");
 		}
-		if (listMessages.club) {
+		if (referenceMessages.club?.channelId && referenceMessages.club?.messageId) {
 			updateList(channelManager, "club");
 		}
+		["rules", "press-kit"].forEach(reference => {
+			if (referenceMessages[reference]?.channelId && referenceMessages[reference]?.messageId) {
+				channelManager.fetch(referenceMessages[reference].channelId).then(channel => {
+					channel.messages.fetch(referenceMessages[reference].messageId).then(message => {
+						message.edit({ embeds: [rulesEmbedBuilder()] });
+					}).catch(error => {
+						if (error.code === 10008) { // Unknown Message
+							referenceMessages[reference].channelId = "";
+							referenceMessages[reference].messageId = "";
+							ensuredPathSave(referenceMessages, "referenceMessageIds.json");
+						}
+						console.error(error);
+					})
+				}).catch(error => {
+					if (error.code === 10003) { // Unknown Channel
+						referenceMessages[reference].channelId = "";
+						referenceMessages[reference].messageId = "";
+						ensuredPathSave(referenceMessages, "referenceMessageIds.json");
+					}
+					console.error(error);
+				})
+			}
+		})
 	})
 })
+
+/** returns Unix Timestamp when cooldown will expire or null in case of expired or missing cooldown
+ * @param {InteractionWrapper} interactionWrapper
+ * @param {string} userId
+ */
+function getInteractionCooldownTimestamp({ customId, cooldown }, userId) {
+	const now = Date.now();
+
+	if (!cooldowns.has(customId)) {
+		cooldowns.set(customId, new Map());
+	}
+
+	const timestamps = cooldowns.get(customId);
+	if (timestamps.has(userId)) {
+		const expirationTime = timestamps.get(userId) + cooldown;
+
+		if (now < expirationTime) {
+			return Math.round(expirationTime / 1000);
+		} else {
+			timestamps.delete(userId);
+		}
+	} else {
+		timestamps.set(userId, now);
+		setTimeout(() => timestamps.delete(userId), cooldown);
+	}
+	return null;
+}
 
 client.on(Events.InteractionCreate, interaction => {
 	if (interaction.isCommand()) {
@@ -113,28 +167,47 @@ client.on(Events.InteractionCreate, interaction => {
 			return;
 		}
 
+		const cooldownTimestamp = getInteractionCooldownTimestamp(command, interaction.user.id);
+		if (cooldownTimestamp) {
+			interaction.reply({ content: `Please wait, the \`/${interaction.commandName}\` command is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, ephemeral: true });
+			return;
+		}
+
 		command.execute(interaction);
 	} else {
 		const [mainId, ...args] = interaction.customId.split(SAFE_DELIMITER);
+		let getter;
 		if (interaction.isButton()) {
-			callButton(mainId, interaction, args);
+			getter = getButton;
 		} else if (interaction.isStringSelectMenu()) {
-			callSelect(mainId, interaction, args);
+			getter = getSelect;
 		} else if (interaction.isModalSubmit()) {
-			callModalSubmission(mainId, interaction, args);
+			getter = getModal;
 		}
+		const interactionWrapper = getter(mainId);
+		const cooldownTimestamp = getInteractionCooldownTimestamp(interactionWrapper, interaction.user.id);
+
+		if (cooldownTimestamp) {
+			interaction.reply({ content: `Please wait, this interaction is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, ephemeral: true });
+			return;
+		}
+
+		interactionWrapper.execute(interaction, args);
 	}
 })
 
 client.on(Events.GuildMemberRemove, ({ id: memberId, guild }) => {
 	// Remove member's clubs
 	for (const club of Object.values(getClubDictionary())) {
-		if (memberId == club.hostId) {
-			guild.channels.resolve(club.id).delete("Club host left server");
-		} else if (club.userIds.includes(memberId)) {
-			club.userIds = club.userIds.filter(id => id != memberId);
-			updateList(guild.channels, "club");
-		}
+		guild.channels.fetch(club.id).then(clubTextChannel => {
+			if (memberId == club.hostId) {
+				clubTextChannel.delete("Club host left server");
+				removeClub(club.id, guild.channels);
+			} else if (club.userIds.includes(memberId)) {
+				club.userIds = club.userIds.filter(id => id != memberId);
+				updateClubDetails(club, clubTextChannel);
+			}
+		})
 	}
 
 	// Remove member from petitions and check if member leaving completes any petitions
