@@ -54,15 +54,15 @@ Use these commands to learn more about this server or HorizonsBot.
 > Cooldown: 3 second(s)
 
 Get info about the server or HorizonsBot
-#### horizonsbot-credits
+#### /info horizonsbot-credits
 Get the HorizonsBot credits
-#### server-rules
+#### /info server-rules
 Get the server rules
-#### horizonsbot-data-policy
+#### /info horizonsbot-data-policy
 See what data HorizonsBot collects and what it does with it
-#### roles-rundown
+#### /info roles-rundown
 See what the roles on the server mean and how to get them
-#### press-kit
+#### /info press-kit
 Get info on Imaginary Horizons as a brand
 ### /commands
 > Cooldown: 3 second(s)
@@ -146,9 +146,9 @@ Commands for moderators. Required permissions are listed in (parenthesis) at the
 > Cooldown: 3 second(s)
 
 (moderator) Disallow/Re-allow a user to use /at-channel
-#### disallow
+#### /at-permission disallow
 (moderator) Prevent a user from using /at-channel
-#### allow
+#### /at-permission allow
 (moderator) Re-allow a user to use /at-channel
 ### /petition-veto
 > Cooldown: 3 second(s)
@@ -166,9 +166,9 @@ The new topic
 > Cooldown: 3 second(s)
 
 (moderator) Promote/demote a user to moderator
-#### promote
+#### /manage-mods promote
 (moderator) Add a user to the moderator list
-#### demote
+#### /manage-mods demote
 (moderator) Remove a user from the moderator list
 ### /post-reference
 > Cooldown: 3 second(s)
