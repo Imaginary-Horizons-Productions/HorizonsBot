@@ -31,6 +31,7 @@ module.exports.execute = async (interaction) => {
 			break;
 		case "rules":
 			messageOptions = { embeds: [rulesEmbedBuilder()], flags: MessageFlags.SuppressNotifications };
+			break;
 		case "press-kit":
 			messageOptions = { embeds: [pressKitEmbedBuilder()], flags: MessageFlags.SuppressNotifications };
 			break;
