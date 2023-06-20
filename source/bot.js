@@ -7,7 +7,7 @@ const { getButton } = require("./buttons/_buttonDictionary.js");
 const { getModal } = require("./modalSubmissions/_modalSubmissionDictionary.js");
 const { getSelect } = require("./selects/_selectDictionary.js");
 const { scheduleClubReminderAndEvent, updateClubDetails } = require("./engines/clubEngine.js");
-const { versionEmbedBuilder, rulesEmbedBuilder } = require("./engines/messageEngine.js");
+const { versionEmbedBuilder, rulesEmbedBuilder, pressKitEmbedBuilder } = require("./engines/messageEngine.js");
 const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
 const { referenceMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
 const { ensuredPathSave } = require("./helpers.js");
@@ -105,7 +105,7 @@ client.on(Events.ClientReady, () => {
 			if (referenceMessages[reference]?.channelId && referenceMessages[reference]?.messageId) {
 				channelManager.fetch(referenceMessages[reference].channelId).then(channel => {
 					channel.messages.fetch(referenceMessages[reference].messageId).then(message => {
-						message.edit({ embeds: [rulesEmbedBuilder()] });
+						message.edit({ embeds: [reference === "rules" ? rulesEmbedBuilder() : pressKitEmbedBuilder()] });
 					}).catch(error => {
 						if (error.code === 10008) { // Unknown Message
 							referenceMessages[reference].channelId = "";
