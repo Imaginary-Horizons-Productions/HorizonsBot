@@ -18,7 +18,7 @@ module.exports.execute = (interaction) => {
 	let categoryId = interaction.channel.parentId;
 
 	channelManager.create({
-		name: "new-club-text",
+		name: "new-club",
 		parent: categoryId,
 		permissionOverwrites: [
 			{
