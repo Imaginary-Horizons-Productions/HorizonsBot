@@ -3,8 +3,6 @@ const { commandSets } = require('../commands/_commandDictionary.js');
 const Command = require('../classes/Command.js');
 const { SlashCommandSubcommandBuilder } = require('discord.js');
 
-require("./initialize.js");
-
 let text = "";
 
 commandSets.forEach(commandSet => {

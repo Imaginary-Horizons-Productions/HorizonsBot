@@ -24,7 +24,7 @@ jobs:
           folder: '.'
 
       - name: Setup npm
-        run: npm ci
+        run: npm ci && node source/scripts/initialize.js
 
       - name: Update Commands
         run: node source/scripts/updateWiki.js
