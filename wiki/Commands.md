@@ -5,7 +5,6 @@ These commands are general use utilities for the server.
 
 Send a ping to the current channel
 #### message
-
 The text of the notification
 #### type (optional)
 > Choices: Only online users in this channel, All users in this channel
@@ -16,38 +15,39 @@ Who to notify
 
 Calculate the unix timestamp for a moment in time, which Discord displays with timezones applied
 #### start (optional)
-
 The timestamp to start from (default: now)
 #### days-from-start (optional)
-
 86400 seconds
 #### hours-from-start (optional)
-
 3600 seconds
 #### minutes-from-start (optional)
-
 60 seconds
 ### /roll
 > Cooldown: 3 second(s)
 
 Roll any number of dice with any number of sides
 #### dice
-
 The dice to roll in #d# format
 #### display (optional)
 > Choices: Result only, Compare to max total roll, Result for each die, Compare each die to max roll
 
 Choose output display option
 #### label (optional)
-
 Text after the roll
 ### /petition
 > Cooldown: 3 second(s)
 
 Petition for a topic text channel
 #### topic-name
-
 Make sure the topic doesn't already exist
+### /at-event
+> Cooldown: 300 second(s)
+
+Send a ping to users interested in an event
+#### event-id
+The id of the event to make an announcement for
+#### message
+The text of the notification
 ## Informantional Commands
 Use these commands to learn more about this server or HorizonsBot.
 ### /info
@@ -55,19 +55,14 @@ Use these commands to learn more about this server or HorizonsBot.
 
 Get info about the server or HorizonsBot
 #### horizonsbot-credits (optional)
-
 Get the HorizonsBot credits
 #### server-rules (optional)
-
 Get the server rules
 #### horizonsbot-data-policy (optional)
-
 See what data HorizonsBot collects and what it does with it
 #### roles-rundown (optional)
-
 See what the roles on the server mean and how to get them
 #### press-kit (optional)
-
 Get info on Imaginary Horizons as a brand
 ### /commands
 > Cooldown: 3 second(s)
@@ -90,14 +85,12 @@ The list to get
 
 Get HorizonsBot's version notes
 #### full-notes
-
 Get the file with the full version notes?
 ### /petition-check
 > Cooldown: 3 second(s)
 
 Check how many more petitions a topic needs
 #### topic
-
 The petition to check
 ## Club Commands
 Clubs are private text and voice channels that include organization utilities like automatic reminders.
@@ -106,20 +99,16 @@ Clubs are private text and voice channels that include organization utilities li
 
 Send a user (default: self) an invite to a club
 #### club-id (optional)
-
 The club text channel's id
 #### invitee (optional)
-
 The user's mention
 ### /club-kick
 > Cooldown: 3 second(s)
 
 Remove a user from a club
 #### target
-
 The user's mention
 #### ban (optional)
-
 Prevent the user from rejoining?
 ### /club-leave
 > Cooldown: 3 second(s)
@@ -138,21 +127,18 @@ Change the configuration of the current club
 
 Promote another user to club host
 #### user
-
 The user's mention
 ### /club-add
 > Cooldown: 3 second(s)
 
 (moderator) Set up a club (a text and voice channel)
 #### club-host
-
 The user's mention
 ### /club-sunset
 > Cooldown: 3 second(s)
 
 Delete a club on a delay
 #### delay
-
 Number of hours to delay deleting the club
 ## Moderation Commands
 Commands for moderators. Required permissions are listed in (parenthesis) at the beginning of the description.
@@ -161,34 +147,28 @@ Commands for moderators. Required permissions are listed in (parenthesis) at the
 
 (moderator) Disallow/Re-allow a user to use /at-channel
 #### disallow (optional)
-
 (moderator) Prevent a user from using /at-channel
 #### allow (optional)
-
 (moderator) Re-allow a user to use /at-channel
 ### /petition-veto
 > Cooldown: 3 second(s)
 
 (moderator) Veto a petition
 #### topic
-
 The petition to close
 ### /topic-add
 > Cooldown: 3 second(s)
 
 (moderator) Set up a topic
 #### topic-name
-
 The new topic
 ### /manage-mods
 > Cooldown: 3 second(s)
 
 (moderator) Promote/demote a user to moderator
 #### promote (optional)
-
 (moderator) Add a user to the moderator list
 #### demote (optional)
-
 (moderator) Remove a user from the moderator list
 ### /post-reference
 > Cooldown: 3 second(s)

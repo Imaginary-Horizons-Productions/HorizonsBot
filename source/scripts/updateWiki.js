@@ -15,9 +15,9 @@ commandSets.forEach(commandSet => {
 		for (const optionData of command.data.options) {
 			text += `#### ${optionData.name}${optionData.required ? "" : " (optional)"}\n`;
 			if (optionData.choices?.length > 0) {
-				text += `> Choices: ${optionData.choices.map(choice => choice.name).join(", ")}\n`;
+				text += `> Choices: ${optionData.choices.map(choice => choice.name).join(", ")}\n\n`;
 			}
-			text += `\n${optionData.description}\n`;
+			text += `${optionData.description}\n`;
 		}
 	})
 })
