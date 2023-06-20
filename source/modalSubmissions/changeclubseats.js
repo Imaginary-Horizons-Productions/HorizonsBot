@@ -4,7 +4,7 @@ const { updateClubDetails } = require('../engines/clubEngine.js');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 
 const id = "changeclubseats";
-module.exports = new ModalSubmission(id,
+module.exports = new ModalSubmission(id, 3000,
 	/** Set the max members and isRecruting for the club with provided id */
 	async (interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];

@@ -4,7 +4,7 @@ const { getClubDictionary } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { SAFE_DELIMITER } = require('../constants.js');
 
-module.exports = new Select("clubList",
+module.exports = new Select("clubList", 3000,
 	/** Provide club details embed to the user for the selected clubs */
 	(interaction, args) => {
 		const clubs = getClubDictionary();

@@ -4,7 +4,7 @@ const { getClubDictionary } = require('../engines/referenceEngine.js');
 const { isModerator } = require("../engines/permissionEngine.js");
 
 const id = "startevent";
-module.exports = new Button(id,
+module.exports = new Button(id, 3000,
 	/** Start a club's event */
 	(interaction, [eventId]) => {
 		const { hostId } = getClubDictionary()[interaction.message.channel.id];

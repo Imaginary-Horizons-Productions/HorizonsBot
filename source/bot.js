@@ -3,9 +3,9 @@ const { Client, REST, GatewayIntentBits, Routes, ActivityType, Events } = requir
 const fsa = require("fs/promises");
 
 const { getCommand, slashData } = require("./commands/_commandDictionary.js");
-const { callButton } = require("./buttons/_buttonDictionary.js");
-const { callModalSubmission } = require("./modalSubmissions/_modalSubmissionDictionary.js");
-const { callSelect } = require("./selects/_selectDictionary.js");
+const { getButton } = require("./buttons/_buttonDictionary.js");
+const { getModal } = require("./modalSubmissions/_modalSubmissionDictionary.js");
+const { getSelect } = require("./selects/_selectDictionary.js");
 const { scheduleClubReminderAndEvent, updateClubDetails } = require("./engines/clubEngine.js");
 const { versionEmbedBuilder, rulesEmbedBuilder } = require("./engines/messageEngine.js");
 const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
@@ -15,6 +15,8 @@ const { SAFE_DELIMITER, guildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion
 //#region Executing Code
+const cooldowns = new Map();
+
 const client = new Client({
 	retryLimit: 5,
 	presence: {
@@ -125,6 +127,33 @@ client.on(Events.ClientReady, () => {
 	})
 })
 
+/** returns Unix Timestamp when cooldown will expire or null in case of expired or missing cooldown
+ * @param {InteractionWrapper} interactionWrapper
+ * @param {string} userId
+ */
+function getInteractionCooldownTimestamp({ customId, cooldown }, userId) {
+	const now = Date.now();
+
+	if (!cooldowns.has(customId)) {
+		cooldowns.set(customId, new Map());
+	}
+
+	const timestamps = cooldowns.get(customId);
+	if (timestamps.has(userId)) {
+		const expirationTime = timestamps.get(userId) + cooldown;
+
+		if (now < expirationTime) {
+			return Math.round(expirationTime / 1000);
+		} else {
+			timestamps.delete(userId);
+		}
+	} else {
+		timestamps.set(userId, now);
+		setTimeout(() => timestamps.delete(userId), cooldown);
+	}
+	return null;
+}
+
 client.on(Events.InteractionCreate, interaction => {
 	if (interaction.isCommand()) {
 		const command = getCommand(interaction.commandName);
@@ -138,16 +167,32 @@ client.on(Events.InteractionCreate, interaction => {
 			return;
 		}
 
+		const cooldownTimestamp = getInteractionCooldownTimestamp(command, interaction.user.id);
+		if (cooldownTimestamp) {
+			interaction.reply({ content: `Please wait, the \`/${interaction.commandName}\` command is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, ephemeral: true });
+			return;
+		}
+
 		command.execute(interaction);
 	} else {
 		const [mainId, ...args] = interaction.customId.split(SAFE_DELIMITER);
+		let getter;
 		if (interaction.isButton()) {
-			callButton(mainId, interaction, args);
+			getter = getButton;
 		} else if (interaction.isStringSelectMenu()) {
-			callSelect(mainId, interaction, args);
+			getter = getSelect;
 		} else if (interaction.isModalSubmit()) {
-			callModalSubmission(mainId, interaction, args);
+			getter = getModal;
 		}
+		const interactionWrapper = getter(mainId);
+		const cooldownTimestamp = getInteractionCooldownTimestamp(interactionWrapper, interaction.user.id);
+
+		if (cooldownTimestamp) {
+			interaction.reply({ content: `Please wait, this interaction is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, ephemeral: true });
+			return;
+		}
+
+		interactionWrapper.execute(interaction, args);
 	}
 })
 

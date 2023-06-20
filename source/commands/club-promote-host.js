@@ -5,7 +5,7 @@ const { getClubDictionary, updateClub, updateList } = require('../engines/refere
 
 const options = [{ type: "User", name: "user", description: "The user's mention", required: true, choices: [] }];
 const subcommands = [];
-module.exports = new Command("club-update-host", "Promote another user to club host", false, "moderator/club host", options, subcommands);
+module.exports = new Command("club-update-host", "Promote another user to club host", false, "moderator/club host", 3000, options, subcommands);
 
 /** Update the club's host to the given user
  * @param {import('discord.js').Interaction} interaction

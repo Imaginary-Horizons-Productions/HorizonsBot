@@ -9,14 +9,12 @@ for (const file of [
 	"startevent.js"
 ]) {
 	const button = require(`./${file}`);
-	buttonDictionary[button.name] = button;
+	buttonDictionary[button.customId] = button;
 }
 
 /**
  * @param {string} mainId
- * @param {import("discord.js").Interaction} interaction
- * @param {string[]} args
  */
-exports.callButton = function (mainId, interaction, args) {
-	buttonDictionary[mainId].execute(interaction, args);
+exports.getButton = function (mainId) {
+	return buttonDictionary[mainId];
 }

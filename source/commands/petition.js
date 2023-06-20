@@ -5,7 +5,7 @@ const options = [
 	{ type: "String", name: "topic-name", description: "Make sure the topic doesn't already exist", required: true, choices: [] }
 ];
 const subcomands = [];
-module.exports = new Command("petition", "Petition for a topic text channel", false, "none", options, subcomands);
+module.exports = new Command("petition", "Petition for a topic text channel", false, "none", 3000, options, subcomands);
 
 /** Record a user's petition for a text channel, create channel if sufficient number of petitions
  * @param {import('discord.js').Interaction} interaction */

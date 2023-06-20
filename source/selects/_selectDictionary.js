@@ -5,14 +5,12 @@ for (const file of [
 	"petitionList.js"
 ]) {
 	const select = require(`./${file}`);
-	selectDictionary[select.name] = select;
+	selectDictionary[select.customId] = select;
 }
 
 /**
  * @param {string} mainId
- * @param {import("discord.js").Interaction} interaction
- * @param {string[]} args
  */
-exports.callSelect = function (mainId, interaction, args) {
-	selectDictionary[mainId].execute(interaction, args);
+exports.getSelect = function (mainId) {
+	return selectDictionary[mainId];
 }

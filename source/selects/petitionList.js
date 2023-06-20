@@ -1,7 +1,7 @@
 const Select = require('../classes/Select.js');
 const { checkPetition } = require('../engines/referenceEngine.js');
 
-module.exports = new Select("petitionList",
+module.exports = new Select("petitionList", 3000,
 	/** Have the user petition for the selected topics */
 	(interaction, args) => {
 		interaction.values.forEach(petition => {

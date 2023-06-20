@@ -32,7 +32,7 @@ const subcommands = [
 		optionsInput: []
 	}
 ];
-module.exports = new Command(customId, "Get info about the server or HorizonsBot", false, "none", options, subcommands);
+module.exports = new Command(customId, "Get info about the server or HorizonsBot", false, "none", 3000, options, subcommands);
 
 /** Get one of the informational messages for the user
  * @param {import('discord.js').Interaction} interaction

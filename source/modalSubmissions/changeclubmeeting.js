@@ -6,7 +6,7 @@ const { getClubDictionary, updateClub, updateList } = require('../engines/refere
 const YEAR_IN_MS = 31556926000;
 
 const id = "changeclubmeeting";
-module.exports = new ModalSubmission(id,
+module.exports = new ModalSubmission(id, 3000,
 	/** Set the meeting time/repetition properties for the club with provided id */
 	async (interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];

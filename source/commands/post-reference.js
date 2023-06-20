@@ -16,7 +16,7 @@ const options = [
 	}
 ];
 const subcomands = [];
-module.exports = new Command(customId, "Post a reference message in this channel", false, "moderator", options, subcomands);
+module.exports = new Command(customId, "Post a reference message in this channel", false, "moderator", 3000, options, subcomands);
 
 /** Send a reference message (petitions, clubs, rules) to the receiving channel
  * @param {import('discord.js').Interaction} interaction

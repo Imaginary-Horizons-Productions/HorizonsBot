@@ -5,7 +5,7 @@ const options = [
 	{ type: "String", name: "topic", description: "The petition to close", required: true, choices: [] },
 ];
 const subcomands = [];
-module.exports = new Command("petition-veto", "Veto a petition", true, "moderator", options, subcomands);
+module.exports = new Command("petition-veto", "Veto a petition", true, "moderator", 3000, options, subcomands);
 
 /** Remove the given petition from the petition list
  * @param {import('discord.js').Interaction} interaction
