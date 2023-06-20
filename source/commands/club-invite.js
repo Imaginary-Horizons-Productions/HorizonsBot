@@ -25,25 +25,19 @@ module.exports.execute = (interaction) => {
 
 	const recipient = interaction.options.getUser("invitee") || interaction.user;
 	if (!recipient.bot) {
-		if (recipient.id !== club.hostId && !club.userIds.includes(recipient.id)) {
-			recipient.send({
-				embeds: [clubEmbedBuilder(club)], components: [new ActionRowBuilder(
-					{
-						components: [
-							new ButtonBuilder({
-								custom_id: `join${SAFE_DELIMITER}${club.id}`,
-								label: `Join ${club.title}`,
-								style: ButtonStyle.Success
-							})
-						]
-					}
-				)]
-			}).then(() => {
-				interaction.reply({ content: "Club details have been sent.", ephemeral: true });
-			}).catch(console.error);
-		} else {
-			interaction.reply({ content: "If the club details are not pinned, the club host can have them reposted and pinned with `/club-details`.", ephemeral: true })
-				.catch(console.error);
-		}
+		const components = recipient.id !== club.hostId && !club.userIds.includes(recipient.id) ? [new ActionRowBuilder(
+			{
+				components: [
+					new ButtonBuilder({
+						custom_id: `join${SAFE_DELIMITER}${club.id}`,
+						label: `Join ${club.title}`,
+						style: ButtonStyle.Success
+					})
+				]
+			}
+		)] : [];
+		recipient.send({ embeds: [clubEmbedBuilder(club)], components }).then(() => {
+			interaction.reply({ content: "Club details have been sent.", ephemeral: true });
+		}).catch(console.error);
 	}
 }

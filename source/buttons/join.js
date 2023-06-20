@@ -1,26 +1,69 @@
+const { ButtonInteraction, PermissionsBitField } = require('discord.js');
 const Button = require('../classes/Button.js');
 const { guildId } = require('../constants.js');
-const { joinChannel } = require('../engines/clubEngine.js');
+const { updateClubDetails } = require('../engines/clubEngine.js');
+const { updateList, getClubDictionary } = require('../engines/referenceEngine.js');
 
-module.exports = new Button("join", 3000,
-	/** Join the club specified in args */
+const customId = "join";
+module.exports = new Button(customId, 3000,
+	/** Join the club specified in args
+	 * @param {ButtonInteraction} interaction
+	 */
 	(interaction, [channelId]) => {
+		const club = getClubDictionary()[channelId];
+		if (!club) {
+			clearComponents(interaction.message);
+			interaction.reply("This club doesn't seem to exist.");
+			return;
+		}
+
+		if (club.hostId === interaction.user.id || club.userIds.includes(interaction.user.id)) {
+			clearComponents(interaction.message);
+			interaction.reply(`You are already in ${club.title}.`);
+			return;
+		}
+
+		if (club.seats !== -1 && !club.isRecruiting()) {
+			clearComponents(interaction.message);
+			interaction.reply(`${club.title} is already full.`);
+			return;
+		}
+
 		interaction.client.guilds.fetch(guildId).then(guild => {
-			guild.channels.fetch(channelId).then(channel => {
-				joinChannel(channel, interaction.user);
-				interaction.message.edit({ components: [] });
-				interaction.reply(`You have joined ${channel}!`);
-			}).catch(error => {
-				if (error.code === "ChannelNotCached") {
-					interaction.client.guilds.fetch(guildId).then(guild => {
-						return guild.channels.fetch(channelId);
-					}).then(clubChannel => {
-						guild.channels.fetch(interaction.channelId).then(channel => {
-							interaction.message.edit({ components: [] });
-							interaction.reply(`You have joined ${clubChannel}!`);
+			guild.channels.fetch(channelId).then(clubChannel => {
+				const userId = interaction.user.id;
+				const { permissionOverwrites, guild, name: channelName } = clubChannel;
+				const permissionOverwrite = permissionOverwrites.resolve(userId);
+				if (!permissionOverwrite?.deny.has(PermissionsBitField.Flags.ViewChannel, false)) {
+					club.userIds.push(userId);
+					permissionOverwrites.create(interaction.user, {
+						[PermissionsBitField.Flags.ViewChannel]: true
+					}).then(() => {
+						guild.channels.resolve(club.voiceChannelId).permissionOverwrites.create(interaction.user, {
+							[PermissionsBitField.Flags.ViewChannel]: true
 						})
+						clubChannel.send(`Welcome to ${channelName}, ${interaction.user}!`);
 					})
+					updateClubDetails(club, clubChannel);
+					updateList(guild.channels, "club");
+					clearComponents(interaction.message);
+					interaction.reply(`You have joined ${clubChannel}!`);
+				} else {
+					interaction.reply(`You are currently banned from ${channelName}. Speak to a Moderator if you believe this is in error.`);
 				}
-			})
+			});
 		})
+	}
+);
+
+function clearComponents(message) {
+	message.edit({ components: [] }).catch(error => {
+		if (error.code === "ChannelNotCached") {
+			message.client.channels.fetch(message.interaction.channelId).then(channel => {
+				message.edit({ components: [] });
+			});
+		} else {
+			console.error(error);
+		}
 	});
+}
