@@ -1,4 +1,4 @@
-const { Guild, User, PermissionsBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildScheduledEventEntityType } = require("discord.js");
+const { Guild, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildScheduledEventEntityType } = require("discord.js");
 const { Club } = require("../classes/Club.js");
 const { timeConversion } = require("../helpers.js");
 const { getClubDictionary, updateClub, updateList } = require("./referenceEngine.js");
@@ -7,47 +7,6 @@ const { MAX_SET_TIMEOUT, SAFE_DELIMITER } = require("../constants.js");
 
 /** @type {{[clubId: string]: NodeJS.Timeout}} */
 const reminderTimeouts = {};
-
-/** Add the user to the club (syncing internal tracking and permissions)
- * @param {TextChannel} channel
- * @param {User} user
- */
-exports.joinChannel = function (channel, user) {
-	if (!user.bot) {
-		const { id, permissionOverwrites, guild, name: channelName } = channel;
-		const permissionOverwrite = permissionOverwrites.resolve(user.id);
-		if (!permissionOverwrite?.deny.has(PermissionsBitField.Flags.ViewChannel, false)) {
-			const club = getClubDictionary()[id];
-			if (club) {
-				if (club.seats === -1 || club.isRecruiting()) {
-					if (club.hostId != user.id && !club.userIds.includes(user.id)) {
-						club.userIds.push(user.id);
-						permissionOverwrites.create(user, {
-							[PermissionsBitField.Flags.ViewChannel]: true
-						}).then(() => {
-							guild.channels.resolve(club.voiceChannelId).permissionOverwrites.create(user, {
-								[PermissionsBitField.Flags.ViewChannel]: true
-							})
-							channel.send(`Welcome to ${channelName}, ${user}!`);
-						})
-						exports.updateClubDetails(club, channel);
-						updateList(guild.channels, "club");
-						updateClub(club);
-					} else {
-						user.send(`You are already in ${club.title}.`)
-							.catch(console.error);
-					}
-				} else {
-					user.send(`${club.title} is already full.`)
-						.catch(console.error);
-				}
-			}
-		} else {
-			user.send(`You are currently banned from ${channelName}. Speak to a Moderator if you believe this is in error.`)
-				.catch(console.error);
-		}
-	}
-}
 
 /** Update a club's details embed in the club text channel
  * @param {Club} club
