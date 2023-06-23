@@ -1,12 +1,12 @@
 const fs = require('fs');
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder, Colors } = require("discord.js");
 const { imaginaryHorizonsIconURL, discordIconURL } = require('../constants');
 
 /** Create a Message Embed with common settings (author, timestamp, color)
  * @param {string} color
  * @returns {EmbedBuilder}
  */
-exports.embedTemplateBuilder = function (color = "#6b81eb") {
+exports.embedTemplateBuilder = function (color = Colors.Blurple) {
 	return new EmbedBuilder().setColor(color)
 		.setAuthor({
 			name: "Click here to visit HorizonsBot's GitHub",
@@ -18,7 +18,7 @@ exports.embedTemplateBuilder = function (color = "#6b81eb") {
 }
 
 const discordTips = [
-	{ text: "Message starting with @silent don't send notifications. This is good for when everyone's asleep.", iconURL: discordIconURL },
+	{ text: "Message starting with @silent don't send notifications; good for when everyone's asleep.", iconURL: discordIconURL },
 	{ text: "Surround your message with || to mark it a spoiler (not shown until reader clicks on it).", iconURL: discordIconURL },
 	{ text: "Surround a part of your messag with ~~ to add strikethrough styling.", iconURL: discordIconURL },
 	{ text: "Don't forget to check slash commands for optional arguments.", iconURL: discordIconURL },
