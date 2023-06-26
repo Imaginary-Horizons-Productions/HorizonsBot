@@ -47,7 +47,7 @@ module.exports.execute = (interaction) => {
 					"iconURL": imaginaryHorizonsIconURL,
 					"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 				})
-				.setTitle("HorizonsBot v2.2.0")
+				.setTitle("HorizonsBot v2.2.1")
 				.setDescription("HorizonsBot helps with channel management and other stuff on the Imaginary Horizons Community Discord.")
 				.addFields({
 					"name": "Design & Engineering",
