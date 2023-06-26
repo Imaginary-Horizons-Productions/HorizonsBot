@@ -1,4 +1,6 @@
 # HorizonsBot Change Log
+#### HorizonsBot Version 2.2.1:
+- Fixed mention in `/at-channel` being null when argument is omitted
 #### HorizonsBot Version 2.2.0:
 - Updated rules and data policy
 - Combined `/about`, `/data-policy`, `/press-kit`, `/roles`, & `/rules` into `/info`

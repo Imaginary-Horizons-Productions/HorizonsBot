@@ -13,7 +13,7 @@ module.exports = new Command("at-channel", "Send a ping to the current channel",
  */
 module.exports.execute = (interaction) => {
 	if (!noAts.includes(interaction.user.id)) {
-		interaction.reply(`${interaction.options.getString("type")} ${interaction.options.getString("message")}`);
+		interaction.reply(`${interaction.options.getString("type") ?? "@here"} ${interaction.options.getString("message")}`);
 	} else {
 		interaction.reply({ content: "You are not currently permitted to use `/at-channel`. Please speak to a moderator if you believe this to be in error.", ephemeral: true });
 	}
