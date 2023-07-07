@@ -11,22 +11,21 @@ module.exports = class Command {
 	 */
 	constructor(customIdInput, descriptionInput, isDMCommand, permissionLevelEnum, cooldownInMS, optionsInput, subcommandsInput) {
 		this.customId = customIdInput;
-		switch (permissionLevelEnum) {
-			case "moderator":
-				this.description = `(moderator) ${descriptionInput}`;
-				break;
-			case "moderator or club host":
-				this.description = `(moderator/club host) ${descriptionInput}`;
-				break;
-			default:
-				this.description = descriptionInput;
-		}
 		this.permissionLevel = permissionLevelEnum;
 		this.cooldown = cooldownInMS;
 		this.data = new SlashCommandBuilder()
 			.setName(customIdInput)
-			.setDescription(this.description)
 			.setDMPermission(isDMCommand);
+		switch (permissionLevelEnum) {
+			case "moderator":
+				this.data.setDescription(`(moderator) ${descriptionInput}`);
+				break;
+			case "moderator or club host":
+				this.data.setDescription(`(moderator/club host) ${descriptionInput}`);
+				break;
+			default:
+				this.data.setDescription(descriptionInput);
+		}
 		optionsInput.forEach(option => {
 			this.data[`add${option.type}Option`](built => {
 				built.setName(option.name).setDescription(option.description).setRequired(option.required);

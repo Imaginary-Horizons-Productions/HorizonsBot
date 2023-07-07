@@ -10,7 +10,7 @@ commandSets.forEach(commandSet => {
 	commandSet.fileNames.forEach(filename => {
 		/** @type {Command} */
 		const command = require(`./../commands/${filename}`);
-		text += `### /${command.customId}\n> Cooldown: ${command.cooldown / 1000} second(s)\n\n${command.description}\n`;
+		text += `### /${command.customId}\n> Cooldown: ${command.cooldown / 1000} second(s)\n\n${command.data.description}\n`;
 		for (const optionData of command.data.options) {
 			let optionName = "#### ";
 			if (optionData instanceof SlashCommandSubcommandBuilder) {
