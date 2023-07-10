@@ -1,4 +1,3 @@
-const { PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { versionEmbedBuilder } = require('../engines/messageEngine.js');
 

@@ -1,4 +1,4 @@
-const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { randomEmbedFooter, rulesEmbedBuilder, pressKitEmbedBuilder } = require('../engines/messageEngine.js');
 const { imaginaryHorizonsIconURL } = require('../constants.js');
