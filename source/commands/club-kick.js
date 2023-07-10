@@ -1,4 +1,4 @@
-const { PermissionsBitField, MessageFlags } = require('discord.js');
+const { PermissionsBitField, MessageFlags, PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 
@@ -8,7 +8,7 @@ const options = [
 	{ type: "Boolean", name: "ban", description: "Prevent the user from rejoining?", required: false, choices: [] }
 ];
 const subcomands = [];
-module.exports = new Command(id, "Remove a user from a club", false, "moderator/club host", 3000, options, subcomands);
+module.exports = new Command(id, "Remove a user from a club", false, PermissionFlagsBits.ManageChannels, 3000, options, subcomands);
 
 /** Remove visibility of receiving channel from mentioned user
  * @param {import('discord.js').Interaction} interaction

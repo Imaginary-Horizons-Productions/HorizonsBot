@@ -1,4 +1,4 @@
-const { MessageFlags } = require('discord.js');
+const { MessageFlags, PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { getRollString } = require('../engines/rollEngine.js');
 
@@ -15,7 +15,7 @@ const options = [
 	{ type: "String", name: "label", description: "Text after the roll", required: false, choices: [] },
 ];
 const subcomands = [];
-module.exports = new Command("roll", "Roll any number of dice with any number of sides", true, "none", 3000, options, subcomands);
+module.exports = new Command("roll", "Roll any number of dice with any number of sides", true, PermissionFlagsBits.ViewChannel, 3000, options, subcomands);
 
 /** Roll the specified dice
  * @param {import('discord.js').Interaction} interaction

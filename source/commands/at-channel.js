@@ -1,3 +1,4 @@
+const { PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { noAts } = require('../engines/permissionEngine.js');
 
@@ -6,7 +7,7 @@ const options = [
 	{ type: "String", name: "type", description: "Who to notify", required: false, choices: [{ name: "Only online users in this channel", value: "@here" }, { name: "All users in this channel", value: "@everyone" }] }
 ];
 const subcomands = [];
-module.exports = new Command("at-channel", "Send a ping to the current channel", false, "none", 300000, options, subcomands);
+module.exports = new Command("at-channel", "Send a ping to the current channel", false, PermissionFlagsBits.ViewChannel, 300000, options, subcomands);
 
 /** Send a rate-limited ping
  * @param {import('discord.js').Interaction} interaction

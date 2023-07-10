@@ -1,6 +1,7 @@
 const fs = require("fs");
 const Command = require('../classes/Command.js');
 const { randomEmbedFooter, embedTemplateBuilder } = require("../engines/messageEngine.js");
+const { PermissionFlagsBits } = require("discord.js");
 
 const options = [
 	{
@@ -14,7 +15,7 @@ const options = [
 	}
 ];
 const subcommands = [];
-module.exports = new Command("commands", "List HorizonsBot's commands", true, "none", 3000, options, subcommands);
+module.exports = new Command("commands", "List HorizonsBot's commands", true, null, 3000, options, subcommands);
 
 let wikiPage;
 fs.readFile("wiki/Commands.md", { encoding: "utf-8" }, (error, data) => {

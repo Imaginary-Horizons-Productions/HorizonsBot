@@ -1,10 +1,11 @@
+const { PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const id = "club-sunset";
 const options = [{ type: "Integer", name: "delay", description: "Number of hours to delay deleting the club", required: true, choices: [] }];
 const subcomands = [];
-module.exports = new Command(id, "Delete a club on a delay", false, "moderator/club host", 3000, options, subcomands);
+module.exports = new Command(id, "Delete a club on a delay", false, PermissionFlagsBits.ManageChannels, 3000, options, subcomands);
 
 /** Set a club to be deleted on a delay
  * @param {import('discord.js').Interaction} interaction

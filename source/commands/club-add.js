@@ -1,4 +1,4 @@
-const { PermissionFlagsBits: { ViewChannel, ManageMessages, ManageChannels, ManageEvents }, ChannelType, MessageFlags } = require('discord.js');
+const { PermissionFlagsBits: { ViewChannel, ManageMessages, ManageChannels, ManageEvents }, ChannelType, MessageFlags, PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { Club } = require('../classes/Club.js');
 const { updateClub, updateList } = require('../engines/referenceEngine.js');
@@ -7,7 +7,7 @@ const { modRoleId } = require('../engines/permissionEngine.js');
 
 const options = [{ type: "User", name: "club-host", description: "The user's mention", required: true, choices: [] }]
 const subcommands = [];
-module.exports = new Command("club-add", "Set up a club (a text and voice channel)", false, "moderator", 3000, options, subcommands);
+module.exports = new Command("club-add", "Set up a club (a text and voice channel)", false, PermissionFlagsBits.ManageChannels, 3000, options, subcommands);
 
 /** Create a new club including a text and voice channel in the receiving channel's category and set the mentioned user as host
  * @param {import('discord.js').Interaction} interaction

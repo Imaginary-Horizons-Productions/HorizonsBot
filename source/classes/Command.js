@@ -4,27 +4,21 @@ module.exports = class Command {
 	/** IHP wrapper for slash commands
 	 * @param {string} customIdInput
 	 * @param {string} descriptionInput
-	 * @param {"none" | "moderator" | "moderator/club host"} permissionLevelEnum
+	 * @param {import("discord.js").PermissionFlags | null} defaultPermission
 	 * @param {number} cooldownInMS
 	 * @param {Array} optionsInput
 	 * @param {Array} subcommandsInput
 	 */
-	constructor(customIdInput, descriptionInput, isDMCommand, permissionLevelEnum, cooldownInMS, optionsInput, subcommandsInput) {
+	constructor(customIdInput, descriptionInput, isDMCommand, defaultPermission, cooldownInMS, optionsInput, subcommandsInput) {
 		this.customId = customIdInput;
-		this.permissionLevel = permissionLevelEnum;
+		this.permissionLevel = defaultPermission;
 		this.cooldown = cooldownInMS;
 		this.data = new SlashCommandBuilder()
 			.setName(customIdInput)
+			.setDescription(descriptionInput)
 			.setDMPermission(isDMCommand);
-		switch (permissionLevelEnum) {
-			case "moderator":
-				this.data.setDescription(`(moderator) ${descriptionInput}`);
-				break;
-			case "moderator or club host":
-				this.data.setDescription(`(moderator/club host) ${descriptionInput}`);
-				break;
-			default:
-				this.data.setDescription(descriptionInput);
+		if (defaultPermission) {
+			this.data.setDefaultMemberPermissions(defaultPermission);
 		}
 		optionsInput.forEach(option => {
 			this.data[`add${option.type}Option`](built => {

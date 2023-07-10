@@ -1,3 +1,4 @@
+const { PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { addTopicChannel } = require('../engines/referenceEngine.js');
 
@@ -5,7 +6,7 @@ const options = [
 	{ type: "String", name: "topic-name", description: "The new topic", required: true, choices: [] },
 ];
 const subcomands = [];
-module.exports = new Command("topic-add", "Set up a topic", false, "moderator", 3000, options, subcomands);
+module.exports = new Command("topic-add", "Set up a topic", false, PermissionFlagsBits.ManageChannels, 3000, options, subcomands);
 
 /** Creates a new text channel and add it to list of topic channels (to prevent duplicate petitions)
  * @param {import('discord.js').Interaction} interaction

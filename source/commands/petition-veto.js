@@ -1,3 +1,4 @@
+const { PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { getPetitions, setPetitions } = require('../engines/referenceEngine.js');
 
@@ -5,7 +6,7 @@ const options = [
 	{ type: "String", name: "topic", description: "The petition to close", required: true, choices: [] },
 ];
 const subcomands = [];
-module.exports = new Command("petition-veto", "Veto a petition", true, "moderator", 3000, options, subcomands);
+module.exports = new Command("petition-veto", "Veto a petition", true, PermissionFlagsBits.ManageChannels, 3000, options, subcomands);
 
 /** Remove the given petition from the petition list
  * @param {import('discord.js').Interaction} interaction

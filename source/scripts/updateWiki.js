@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { commandSets } = require('../commands/_commandDictionary.js');
 const Command = require('../classes/Command.js');
-const { SlashCommandSubcommandBuilder } = require('discord.js');
+const { SlashCommandSubcommandBuilder, PermissionsBitField } = require('discord.js');
 
 let text = "";
 
@@ -10,7 +10,7 @@ commandSets.forEach(commandSet => {
 	commandSet.fileNames.forEach(filename => {
 		/** @type {Command} */
 		const command = require(`./../commands/${filename}`);
-		text += `### /${command.customId}\n> Cooldown: ${command.cooldown / 1000} second(s)\n\n${command.data.description}\n`;
+		text += `### /${command.customId}\n${command.data.default_member_permissions ? `> Permission Level: ${new PermissionsBitField(command.data.default_member_permissions).toArray().join(", ")}\n` : ""}\n> Usable in DMs: ${command.data.dm_permission}\n\n> Cooldown: ${command.cooldown / 1000} second(s)\n\n${command.data.description}\n`;
 		for (const optionData of command.data.options) {
 			let optionName = "#### ";
 			if (optionData instanceof SlashCommandSubcommandBuilder) {

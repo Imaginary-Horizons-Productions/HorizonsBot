@@ -1,10 +1,11 @@
+const { PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { sendClubReminder } = require('../engines/clubEngine.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const options = [];
 const subcommands = [];
-module.exports = new Command("club-send-reminder", "Re-post the reminder message for the club's next meeting", false, "moderator/club host", 3000, options, subcommands);
+module.exports = new Command("club-send-reminder", "Re-post the reminder message for the club's next meeting", false, PermissionFlagsBits.ManageChannels, 3000, options, subcommands);
 
 /** Re-post the reminder message for the club's next meeting
  * @param {import('discord.js').Interaction} interaction

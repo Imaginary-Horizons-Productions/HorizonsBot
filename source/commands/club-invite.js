@@ -1,4 +1,4 @@
-const { ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js');
+const { ButtonBuilder, ActionRowBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { SAFE_DELIMITER } = require('../constants.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
@@ -10,7 +10,7 @@ const options = [
 	{ type: "User", name: "invitee", description: "The user's mention", required: false, choices: [] }
 ];
 const subcommands = [];
-module.exports = new Command("club-invite", "Send a user (default: self) an invite to a club", true, "none", 3000, options, subcommands);
+module.exports = new Command("club-invite", "Send a user (default: self) an invite to a club", true, PermissionFlagsBits.ViewChannel, 3000, options, subcommands);
 
 /** Provide full details on the given club
  * @param {import('discord.js').Interaction} interaction

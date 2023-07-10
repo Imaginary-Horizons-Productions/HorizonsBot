@@ -1,4 +1,4 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags, PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { SAFE_DELIMITER } = require('../constants.js');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
@@ -6,7 +6,7 @@ const { getClubDictionary, updateClub, updateList } = require('../engines/refere
 const id = "club-leave";
 const options = [];
 const subcomands = [];
-module.exports = new Command(id, "Leave this club", false, "none", 3000, options, subcomands);
+module.exports = new Command(id, "Leave this club", false, PermissionFlagsBits.ViewChannel, 3000, options, subcomands);
 
 /** Do cleanup associated with user leaving a club or topic
  * @param {import('discord.js').Interaction} interaction

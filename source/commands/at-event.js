@@ -1,3 +1,4 @@
+const { PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 
 const options = [
@@ -5,7 +6,7 @@ const options = [
 	{ type: "String", name: "message", description: "The text of the notification", required: true, choices: [] }
 ];
 const subcomands = [];
-module.exports = new Command("at-event", "Send a ping to users interested in an event", false, "none", 300000, options, subcomands);
+module.exports = new Command("at-event", "Send a ping to users interested in an event", false, PermissionFlagsBits.ViewChannel, 300000, options, subcomands);
 
 /** Send a rate-limited ping to users interested in an event
  * @param {import('discord.js').Interaction} interaction

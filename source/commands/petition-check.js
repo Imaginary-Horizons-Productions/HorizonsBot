@@ -1,3 +1,4 @@
+const { PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { checkPetition } = require('../engines/referenceEngine.js');
 
@@ -5,7 +6,7 @@ const options = [
 	{ type: "String", name: "topic", description: "The petition to check", required: true, choices: [] },
 ];
 const subcomands = [];
-module.exports = new Command("petition-check", "Check how many more petitions a topic needs", false, "none", 3000, options, subcomands);
+module.exports = new Command("petition-check", "Check how many more petitions a topic needs", false, null, 3000, options, subcomands);
 
 /** Check if the given petition has enough support to make into a channel
  * @param {import('discord.js').Interaction} interaction
