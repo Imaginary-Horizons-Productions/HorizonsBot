@@ -1,4 +1,6 @@
 # HorizonsBot Change Log
+#### HorizonsBot Version 2.3.0:
+- Made the type argument of `/at-channel` required
 #### HorizonsBot Version 2.2.1:
 - Fixed mention in `/at-channel` being null when argument is omitted
 #### HorizonsBot Version 2.2.0:
