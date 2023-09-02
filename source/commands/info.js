@@ -17,11 +17,6 @@ const subcommands = [
 		optionsInput: []
 	},
 	{
-		name: "horizonsbot-data-policy",
-		description: "See what data HorizonsBot collects and what it does with it",
-		optionsInput: []
-	},
-	{
 		name: "roles-rundown",
 		description: "See what the roles on the server mean and how to get them",
 		optionsInput: []
@@ -62,30 +57,6 @@ module.exports.execute = (interaction) => {
 			break;
 		case "server-rules":
 			embed = rulesEmbedBuilder();
-			break;
-		case "horizonsbot-data-policy":
-			embed.setColor(7045611)
-				.setAuthor({
-					"name": "Click here to visit HorizonsBot's GitHub",
-					"iconURL": imaginaryHorizonsIconURL,
-					"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
-				})
-				.setTitle("Imaginary Horizons Data Policy")
-				.setThumbnail("https://cdn.discordapp.com/attachments/545684759276421120/782019073562378298/shaking-hands.png")
-				.setDescription("If you leave Imaginary Horizons, your data will be deleted.")
-				.addFields({
-					"name": "Data Collected",
-					"value": "HorizonsBot stores user submitted petitions, and club details."
-				},
-					{
-						"name": "Data Usage",
-						"value": "Imaginary Horizons does not use any user data at this time."
-					}
-				)
-				.setFooter({
-					"text": "Updated: HorizonsBot version 2.2.0",
-					"iconURL": imaginaryHorizonsIconURL
-				})
 			break;
 		case "roles-rundown":
 			embed.setColor(7045611)

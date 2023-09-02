@@ -13,6 +13,7 @@ exports.commandFiles = [
 	"club-send-reminder.js",
 	"club-sunset.js",
 	"commands.js",
+	"data-policy.js",
 	"info.js",
 	"list.js",
 	"manage-mods.js",
