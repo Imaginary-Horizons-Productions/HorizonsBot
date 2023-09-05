@@ -39,9 +39,11 @@ module.exports = new Button(customId, 3000,
 					permissionOverwrites.create(interaction.user, {
 						[PermissionsBitField.Flags.ViewChannel]: true
 					}).then(() => {
-						guild.channels.resolve(club.voiceChannelId).permissionOverwrites.create(interaction.user, {
-							[PermissionsBitField.Flags.ViewChannel]: true
-						})
+						if (club.voiceType === "private") {
+							guild.channels.resolve(club.voiceChannelId).permissionOverwrites.create(interaction.user, {
+								[PermissionsBitField.Flags.ViewChannel]: true
+							})
+						}
 						clubChannel.send(`Welcome to ${channelName}, ${interaction.user}!`);
 					})
 					updateClubDetails(club, clubChannel);

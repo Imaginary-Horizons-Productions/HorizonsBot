@@ -1,11 +1,15 @@
-const { PermissionFlagsBits: { ViewChannel, ManageMessages, ManageChannels, ManageEvents }, ChannelType, MessageFlags, PermissionFlagsBits } = require('discord.js');
+const { PermissionFlagsBits: { ViewChannel, ManageMessages }, ChannelType, MessageFlags, PermissionFlagsBits } = require('discord.js');
 const Command = require('../classes/Command.js');
 const { Club } = require('../classes/Club.js');
 const { updateClub, updateList } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { modRoleId } = require('../engines/permissionEngine.js');
+const { voiceChannelOptions } = require('../constants.js');
 
-const options = [{ type: "User", name: "club-host", description: "The user's mention", required: true, choices: [] }]
+const options = [
+	{ type: "User", name: "club-host", description: "The user's mention", required: true, choices: [] },
+	{ type: "String", name: "voice-channel-type", description: "Stage channels are visible to everyone", required: true, choices: [{ name: "stage", value: "stage" }, { name: "private", value: "private" }] }
+];
 const subcommands = [];
 module.exports = new Command("club-add", "Set up a club (a text and voice channel)", false, PermissionFlagsBits.ManageChannels, 3000, options, subcommands);
 
@@ -13,9 +17,10 @@ module.exports = new Command("club-add", "Set up a club (a text and voice channe
  * @param {import('discord.js').Interaction} interaction
  */
 module.exports.execute = (interaction) => {
-	let host = interaction.options.getUser("club-host");
-	let channelManager = interaction.guild.channels;
-	let categoryId = interaction.channel.parentId;
+	const host = interaction.options.getUser("club-host");
+	const voiceType = interaction.options.getString("voice-channel-type");
+	const channelManager = interaction.guild.channels;
+	const categoryId = interaction.channel.parentId;
 
 	channelManager.create({
 		name: "new-club",
@@ -50,29 +55,9 @@ module.exports.execute = (interaction) => {
 		channelManager.create({
 			name: "New Club Voice",
 			parent: categoryId,
-			permissionOverwrites: [
-				{
-					id: channelManager.client.user,
-					allow: [ViewChannel]
-				},
-				{
-					id: modRoleId,
-					allow: [ViewChannel],
-					type: 0
-				},
-				{
-					id: interaction.guildId,
-					deny: [ViewChannel],
-					type: 0
-				},
-				{
-					id: host,
-					allow: [ViewChannel, ManageChannels, ManageEvents]
-				}
-			],
-			type: ChannelType.GuildVoice
+			...voiceChannelOptions[voiceType](interaction.guild, modRoleId, host)
 		}).then(voiceChannel => {
-			const club = new Club(textChannel.id, host.id, voiceChannel.id);
+			const club = new Club(textChannel.id, host.id, voiceChannel.id, voiceType);
 			textChannel.send({ content: `Welcome to your new club's text channel ${host}! As club host, you can pin and delete messages in this channel and configure various settings with \`/club-config\`.` });
 			textChannel.send({ content: "When invites are sent with \`/club-invite\`, the invitee will be shown the following embed:", embeds: [clubEmbedBuilder(club)], fetchReply: true, flags: MessageFlags.SuppressNotifications }).then(invitePreviewMessage => {
 				invitePreviewMessage.pin();

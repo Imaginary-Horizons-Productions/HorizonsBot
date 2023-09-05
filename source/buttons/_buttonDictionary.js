@@ -6,7 +6,8 @@ for (const file of [
 	"changeclubseats.js",
 	"delete.js",
 	"join.js",
-	"startevent.js"
+	"startevent.js",
+	"switchclubvoicetype.js"
 ]) {
 	const button = require(`./${file}`);
 	buttonDictionary[button.customId] = button;

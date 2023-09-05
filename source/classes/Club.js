@@ -3,10 +3,12 @@ module.exports.Club = class {
 	 * @param {string} idInput the club's text channel's id
 	 * @param {string} hostIdInput The host's Discord snowflake
 	 * @param {string} voiceChannelIdInput
+	 * @param {"stage" | "private"} voiceTypeInput
 	 */
-	constructor(idInput, hostIdInput, voiceChannelIdInput) {
+	constructor(idInput, hostIdInput, voiceChannelIdInput, voiceTypeInput) {
 		this.id = idInput;
 		this.voiceChannelId = voiceChannelIdInput;
+		this.voiceType = voiceTypeInput;
 		this.hostId = hostIdInput;
 	}
 	title = "new club";
