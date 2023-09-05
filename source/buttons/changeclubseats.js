@@ -1,16 +1,15 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const Button = require('../classes/Button.js');
-const { SAFE_DELIMITER } = require('../constants.js');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 
-const id = "changeclubseats";
-module.exports = new Button(id, 3000,
+const customId = "changeclubseats";
+module.exports = new Button(customId, 3000,
 	/** Set the max members and isRecruting for the club with provided id */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
-		const modal = new ModalBuilder().setCustomId(`${id}${SAFE_DELIMITER}${clubId}`)
+		const modal = new ModalBuilder().setCustomId(customId)
 			.setTitle("Club Membership Settings")
 			.addComponents(
 				new ActionRowBuilder().addComponents(
