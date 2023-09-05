@@ -1,11 +1,13 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const Button = require('../classes/Button.js');
 const { SAFE_DELIMITER } = require('../constants.js');
-const { getClubDictionary } = require('../engines/referenceEngine.js');
+const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
+const { clubEmbedBuilder } = require('../engines/messageEngine.js');
+const { updateClubDetails } = require('../engines/clubEngine.js');
 
 const id = "changeclubseats";
 module.exports = new Button(id, 3000,
-	/** Opens a modal to change the max seats and recruiting toggle of the club */
+	/** Set the max members and isRecruting for the club with provided id */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
 		const modal = new ModalBuilder().setCustomId(`${id}${SAFE_DELIMITER}${clubId}`)
@@ -21,4 +23,31 @@ module.exports = new Button(id, 3000,
 				),
 			);
 		interaction.showModal(modal);
+		interaction.awaitModalSubmit({ filter: interaction => interaction.customId === customId, time: timeConversion(5, "m", "ms") }).then(modalSubmission => {
+			const { fields } = modalSubmission;
+			const errors = {};
+
+			["seats"].forEach(simpleIntegerKey => {
+				if (fields.fields.has(simpleIntegerKey)) {
+					const unparsedValue = fields.getTextInputValue(simpleIntegerKey);
+					const value = parseInt(unparsedValue);
+					if (value) {
+						club[simpleIntegerKey] = value;
+					} else {
+						errors[simpleIntegerKey] = `Could not interpret ${unparsedValue} as integer`;
+					}
+				}
+			})
+			updateClubDetails(club, modalSubmission.channel);
+			updateList(modalSubmission.guild.channels, "club");
+			updateClub(club);
+
+			const payload = { embeds: [clubEmbedBuilder(club)] };
+			if (Object.keys(errors).length > 0) {
+				payload.content = Object.keys(errors).reduce((errorMessage, field) => {
+					return errorMessage + `${field} - ${errors[field]}`
+				}, "The following settings were not set because they encountered errors:\n")
+			}
+			modalSubmission.update(payload);
+		})
 	});

@@ -4,7 +4,6 @@ const fsa = require("fs/promises");
 
 const { getCommand, slashData } = require("./commands/_commandDictionary.js");
 const { getButton } = require("./buttons/_buttonDictionary.js");
-const { getModal } = require("./modalSubmissions/_modalSubmissionDictionary.js");
 const { getSelect } = require("./selects/_selectDictionary.js");
 const { scheduleClubReminderAndEvent, updateClubDetails } = require("./engines/clubEngine.js");
 const { versionEmbedBuilder, rulesEmbedBuilder, pressKitEmbedBuilder } = require("./engines/messageEngine.js");
@@ -158,7 +157,10 @@ function getInteractionCooldownTimestamp({ customId, cooldown }, userId) {
 }
 
 client.on(Events.InteractionCreate, interaction => {
-	if (interaction.isCommand()) {
+	if (interaction.isModalSubmit()) {
+		// Modal submissions to be handled in the interaction that shows them
+		return;
+	} else if (interaction.isCommand()) {
 		const command = getCommand(interaction.commandName);
 		if (command.permissionLevel === "moderator" && !isModerator(interaction.member)) {
 			interaction.reply(`\`/${interaction.commandName}\` is a moderator-only command.`);
@@ -184,8 +186,6 @@ client.on(Events.InteractionCreate, interaction => {
 			getter = getButton;
 		} else if (interaction.isAnySelectMenu()) {
 			getter = getSelect;
-		} else if (interaction.isModalSubmit()) {
-			getter = getModal;
 		}
 		const interactionWrapper = getter(mainId);
 		const cooldownTimestamp = getInteractionCooldownTimestamp(interactionWrapper, interaction.user.id);
