@@ -1,4 +1,6 @@
 # HorizonsBot Change Log
+#### HorizonsBot Version 2.3.0:
+- Clubs can now be "Staged" clubs, which have a stage channel instead of a private voice channel
 #### HorizonsBot Version 2.2.2:
 - Made the type argument of `/at-channel` required
 - `/club-invite` provides a more helpful feedback message and can accept multiple users to send info to

@@ -27,8 +27,10 @@ module.exports.execute = (interaction) => {
 			club.userIds = club.userIds.filter(id => id != userId);
 			interaction.channel.permissionOverwrites.delete(interaction.user, `/${id}`)
 				.catch(console.error);
-			interaction.guild.channels.resolve(club.voiceChannelId).permissionOverwrites.delete(interaction.user, `/${id}`)
-				.catch(console.error);
+			if (club.voiceType === "private") {
+				interaction.guild.channels.resolve(club.voiceChannelId).permissionOverwrites.delete(interaction.user, `/${id}`)
+					.catch(console.error);
+			}
 			updateList(interaction.guild.channels, "club");
 			updateClub(club);
 			interaction.reply({ content: `${interaction.user} has left this channel.`, flags: MessageFlags.SuppressNotifications })
