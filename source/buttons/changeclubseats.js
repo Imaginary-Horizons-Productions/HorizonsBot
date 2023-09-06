@@ -3,6 +3,7 @@ const Button = require('../classes/Button.js');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
+const { timeConversion } = require('../helpers.js');
 
 const customId = "changeclubseats";
 module.exports = new Button(customId, 3000,
