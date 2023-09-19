@@ -2,6 +2,7 @@
 #### HorizonsBot Version 2.3.0:
 - Clubs can now be "Staged" clubs, which have a stage channel instead of a private voice channel
 - Selecting multiple clubs to view the summary of (either from `/list` or the club list) only sends one message now
+- Split `/info` back into its previous commands (was practically only causing more UI navigation)
 #### HorizonsBot Version 2.2.2:
 - Made the type argument of `/at-channel` required
 - `/club-invite` provides a more helpful feedback message and can accept multiple users to send info to
