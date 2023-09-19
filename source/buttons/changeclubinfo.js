@@ -1,14 +1,16 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const Button = require('../classes/Button.js');
-const { SAFE_DELIMITER } = require('../constants.js');
-const { getClubDictionary } = require('../engines/referenceEngine.js');
+const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
+const { timeConversion } = require('../helpers.js');
+const { updateClubDetails } = require('../engines/clubEngine.js');
+const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 
-const id = "changeclubinfo";
-module.exports = new Button(id, 3000,
-	/** Opens a modal to change the name, description, game, imageURL, or color of the club */
+const customId = "changeclubinfo";
+module.exports = new Button(customId, 3000,
+	/** Set the name, description, game, image and/or color for the club with provided id */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
-		const modal = new ModalBuilder().setCustomId(`${id}${SAFE_DELIMITER}${clubId}`)
+		const modal = new ModalBuilder().setCustomId(customId)
 			.setTitle("Set Club Info")
 			.addComponents(
 				new ActionRowBuilder().addComponents(
@@ -56,4 +58,52 @@ module.exports = new Button(id, 3000,
 				)
 			);
 		interaction.showModal(modal);
+		interaction.awaitModalSubmit({ filter: interaction => interaction.customId === customId, time: timeConversion(5, "m", "ms") }).then(async modalSubmission => {
+			const { fields } = modalSubmission;
+			const errors = {};
+
+			if (fields.fields.has("title") || fields.fields.has("description")) {
+				const textChannel = await modalSubmission.guild.channels.fetch(club.id);
+
+				const titleInput = fields.getTextInputValue("title");
+				if (club.title !== titleInput) {
+					club.title = titleInput;
+					textChannel.setName(titleInput);
+					const voiceChannel = await modalSubmission.guild.channels.fetch(club.voiceChannelId);
+					voiceChannel.setName(titleInput + " Voice");
+				}
+				const descriptionInput = fields.getTextInputValue("description");
+				if (club.description !== descriptionInput) {
+					club.description = descriptionInput;
+					textChannel.setTopic(descriptionInput);
+				}
+			}
+			if (fields.fields.has("imageURL")) {
+				const unvalidatedURL = fields.getTextInputValue("imageURL");
+				try {
+					new URL(unvalidatedURL);
+					club.imageURL = unvalidatedURL;
+				} catch (error) {
+					errors.imageURL = error.message;
+				}
+			}
+
+			["system", "color"].forEach(simpleStringKey => {
+				if (fields.fields.has(simpleStringKey)) {
+					const value = fields.getTextInputValue(simpleStringKey);
+					club[simpleStringKey] = value;
+				}
+			});
+			updateClubDetails(club, modalSubmission.channel);
+			updateList(modalSubmission.guild.channels, "club");
+			updateClub(club);
+
+			const payload = { embeds: [clubEmbedBuilder(club)] };
+			if (Object.keys(errors).length > 0) {
+				payload.content = Object.keys(errors).reduce((errorMessage, field) => {
+					return errorMessage + `${field} - ${errors[field]}`
+				}, "The following settings were not set because they encountered errors:\n")
+			}
+			modalSubmission.update(payload);
+		})
 	});

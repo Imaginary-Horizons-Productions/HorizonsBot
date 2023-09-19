@@ -24,7 +24,10 @@ module.exports.execute = (interaction) => {
 				.setStyle(ButtonStyle.Primary),
 			new ButtonBuilder().setCustomId(`changeclubmeeting${SAFE_DELIMITER}${club.id}`)
 				.setLabel("Set Meeting Time")
-				.setStyle(ButtonStyle.Primary)
+				.setStyle(ButtonStyle.Primary),
+			new ButtonBuilder().setCustomId("switchclubvoicetype")
+				.setLabel(`Switch Voice Channel Type to ${club.voiceType === "private" ? "Stage" : "Private"}`)
+				.setStyle(ButtonStyle.Secondary)
 		)],
 		ephemeral: true
 	});

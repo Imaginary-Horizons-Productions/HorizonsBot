@@ -10,21 +10,19 @@ module.exports = new Button(customId, 3000,
 	 * @param {ButtonInteraction} interaction
 	 */
 	(interaction, [channelId]) => {
+		clearComponents(interaction.message);
 		const club = getClubDictionary()[channelId];
 		if (!club) {
-			clearComponents(interaction.message);
 			interaction.reply("This club doesn't seem to exist.");
 			return;
 		}
 
 		if (club.hostId === interaction.user.id || club.userIds.includes(interaction.user.id)) {
-			clearComponents(interaction.message);
 			interaction.reply(`You are already in ${club.title}.`);
 			return;
 		}
 
 		if (club.seats !== -1 && !club.isRecruiting()) {
-			clearComponents(interaction.message);
 			interaction.reply(`${club.title} is already full.`);
 			return;
 		}
@@ -39,14 +37,15 @@ module.exports = new Button(customId, 3000,
 					permissionOverwrites.create(interaction.user, {
 						[PermissionsBitField.Flags.ViewChannel]: true
 					}).then(() => {
-						guild.channels.resolve(club.voiceChannelId).permissionOverwrites.create(interaction.user, {
-							[PermissionsBitField.Flags.ViewChannel]: true
-						})
+						if (club.voiceType === "private") {
+							guild.channels.resolve(club.voiceChannelId).permissionOverwrites.create(interaction.user, {
+								[PermissionsBitField.Flags.ViewChannel]: true
+							})
+						}
 						clubChannel.send(`Welcome to ${channelName}, ${interaction.user}!`);
 					})
 					updateClubDetails(club, clubChannel);
 					updateList(guild.channels, "club");
-					clearComponents(interaction.message);
 					interaction.reply(`You have joined ${clubChannel}!`);
 				} else {
 					interaction.reply(`You are currently banned from ${channelName}. Speak to a Moderator if you believe this is in error.`);

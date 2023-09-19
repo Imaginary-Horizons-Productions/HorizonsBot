@@ -214,7 +214,8 @@ exports.buildListMessagePayload = function (memberCount, listType) {
 	}
 
 	if (selectMenu.options.length > 0) {
-		selectMenu.setMaxValues(selectMenu.options.length);
+		// Max 10 because club summaries are shown as embeds and only 10 embeds fit in a single message
+		selectMenu.setMaxValues(Math.min(selectMenu.options.length, 10));
 	} else {
 		selectMenu.setDisabled(true)
 			.addOptions([{
