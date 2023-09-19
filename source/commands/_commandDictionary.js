@@ -1,6 +1,7 @@
 const Command = require('../classes/Command.js');
 
 exports.commandFiles = [
+	"about.js",
 	"at-channel.js",
 	"at-event.js",
 	"at-permission.js",
@@ -14,14 +15,16 @@ exports.commandFiles = [
 	"club-sunset.js",
 	"commands.js",
 	"data-policy.js",
-	"info.js",
 	"list.js",
 	"manage-mods.js",
 	"petition-check.js",
 	"petition-veto.js",
 	"petition.js",
 	"post-reference.js",
+	"press-kit.js",
+	"roles-rundown.js",
 	"roll.js",
+	"server-rules.js",
 	"timestamp.js",
 	"topic-add.js",
 	"version.js"
