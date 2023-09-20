@@ -1,11 +1,11 @@
 const { PermissionsBitField } = require('discord.js');
-const Select = require('../classes/Select.js');
+const { SelectWrapper } = require('../classes');
 const { guildId } = require('../constants.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 const { updateList, getClubDictionary } = require('../engines/referenceEngine.js');
 
-const customId = "joinclubs";
-module.exports = new Select(customId, 3000,
+const mainId = "joinclubs";
+module.exports = new SelectWrapper(mainId, 3000,
 	/** Join the selected clubs */
 	(interaction, args) => {
 		const errors = [];

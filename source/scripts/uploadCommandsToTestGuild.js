@@ -5,8 +5,8 @@ const { commandFiles } = require('../commands/_commandDictionary');
 const commands = [];
 for (const file of commandFiles) {
 	const command = require(`../commands/${file}`);
-	if (command.data) {
-		commands.push(command.data.toJSON());
+	if (command.builder) {
+		commands.push(command.builder.toJSON());
 	}
 }
 

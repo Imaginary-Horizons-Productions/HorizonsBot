@@ -1,4 +1,4 @@
-const Command = require('../classes/Command.js');
+const { CommandWrapper } = require('../classes');
 
 exports.commandFiles = [
 	"about.js",
@@ -29,19 +29,18 @@ exports.commandFiles = [
 	"topic-add.js",
 	"version.js"
 ];
+/** @type {Record<string, CommandWrapper>} */
 const commandDictionary = {};
 exports.slashData = [];
 
 for (const file of exports.commandFiles) {
+	/** @type {CommandWrapper} */
 	const command = require(`./${file}`);
-	commandDictionary[command.customId] = command;
-	exports.slashData.push(command.data.toJSON());
+	commandDictionary[command.mainId] = command;
+	exports.slashData.push(command.builder.toJSON());
 }
 
-/**
- * @param {string} commandName
- * @returns {Command}
- */
-exports.getCommand = function (commandName) {
-	return commandDictionary[commandName];
+/** @param {string} mainId */
+exports.getCommand = function (mainId) {
+	return commandDictionary[mainId];
 }

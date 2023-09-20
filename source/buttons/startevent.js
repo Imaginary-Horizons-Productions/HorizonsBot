@@ -1,10 +1,10 @@
 const { GuildScheduledEventStatus, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const Button = require('../classes/Button.js');
+const { ButtonWrapper } = require('../classes');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 const { isModerator } = require("../engines/permissionEngine.js");
 
-const id = "startevent";
-module.exports = new Button(id, 3000,
+const mainId = "startevent";
+module.exports = new ButtonWrapper(mainId, 3000,
 	/** Start a club's event */
 	(interaction, [eventId]) => {
 		const { hostId } = getClubDictionary()[interaction.message.channel.id];

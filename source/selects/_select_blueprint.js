@@ -1,9 +1,11 @@
-const Select = require('../classes/Select.js');
+const { SelectWrapper } = require('../classes');
+const { SAFE_DELIMITER } = require('../constants');
 
-const customId = "";
-module.exports = new Select(customId, 3000,
+const mainId = "";
+module.exports = new SelectWrapper(mainId, 3000,
 	/** Specs */
 	(interaction, args) => {
+		const customId = [mainId, ...args].join(SAFE_DELIMITER);
 
 	}
 );

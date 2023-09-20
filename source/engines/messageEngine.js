@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { EmbedBuilder, Colors } = require("discord.js");
 const { imaginaryHorizonsIconURL, discordIconURL } = require('../constants');
+const { Club } = require('../classes');
 
 /** Create a Message Embed with common settings (author, timestamp, color)
  * @param {string} color

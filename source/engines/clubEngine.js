@@ -1,5 +1,5 @@
 const { Guild, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildScheduledEventEntityType } = require("discord.js");
-const { Club } = require("../classes/Club.js");
+const { Club } = require("../classes");
 const { timeConversion } = require("../helpers.js");
 const { getClubDictionary, updateClub, updateList } = require("./referenceEngine.js");
 const { clubEmbedBuilder } = require("./messageEngine.js");

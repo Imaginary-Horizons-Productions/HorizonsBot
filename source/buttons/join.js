@@ -1,14 +1,12 @@
-const { ButtonInteraction, PermissionsBitField } = require('discord.js');
-const Button = require('../classes/Button.js');
+const { PermissionsBitField } = require('discord.js');
+const { ButtonWrapper } = require('../classes');
 const { guildId } = require('../constants.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 const { updateList, getClubDictionary } = require('../engines/referenceEngine.js');
 
-const customId = "join";
-module.exports = new Button(customId, 3000,
-	/** Join the club specified in args
-	 * @param {ButtonInteraction} interaction
-	 */
+const mainId = "join";
+module.exports = new ButtonWrapper(mainId, 3000,
+	/** Join the club specified in args */
 	(interaction, [channelId]) => {
 		clearComponents(interaction.message);
 		const club = getClubDictionary()[channelId];

@@ -1,5 +1,5 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
-const Button = require('../classes/Button.js');
+const { ButtonWrapper } = require('../classes');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 const { updateClubDetails, cancelClubEvent, createClubEvent, scheduleClubReminderAndEvent, clearClubReminder } = require('../engines/clubEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
@@ -7,12 +7,12 @@ const { timeConversion } = require('../helpers.js');
 
 const YEAR_IN_MS = 31556926000;
 
-const customId = "changeclubmeeting";
-module.exports = new Button(customId, 3000,
+const mainId = "changeclubmeeting";
+module.exports = new ButtonWrapper(mainId, 3000,
 	/** Set the meeting time/repetition properties for the club with provided id */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
-		const modal = new ModalBuilder().setCustomId(customId)
+		const modal = new ModalBuilder().setCustomId(mainId)
 			.setTitle("Club Meeting Time Settings")
 			.addComponents(
 				new ActionRowBuilder().addComponents(
@@ -52,7 +52,7 @@ module.exports = new Button(customId, 3000,
 				)
 			);
 		interaction.showModal(modal);
-		interaction.awaitModalSubmit({ filter: interaction => interaction.customId === customId, time: timeConversion(5, "m", "ms") }).then(interaction => {
+		interaction.awaitModalSubmit({ filter: interaction => interaction.customId === mainId, time: timeConversion(5, "m", "ms") }).then(interaction => {
 			const { fields } = interaction;
 			const errors = {};
 
