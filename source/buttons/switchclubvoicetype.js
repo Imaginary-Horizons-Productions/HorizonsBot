@@ -1,10 +1,10 @@
-const Button = require('../classes/Button.js');
+const { ButtonWrapper } = require('../classes');
 const { voiceChannelOptions } = require('../constants.js');
 const { modRoleId } = require('../engines/permissionEngine.js');
 const { getClubDictionary, updateClub } = require('../engines/referenceEngine.js');
 
-const customId = "switchclubvoicetype";
-module.exports = new Button(customId, 3000,
+const mainId = "switchclubvoicetype";
+module.exports = new ButtonWrapper(mainId, 3000,
 	/** Toggle between stage and private voice channels for a club */
 	(interaction, args) => {
 		const club = getClubDictionary()[interaction.channel.id];

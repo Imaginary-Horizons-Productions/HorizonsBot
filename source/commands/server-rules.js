@@ -1,14 +1,12 @@
-const Command = require('../classes/Command.js');
+const { CommandWrapper } = require('../classes');
 const { rulesEmbedBuilder } = require('../engines/messageEngine.js');
 
-const customId = "server-rules";
+const mainId = "server-rules";
 const options = [];
 const subcommands = [];
-module.exports = new Command(customId, "Get the server rules", false, null, 3000, options, subcommands);
-
-/** Get the server rules
- * @param {import('discord.js').Interaction} interaction
- */
-module.exports.execute = (interaction) => {
-	interaction.reply({ embeds: [rulesEmbedBuilder()], ephemeral: true });
-}
+module.exports = new CommandWrapper(mainId, "Get the server rules", null, false, 3000, options, subcommands,
+	/** Get the server rules */
+	(interaction) => {
+		interaction.reply({ embeds: [rulesEmbedBuilder()], ephemeral: true });
+	}
+);

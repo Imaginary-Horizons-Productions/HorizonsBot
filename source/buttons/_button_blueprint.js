@@ -1,9 +1,11 @@
-const Button = require('../classes/Button.js');
+const { ButtonWrapper } = require('../classes');
+const { SAFE_DELIMITER } = require('../constants');
 
-const customId = "";
-module.exports = new Button(customId, 3000,
+const mainId = "";
+module.exports = new ButtonWrapper(mainId, 3000,
 	/** Specs */
 	(interaction, args) => {
+		const customId = [mainId, ...args].join(SAFE_DELIMITER);
 
 	}
 );

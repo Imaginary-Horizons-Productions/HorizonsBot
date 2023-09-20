@@ -1,6 +1,6 @@
-const Command = require('../classes/Command.js');
+const { CommandWrapper } = require('../classes');
 
-const customId = "name";
+const mainId = "name";
 const options = [
 	{
 		type: "",
@@ -25,11 +25,9 @@ const subcommands = [
 		]
 	}
 ];
-module.exports = new Command(customId, "description", false, null, 3000, options, subcommands);
+module.exports = new CommandWrapper(mainId, "description", null, false, 3000, options, subcommands,
+	/** Command specifications go here */
+	(interaction) => {
 
-/** Command specifications go here
- * @param {import('discord.js').Interaction} interaction
- */
-module.exports.execute = (interaction) => {
-
-}
+	}
+);

@@ -1,9 +1,10 @@
 const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
-const Select = require('../classes/Select.js');
+const { SelectWrapper } = require('../classes');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 
-module.exports = new Select("clubList", 3000,
+const mainId = "clubList";
+module.exports = new SelectWrapper(mainId, 3000,
 	/** Provide club details embed to the user for the selected clubs */
 	(interaction, args) => {
 		const clubs = getClubDictionary();

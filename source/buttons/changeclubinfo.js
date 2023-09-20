@@ -1,16 +1,16 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
-const Button = require('../classes/Button.js');
+const { ButtonWrapper } = require('../classes');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 const { timeConversion } = require('../helpers.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 
-const customId = "changeclubinfo";
-module.exports = new Button(customId, 3000,
+const mainId = "changeclubinfo";
+module.exports = new ButtonWrapper(mainId, 3000,
 	/** Set the name, description, game, image and/or color for the club with provided id */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
-		const modal = new ModalBuilder().setCustomId(customId)
+		const modal = new ModalBuilder().setCustomId(mainId)
 			.setTitle("Set Club Info")
 			.addComponents(
 				new ActionRowBuilder().addComponents(
@@ -58,7 +58,7 @@ module.exports = new Button(customId, 3000,
 				)
 			);
 		interaction.showModal(modal);
-		interaction.awaitModalSubmit({ filter: interaction => interaction.customId === customId, time: timeConversion(5, "m", "ms") }).then(async modalSubmission => {
+		interaction.awaitModalSubmit({ filter: interaction => interaction.customId === mainId, time: timeConversion(5, "m", "ms") }).then(async modalSubmission => {
 			const { fields } = modalSubmission;
 			const errors = {};
 
@@ -106,4 +106,5 @@ module.exports = new Button(customId, 3000,
 			}
 			modalSubmission.update(payload);
 		})
-	});
+	}
+);
