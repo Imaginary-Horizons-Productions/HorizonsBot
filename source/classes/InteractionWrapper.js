@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
+const { Interaction, ButtonInteraction, SlashCommandBuilder, PermissionFlagsBits, CommandInteraction, AnySelectMenuInteraction } = require("discord.js");
 const { MAX_SET_TIMEOUT } = require("../constants");
 const { BuildError } = require("./BuildError.js");
 
@@ -6,7 +6,7 @@ class InteractionWrapper {
 	/** base wrapper class for interaction responses
 	 * @param {string} mainIdInput
 	 * @param {number} cooldownInMS
-	 * @param {(interaction: import("discord.js").Interaction, args: string[]) => void} executeFunction
+	 * @param {(interaction: Interaction, args: string[]) => void} executeFunction
 	*/
 	constructor(mainIdInput, cooldownInMS, executeFunction) {
 		if (cooldownInMS > MAX_SET_TIMEOUT) {
@@ -22,10 +22,37 @@ class ButtonWrapper extends InteractionWrapper {
 	/** IHP wrapper for Button interaction responses
 	 * @param {string} mainIdInput
 	 * @param {number} cooldownInMS
-	 * @param {(interaction: import("discord.js").ButtonInteraction, args: string[]) => void} executeFunction
+	 * @param {(interaction: ButtonInteraction, args: string[]) => void} executeFunction
 	 */
 	constructor(mainIdInput, cooldownInMS, executeFunction) {
 		super(mainIdInput, cooldownInMS, executeFunction);
+	}
+
+	/** returns Unix Timestamp when cooldown will expire or null in case of expired or missing cooldown
+	 * @param {string} userId
+	 * @param {Map<string, Map<string, number>} cooldownMap
+	 */
+	getCooldownTimestamp(userId, cooldownMap) {
+		const now = Date.now();
+
+		if (!cooldownMap.has(this.mainId)) {
+			cooldownMap.set(this.mainId, new Map());
+		}
+
+		const timestamps = cooldownMap.get(this.mainId);
+		if (timestamps.has(userId)) {
+			const expirationTime = timestamps.get(userId) + this.cooldown;
+
+			if (now < expirationTime) {
+				return Math.round(expirationTime / 1000);
+			} else {
+				timestamps.delete(userId);
+			}
+		} else {
+			timestamps.set(userId, now);
+			setTimeout(() => timestamps.delete(userId), this.cooldown);
+		}
+		return null;
 	}
 };
 
@@ -33,12 +60,12 @@ class CommandWrapper extends InteractionWrapper {
 	/** Additional wrapper properties for command parsing
 	 * @param {string} mainIdInput
 	 * @param {string} descriptionInput
-	 * @param {import("discord.js").PermissionFlags | null} defaultMemberPermission
+	 * @param {PermissionFlagsBits | null} defaultMemberPermission
 	 * @param {boolean} allowInDMsInput
 	 * @param {number} cooldownInMS
 	 * @param {{type: "Attachment" | "Boolean" | "Channel" | "Integer" | "Mentionable" | "Number" | "Role" | "String" | "User", name: string, description: string, required: boolean, autocomplete?: {name: string, value: string}[], choices?: { name: string, value }[]}[]} optionsInput
 	 * @param {{name: string, description: string, optionsInput?: {type: "Attachment" | "Boolean" | "Channel" | "Integer" | "Mentionable" | "Number" | "Role" | "String" | "User", name: string, description: string, required: boolean, autocomplete?: {name: string, value: string}[], choices?: { name: string, value }[]}}[]} subcommandsInput
-	 * @param {(interaction: import("discord.js").CommandInteraction) => void} executeFunction
+	 * @param {(interaction: CommandInteraction) => void} executeFunction
 	 */
 	constructor(mainIdInput, descriptionInput, defaultMemberPermission, allowInDMsInput, cooldownInMS, optionsInput, subcommandsInput, executeFunction) {
 		super(mainIdInput, cooldownInMS, executeFunction);
@@ -95,7 +122,7 @@ class SelectWrapper extends InteractionWrapper {
 	/** IHP wrapper for Select interaction responses
 	 * @param {string} mainIdInput
 	 * @param {number} cooldownInMS
-	 * @param {(interaction: import("discord.js").AnySelectMenuInteraction, args: string[]) => void} executeFunction
+	 * @param {(interaction: AnySelectMenuInteraction, args: string[]) => void} executeFunction
 	 */
 	constructor(mainIdInput, cooldownInMS, executeFunction) {
 		super(mainIdInput, cooldownInMS, executeFunction);
