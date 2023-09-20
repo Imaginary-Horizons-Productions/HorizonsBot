@@ -1,3 +1,10 @@
+### /about
+
+> Usable in DMs: false
+
+> Cooldown: 3 second(s)
+
+Get the HorizonsBot credits
 ### /at-channel
 > Permission Level: ViewChannel
 
@@ -6,12 +13,12 @@
 > Cooldown: 300 second(s)
 
 Send a ping to the current channel
-#### message
-The text of the notification
-#### type (optional)
+#### type
 > Choices: `Only online users in this channel`, `All users in this channel`
 
 Who to notify
+#### message
+The text of the notification
 ### /at-event
 > Permission Level: ViewChannel
 
@@ -27,14 +34,14 @@ The text of the notification
 ### /at-permission
 > Permission Level: ManageRoles
 
-> Usable in DMs: true
+> Usable in DMs: false
 
 > Cooldown: 3 second(s)
 
 Disallow/Re-allow a user to use /at-channel
-#### /at-permission disallow
+#### /undefined disallow
 (moderator) Prevent a user from using /at-channel
-#### /at-permission allow
+#### /undefined allow
 (moderator) Re-allow a user to use /at-channel
 ### /club-add
 > Permission Level: ManageChannels
@@ -46,8 +53,12 @@ Disallow/Re-allow a user to use /at-channel
 Set up a club (a text and voice channel)
 #### club-host
 The user's mention
+#### voice-channel-type
+> Choices: `stage`, `private`
+
+Stage channels are visible to everyone
 ### /club-config
-> Permission Level: ManageChannels
+> Permission Level: ManageMessages
 
 > Usable in DMs: false
 
@@ -55,7 +66,6 @@ The user's mention
 
 Change the configuration of the current club
 ### /club-invite
-> Permission Level: ViewChannel
 
 > Usable in DMs: true
 
@@ -64,10 +74,10 @@ Change the configuration of the current club
 Send a user (default: self) an invite to a club
 #### club-id (optional)
 The club text channel's id
-#### invitee (optional)
-The user's mention
+#### invitees (optional)
+The mention(s) of the user(s)
 ### /club-kick
-> Permission Level: ManageChannels
+> Permission Level: ManageMessages
 
 > Usable in DMs: false
 
@@ -79,7 +89,6 @@ The user's mention
 #### ban (optional)
 Prevent the user from rejoining?
 ### /club-leave
-> Permission Level: ViewChannel
 
 > Usable in DMs: false
 
@@ -87,7 +96,7 @@ Prevent the user from rejoining?
 
 Leave this club
 ### /club-update-host
-> Permission Level: ManageChannels
+> Permission Level: ManageMessages
 
 > Usable in DMs: false
 
@@ -97,7 +106,7 @@ Promote another user to club host
 #### user
 The user's mention
 ### /club-send-reminder
-> Permission Level: ManageChannels
+> Permission Level: ManageMessages
 
 > Usable in DMs: false
 
@@ -105,7 +114,7 @@ The user's mention
 
 Re-post the reminder message for the club's next meeting
 ### /club-sunset
-> Permission Level: ManageChannels
+> Permission Level: ManageMessages
 
 > Usable in DMs: false
 
@@ -121,23 +130,13 @@ Number of hours to delay deleting the club
 > Cooldown: 3 second(s)
 
 Get a link to HorizonsBot's commands page
-### /info
+### /data-policy
 
-> Usable in DMs: false
+> Usable in DMs: true
 
 > Cooldown: 3 second(s)
 
-Get info about the server or HorizonsBot
-#### /info horizonsbot-credits
-Get the HorizonsBot credits
-#### /info server-rules
-Get the server rules
-#### /info horizonsbot-data-policy
-See what data HorizonsBot collects and what it does with it
-#### /info roles-rundown
-See what the roles on the server mean and how to get them
-#### /info press-kit
-Get info on Imaginary Horizons as a brand
+Get a link to the HorizonsBot's Data Policy page
 ### /list
 
 > Usable in DMs: true
@@ -157,9 +156,9 @@ The list to get
 > Cooldown: 3 second(s)
 
 Promote/demote a user to moderator
-#### /manage-mods promote
+#### /undefined promote
 (moderator) Add a user to the moderator list
-#### /manage-mods demote
+#### /undefined demote
 (moderator) Remove a user from the moderator list
 ### /petition-check
 
@@ -181,7 +180,6 @@ Veto a petition
 #### topic
 The petition to close
 ### /petition
-> Permission Level: ViewChannel
 
 > Usable in DMs: false
 
@@ -202,8 +200,22 @@ Post a reference message in this channel
 > Choices: `the petiton list`, `the club list`, `the rules embed`, `the press kit`
 
 which message to post
+### /press-kit
+
+> Usable in DMs: false
+
+> Cooldown: 3 second(s)
+
+Get info on Imaginary Horizons as a brand
+### /roles-rundown
+
+> Usable in DMs: false
+
+> Cooldown: 3 second(s)
+
+See what the roles on the server mean and how to get them
 ### /roll
-> Permission Level: ViewChannel
+> Permission Level: SendMessages
 
 > Usable in DMs: true
 
@@ -218,6 +230,13 @@ The dice to roll in #d# format
 Choose output display option
 #### label (optional)
 Text after the roll
+### /server-rules
+
+> Usable in DMs: false
+
+> Cooldown: 3 second(s)
+
+Get the server rules
 ### /timestamp
 
 > Usable in DMs: true

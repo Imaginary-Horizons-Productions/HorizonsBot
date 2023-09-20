@@ -8,7 +8,7 @@ const options = [
 	{ type: "String", name: "message", description: "The text of the notification", required: true, choices: [] }
 ];
 const subcomands = [];
-module.exports = new CommandWrapper(mainId, "Send a ping to the current channel", PermissionFlagsBits.ViewChannel, false, 300000, options, subcomands,
+module.exports = new CommandWrapper(mainId, "Send a ping to the current channel", null, false, 300000, options, subcomands,
 	/** Send a rate-limited ping */
 	(interaction) => {
 		if (!noAts.includes(interaction.user.id)) {
