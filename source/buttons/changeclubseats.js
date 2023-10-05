@@ -49,6 +49,6 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				}, "The following settings were not set because they encountered errors:\n")
 			}
 			modalSubmission.update(payload);
-		})
+		}).catch(console.error);
 	}
 );
