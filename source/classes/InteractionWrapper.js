@@ -16,17 +16,6 @@ class InteractionWrapper {
 		this.cooldown = cooldownInMS;
 		this.execute = executeFunction;
 	}
-};
-
-class ButtonWrapper extends InteractionWrapper {
-	/** IHP wrapper for Button interaction responses
-	 * @param {string} mainIdInput
-	 * @param {number} cooldownInMS
-	 * @param {(interaction: ButtonInteraction, args: string[]) => void} executeFunction
-	 */
-	constructor(mainIdInput, cooldownInMS, executeFunction) {
-		super(mainIdInput, cooldownInMS, executeFunction);
-	}
 
 	/** returns Unix Timestamp when cooldown will expire or null in case of expired or missing cooldown
 	 * @param {string} userId
@@ -53,6 +42,17 @@ class ButtonWrapper extends InteractionWrapper {
 			setTimeout(() => timestamps.delete(userId), this.cooldown);
 		}
 		return null;
+	}
+};
+
+class ButtonWrapper extends InteractionWrapper {
+	/** IHP wrapper for Button interaction responses
+	 * @param {string} mainIdInput
+	 * @param {number} cooldownInMS
+	 * @param {(interaction: ButtonInteraction, args: string[]) => void} executeFunction
+	 */
+	constructor(mainIdInput, cooldownInMS, executeFunction) {
+		super(mainIdInput, cooldownInMS, executeFunction);
 	}
 };
 
