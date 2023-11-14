@@ -103,6 +103,8 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				payload.content = Object.keys(errors).reduce((errorMessage, field) => {
 					return errorMessage + `${field} - ${errors[field]}`
 				}, "The following settings were not set because they encountered errors:\n")
+			} else {
+				payload.content = "";
 			}
 			modalSubmission.update(payload);
 		}).catch(console.error);
