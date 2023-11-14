@@ -52,23 +52,25 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				)
 			);
 		interaction.showModal(modal);
-		interaction.awaitModalSubmit({ filter: interaction => interaction.customId === mainId, time: timeConversion(5, "m", "ms") }).then(interaction => {
-			const { fields } = interaction;
+		interaction.awaitModalSubmit({ filter: interaction => interaction.customId === mainId, time: timeConversion(5, "m", "ms") }).then(modalSubmission => {
+			const { fields } = modalSubmission;
 			const errors = {};
 
 			if (fields.fields.has("nextMeeting")) {
 				const unparsedValue = fields.getTextInputValue("nextMeeting");
-				const nextMeetingInput = parseInt(unparsedValue);
-				if (!nextMeetingInput) {
-					errors.nextMeeting = `The timestamp given for the next meeting (${unparsedValue}) could not be interpreted as an integer.`;
-				} else {
-					const now = Date.now();
-					if (now > nextMeetingInput * 1000) {
-						errors.nextMeeting = `The timestamp given for the next meeting (${nextMeetingInput}) is in the past.`;
-					} else if (nextMeetingInput * 1000 > now + (5 * YEAR_IN_MS)) {
-						errors.nextMeeting = "Discord does not allow the creation of events 5 years in the future. Please schedule your next meeting later.";
+				if (unparsedValue) {
+					const nextMeetingInput = parseInt(unparsedValue);
+					if (!nextMeetingInput) {
+						errors.nextMeeting = `The timestamp given for the next meeting (${unparsedValue}) could not be interpreted as an integer.`;
 					} else {
-						club.timeslot.setNextMeeting(nextMeetingInput);
+						const now = Date.now();
+						if (now > nextMeetingInput * 1000) {
+							errors.nextMeeting = `The timestamp given for the next meeting (${nextMeetingInput}) is in the past.`;
+						} else if (nextMeetingInput * 1000 > now + (5 * YEAR_IN_MS)) {
+							errors.nextMeeting = "Discord does not allow the creation of events 5 years in the future. Please schedule your next meeting later.";
+						} else {
+							club.timeslot.setNextMeeting(nextMeetingInput);
+						}
 					}
 				}
 
@@ -84,7 +86,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			if (fields.fields.has("periodCount")) {
 				const unparsedValue = fields.getTextInputValue("periodCount");
 				const periodCountInput = parseInt(unparsedValue);
-				if (periodCountInput) {
+				if (!isNaN(periodCountInput)) {
 					club.timeslot.periodCount = periodCountInput;
 				} else if (unparsedValue === "") {
 					club.timeslot.periodCount = 0;
@@ -101,15 +103,15 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				}
 			}
 
-			cancelClubEvent(club, interaction.guild.scheduledEvents);
+			cancelClubEvent(club, modalSubmission.guild.scheduledEvents);
 			if (club.isRecruiting()) {
-				createClubEvent(club, interaction.guild);
+				createClubEvent(club, modalSubmission.guild);
 			}
 			clearClubReminder(club.id);
-			scheduleClubReminderAndEvent(club.id, club.timeslot.nextMeeting, interaction.guild.channels);
+			scheduleClubReminderAndEvent(club.id, club.timeslot.nextMeeting, modalSubmission.guild.channels);
 
-			updateClubDetails(club, interaction.channel);
-			updateList(interaction.guild.channels, "club");
+			updateClubDetails(club, modalSubmission.channel);
+			updateList(modalSubmission.guild.channels, "club");
 			updateClub(club);
 
 			const payload = { embeds: [clubEmbedBuilder(club)] };
@@ -117,8 +119,10 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				payload.content = Object.keys(errors).reduce((errorMessage, field) => {
 					return errorMessage + `${field} - ${errors[field]}`
 				}, "The following settings were not set because they encountered errors:\n")
+			} else {
+				payload.content = "";
 			}
-			interaction.update(payload);
+			modalSubmission.update(payload);
 		}).catch(console.error);
 	}
 );
