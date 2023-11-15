@@ -1,6 +1,6 @@
 const { CommandWrapper } = require('../classes');
 
-exports.commandFiles = [
+const commandFiles = [
 	"about.js",
 	"at-channel.js",
 	"at-event.js",
@@ -31,16 +31,22 @@ exports.commandFiles = [
 ];
 /** @type {Record<string, CommandWrapper>} */
 const commandDictionary = {};
-exports.slashData = [];
+const slashData = [];
 
-for (const file of exports.commandFiles) {
+for (const file of commandFiles) {
 	/** @type {CommandWrapper} */
 	const command = require(`./${file}`);
 	commandDictionary[command.mainId] = command;
-	exports.slashData.push(command.builder.toJSON());
+	slashData.push(command.builder.toJSON());
 }
 
 /** @param {string} mainId */
-exports.getCommand = function (mainId) {
+function getCommand(mainId) {
 	return commandDictionary[mainId];
 }
+
+module.exports = {
+	commandFiles,
+	slashData,
+	getCommand
+};

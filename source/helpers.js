@@ -7,7 +7,7 @@ const { Collection } = require('discord.js');
  * @param {"w" | "d" | "h" | "m" | "s" | "ms"} resultUnit
  * @returns {number}
  */
-exports.timeConversion = function (value, startingUnit, resultUnit) {
+function timeConversion(value, startingUnit, resultUnit) {
 	const unknownUnits = [];
 	let msPerStartUnit = 1;
 	switch (startingUnit.toLowerCase()) {
@@ -58,7 +58,7 @@ exports.timeConversion = function (value, startingUnit, resultUnit) {
  * @param {unknown} entity unserialized data to be written to the file
  * @param {string} fileName name of the file to be saved
  */
-exports.ensuredPathSave = async function (entity, fileName) {
+async function ensuredPathSave(entity, fileName) {
 	const dirPath = "./config/";
 	const filePath = dirPath + fileName;
 	const backupFilePath = filePath + ".bak";
@@ -83,3 +83,8 @@ exports.ensuredPathSave = async function (entity, fileName) {
 			.catch((err) => Promise.reject(new Error("writeFile failed", { cause: err })))) // promote errors (including ENOENT) for writeFile)
 		.catch(console.error) // log error, and avoid fatally crashing
 }
+
+module.exports = {
+	timeConversion,
+	ensuredPathSave
+};

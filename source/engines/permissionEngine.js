@@ -4,39 +4,33 @@ const { getClubDictionary } = require("./referenceEngine");
 
 let { modIds, noAts, modRoleId } = require("../../config/modData.json");
 
-/** Save the modData object to file
- */
-exports.saveModData = function () {
-	ensuredPathSave({ modIds: modIds, noAts: exports.noAts }, "modData.json");
+/** Save the modData object to file */
+function saveModData() {
+	ensuredPathSave({ modIds, noAts }, "modData.json");
 }
 
 /** Add a user's id to the list of moderator ids
  * @param {string} id
  */
-exports.addModerator = function (id) {
+function addModerator(id) {
 	if (!modIds.some(existingId => existingId === id)) {
 		modIds.push(id);
 	}
-	exports.saveModData();
+	saveModData();
 }
 
 /** Remove a user's id from the list of moderator ids
  * @param {string} removedId
  */
-exports.removeModerator = function (removedId) {
+function removeModerator(removedId) {
 	modIds = modIds.filter(id => id != removedId);
-	exports.saveModData();
+	saveModData();
 }
-
-/** @type {string} */
-exports.modRoleId = modRoleId;
-/** @type {string[]} */
-exports.noAts = noAts;
 
 /** Determines if the member is a moderator or can manage the bot
  * @param {GuildMember} member
  */
-exports.isModerator = function (member) {
+function isModerator(member) {
 	return modIds.includes(member.id) || !member.manageable;
 }
 
@@ -44,7 +38,17 @@ exports.isModerator = function (member) {
  * @param {string} channelId
  * @param {GuildMember} member
  */
-exports.isClubHostOrModerator = function (channelId, member) {
+function isClubHostOrModerator(channelId, member) {
 	const club = getClubDictionary()[channelId];
-	return club && (club.hostId === member.id || exports.isModerator(member));
+	return club && (club.hostId === member.id || isModerator(member));
 }
+
+module.exports = {
+	saveModData,
+	addModerator,
+	removeModerator,
+	modRoleId,
+	noAts,
+	isModerator,
+	isClubHostOrModerator
+};
