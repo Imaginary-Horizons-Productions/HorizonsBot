@@ -19,24 +19,49 @@ function embedTemplateBuilder(color = Colors.Blurple) {
 }
 
 const discordTips = [
-	{ text: "Message starting with @silent don't send notifications; good for when everyone's asleep.", iconURL: discordIconURL },
-	{ text: "Surround your message with || to mark it a spoiler (not shown until reader clicks on it).", iconURL: discordIconURL },
-	{ text: "Surround a part of your messag with ~~ to add strikethrough styling.", iconURL: discordIconURL },
-	{ text: "Don't forget to check slash commands for optional arguments.", iconURL: discordIconURL },
-	{ text: "Some slash commands can be used in DMs, others can't.", iconURL: discordIconURL },
-	{ text: "Server subscriptions cost more on mobile because the mobile app stores take a cut.", iconURL: discordIconURL }
-];
+	"Message starting with @silent don't send notifications; good for when everyone's asleep.",
+	"Surround your message with || to mark it a spoiler (not shown until reader clicks on it).",
+	"Surround a part of your messag with ~~ to add strikethrough styling.",
+	"Don't forget to check slash commands for optional arguments.",
+	"Some slash commands can be used in DMs, others can't.",
+	"Server subscriptions cost more on mobile because the mobile app stores take a cut."
+].map(text => ({ text, iconURL: discordIconURL }));
 const horizonsBotTips = [
-	{ text: "You can roll dice with the /roll command!", iconURL: imaginaryHorizonsIconURL },
-	{ text: "Once 5% of the server has used /petition for a topic, a text channel will automatically be created.", iconURL: imaginaryHorizonsIconURL },
-	{ text: "Clubs are hidden by default to reduce channel clutter. Use /list to see what you're missing!", iconURL: imaginaryHorizonsIconURL },
-	{ text: "Find out how to get roles on the server with /roles.", iconURL: imaginaryHorizonsIconURL },
-	{ text: "Use /timestamp to get a string that Discord automatically converts into the reader's timezone!", iconURL: imaginaryHorizonsIconURL },
-	{ text: "Use /at-channel if you want to ping the channel (this lets us rate limit @here and @everyone).", iconURL: imaginaryHorizonsIconURL },
-	{ text: "The /timestamp command allows negative number inputs.", iconURL: imaginaryHorizonsIconURL },
-	{ text: "Please do not make bounties to vote for your petitions.", iconURL: imaginaryHorizonsIconURL }
-];
-const tipPool = horizonsBotTips.concat(horizonsBotTips, discordTips);
+	"You can roll dice with the /roll command!",
+	"Once 5% of the server has used /petition for a topic, a text channel will automatically be created.",
+	"Clubs are hidden by default to reduce channel clutter. Use /list to see what you're missing!",
+	"Find out how to get roles on the server with /roles.",
+	"Use /timestamp to get a string that Discord automatically converts into the reader's timezone!",
+	"Use /at-channel if you want to ping the channel (this lets us rate limit @here and @everyone).",
+	"The /timestamp command allows negative number inputs.",
+	"Please do not make bounties to vote for your petitions."
+].map(text => ({ text, iconURL: imaginaryHorizonsIconURL }));
+const bountyBotIcon = "https://cdn.discordapp.com/attachments/618523876187570187/1138968614364528791/BountyBotIcon.jpg";
+const bountyBotTips = [
+	"You can showcase one of your bounties once a week to increase its rewards.",
+	"Bounties can't be completed until 5 minutes after they've been posted. Don't make them too easy!",
+	"You get XP for posting a bounty, but lose that XP if it's taken down before it's completed.",
+	"You get XP when your bounties are completed. Thanks for posting!",
+	"You get more XP when a bigger group completes your bounties. Thanks for organizing!",
+	"Sometimes when you raise a toast to someone, it'll crit and grant you XP too!",
+	"Your chance for Critical Toast is lower when repeatedly toasting the same bounty hunters. Spread the love!",
+	"Users who can manage BountyBot aren't included in seasonal rewards to avoid conflicts of interest.",
+	"Anyone can post a bounty, even you!",
+	"Anyone can raise a toast, even you!",
+	"Manage bounties from within games with the Discord Overlay (default: Shift + Tab)!",
+	"Server level is based on total bounty hunter level--higher server level means better evergreen bounty rewards.",
+	"A bounty poster cannot complete their own bounty."
+].map(text => ({ text, iconURL: bountyBotIcon }));
+const potlIcon = "https://images-ext-1.discordapp.net/external/wclKLsXO0RRUYVqULk4xBWnqyeepTl4MPdQAvwmYA4w/https/cdn.discordapp.com/avatars/950469509628702740/97f4ae84c14c2b88fbf569de061bac88.webp";
+const potlTips = [
+	"Combatants lose their next turn (Stun) when their Stagger reaches their Poise.",
+	"Using items has priority.",
+	"Gear that matches your element removes 1 Stagger on allies.",
+	"Gear that matches your element adds 1 Stagger on foes.",
+	"Combatant speed varies every round.",
+	"Damage is capped to 500 in one attack without any Power Up."
+].map(text => ({ text, iconURL: potlIcon }));
+const tipPool = horizonsBotTips.concat(bountyBotTips, potlTips, discordTips);
 function randomEmbedFooter() {
 	return tipPool[Math.floor(Math.random() * tipPool.length)];
 }

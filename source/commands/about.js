@@ -17,7 +17,7 @@ module.exports = new CommandWrapper(mainId, "Get the HorizonsBot credits", null,
 						"iconURL": imaginaryHorizonsIconURL,
 						"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 					})
-					.setTitle("HorizonsBot v2.3.0")
+					.setTitle("HorizonsBot v2.4.0")
 					.setDescription("HorizonsBot helps with channel management and other stuff on the Imaginary Horizons Community Discord.")
 					.addFields({
 						"name": "Design & Engineering",
