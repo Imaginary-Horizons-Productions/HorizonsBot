@@ -7,14 +7,14 @@ const { Club } = require('../classes');
  * @param {string} color
  * @returns {EmbedBuilder}
  */
-exports.embedTemplateBuilder = function (color = Colors.Blurple) {
+function embedTemplateBuilder(color = Colors.Blurple) {
 	return new EmbedBuilder().setColor(color)
 		.setAuthor({
 			name: "Click here to visit HorizonsBot's GitHub",
 			iconURL: imaginaryHorizonsIconURL,
 			url: "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 		})
-		.setFooter(exports.randomEmbedFooter())
+		.setFooter(randomEmbedFooter())
 		.setTimestamp();
 }
 
@@ -37,14 +37,14 @@ const horizonsBotTips = [
 	{ text: "Please do not make bounties to vote for your petitions.", iconURL: imaginaryHorizonsIconURL }
 ];
 const tipPool = horizonsBotTips.concat(horizonsBotTips, discordTips);
-exports.randomEmbedFooter = function () {
+function randomEmbedFooter() {
 	return tipPool[Math.floor(Math.random() * tipPool.length)];
 }
 
 /** Generate the club's summary embed
  * @param {Club} club
  */
-exports.clubEmbedBuilder = function (club) {
+function clubEmbedBuilder(club) {
 	const fields = [{ name: "Club Host", value: `<@${club.hostId}>` }];
 	if (club.system) {
 		fields.push({ name: "Game", value: club.system });
@@ -56,7 +56,7 @@ exports.clubEmbedBuilder = function (club) {
 		});
 	}
 
-	return exports.embedTemplateBuilder()
+	return embedTemplateBuilder()
 		.setTitle(`__**${club.title}**__ (${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members)`)
 		.setDescription(club.description)
 		.addFields(fields)
@@ -67,7 +67,7 @@ exports.clubEmbedBuilder = function (club) {
 /** The version embed should contain the last version's changes, known issues, and project links
  * @returns {EmbedBuilder}
  */
-exports.versionEmbedBuilder = function () {
+function versionEmbedBuilder() {
 	return fs.promises.readFile('./ChangeLog.md', { encoding: 'utf8' }).then(data => {
 		const dividerRegEx = /####/g;
 		const changesStartRegEx = /\.\d+:/g;
@@ -81,11 +81,11 @@ exports.versionEmbedBuilder = function () {
 		}
 		let knownIssuesEnd = dividerRegEx.exec(data).index;
 
-		let embed = exports.embedTemplateBuilder()
+		let embed = embedTemplateBuilder()
 			.setTitle(data.slice(titleStart + 5, changesStartRegEx.lastIndex))
 			.setURL('https://discord.gg/bcE3Syu')
 			.setThumbnail('https://cdn.discordapp.com/attachments/545684759276421120/734099622846398565/newspaper.png')
-			.setFooter(exports.randomEmbedFooter());
+			.setFooter(randomEmbedFooter());
 
 		if (knownIssuesStart && knownIssuesStart < knownIssuesEnd) {
 			// Known Issues section found
@@ -100,7 +100,7 @@ exports.versionEmbedBuilder = function () {
 	})
 }
 
-exports.rulesEmbedBuilder = function () {
+function rulesEmbedBuilder() {
 	return new EmbedBuilder().setColor(7045611)
 		.setAuthor({
 			"name": "Click here to visit HorizonsBot's GitHub",
@@ -127,10 +127,10 @@ exports.rulesEmbedBuilder = function () {
 				"value": "- Start your message with `@silent` to prevent it from waking people up in the middle of the night.\n- Surround text with `||` to mark it a spoiler. ||example||"
 			}
 		)
-		.setFooter(exports.randomEmbedFooter());
+		.setFooter(randomEmbedFooter());
 }
 
-exports.pressKitEmbedBuilder = function () {
+function pressKitEmbedBuilder() {
 	return new EmbedBuilder().setColor(7045611)
 		.setAuthor({
 			"name": "Click here to visit HorizonsBot's GitHub",
@@ -149,5 +149,14 @@ exports.pressKitEmbedBuilder = function () {
 			}
 		)
 		.setImage("https://cdn.discordapp.com/attachments/812099861084241982/1094738237169340558/Patreon_Banner_Final.jpg")
-		.setFooter(exports.randomEmbedFooter());
+		.setFooter(randomEmbedFooter());
 }
+
+module.exports = {
+	embedTemplateBuilder,
+	randomEmbedFooter,
+	clubEmbedBuilder,
+	versionEmbedBuilder,
+	rulesEmbedBuilder,
+	pressKitEmbedBuilder
+};

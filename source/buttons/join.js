@@ -1,4 +1,4 @@
-const { PermissionsBitField } = require('discord.js');
+const { PermissionsBitField, Message } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
 const { guildId } = require('../constants.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
@@ -53,6 +53,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 	}
 );
 
+/** @param {Message} message */
 function clearComponents(message) {
 	message.edit({ components: [] }).catch(error => {
 		if (error.code === "ChannelNotCached") {

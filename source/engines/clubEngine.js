@@ -12,7 +12,7 @@ const reminderTimeouts = {};
  * @param {Club} club
  * @param {TextChannel} channel
  */
-exports.updateClubDetails = (club, channel) => {
+function updateClubDetails(club, channel) {
 	channel.messages.fetch(club.detailSummaryId).then(message => {
 		message.edit({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds: [clubEmbedBuilder(club)], fetchReply: true }).then(detailSummaryMessage => {
 			detailSummaryMessage.pin();
@@ -39,7 +39,7 @@ exports.updateClubDetails = (club, channel) => {
  * @param {Club} club
  * @param {Guild} guild
  */
-exports.createClubEvent = function (club, guild) {
+function createClubEvent(club, guild) {
 	return guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
 		const eventPayload = {
 			name: club.title,
@@ -64,7 +64,7 @@ exports.createClubEvent = function (club, guild) {
  * @param {Club} club
  * @param {GuildScheduledEventManager} eventManager
  */
-exports.cancelClubEvent = function (club, eventManager) {
+function cancelClubEvent(club, eventManager) {
 	if (club.timeslot.eventId) {
 		eventManager.delete(club.timeslot.eventId).catch(console.error);
 		club.timeslot.setEventId(null);
@@ -76,7 +76,7 @@ exports.cancelClubEvent = function (club, eventManager) {
  * @param {number | null} nextMeetingTimestamp
  * @param {ChannelManager} channelManager
  */
-exports.scheduleClubReminderAndEvent = async function (clubId, nextMeetingTimestamp, channelManager) {
+async function scheduleClubReminderAndEvent(clubId, nextMeetingTimestamp, channelManager) {
 	let timeout;
 	const msToTimestamp = (nextMeetingTimestamp - timeConversion(1, "d", "s")) * 1000 - Date.now();
 	if (msToTimestamp <= MAX_SET_TIMEOUT) {
@@ -84,20 +84,20 @@ exports.scheduleClubReminderAndEvent = async function (clubId, nextMeetingTimest
 			async (clubId, channelManager) => {
 				const club = getClubDictionary()[clubId];
 				if (club.timeslot.nextMeeting) {
-					await exports.sendClubReminder(clubId, channelManager);
+					await sendClubReminder(clubId, channelManager);
 					if (club.timeslot.periodCount && club.timeslot.periodUnits) {
 						const nextTimestamp = club.timeslot.nextMeeting + timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
 						club.timeslot.setNextMeeting(nextTimestamp);
 						if (club?.isRecruiting()) {
-							await exports.createClubEvent(club, channelManager.guild);
+							await createClubEvent(club, channelManager.guild);
 						}
 						const clubTextChannel = await channelManager.fetch(club.id);
-						exports.updateClubDetails(club, clubTextChannel);
-						exports.scheduleClubReminderAndEvent(clubId, nextTimestamp, channelManager);
+						updateClubDetails(club, clubTextChannel);
+						scheduleClubReminderAndEvent(clubId, nextTimestamp, channelManager);
 					} else {
 						delete reminderTimeouts[clubId];
 						club.timeslot.setNextMeeting(null);
-						exports.cancelClubEvent(club, channelManager.guild.scheduledEvents);
+						cancelClubEvent(club, channelManager.guild.scheduledEvents);
 						updateClub(club);
 					}
 					updateList(channelManager, "club");
@@ -108,7 +108,7 @@ exports.scheduleClubReminderAndEvent = async function (clubId, nextMeetingTimest
 			channelManager);
 	} else {
 		timeout = setTimeout(() => {
-			exports.scheduleClubReminderAndEvent(clubId, nextMeetingTimestamp, channelManager);
+			scheduleClubReminderAndEvent(clubId, nextMeetingTimestamp, channelManager);
 		}, MAX_SET_TIMEOUT);
 	}
 	reminderTimeouts[clubId] = timeout;
@@ -118,7 +118,7 @@ exports.scheduleClubReminderAndEvent = async function (clubId, nextMeetingTimest
  * @param {string} clubId
  * @param {ChannelManager} channelManager
  */
-exports.sendClubReminder = async (clubId, channelManager) => {
+async function sendClubReminder(clubId, channelManager) {
 	const club = getClubDictionary()[clubId];
 	const textChannel = await channelManager.fetch(clubId);
 	// NOTE: defaultReminder.length (without interpolated length) must be less than or equal to 55 characters so it fits in the config modal placeholder with its wrapper (100 characters)
@@ -147,9 +147,18 @@ exports.sendClubReminder = async (clubId, channelManager) => {
 /** Clears the timeout for an upcoming club meeting reminder message
  * @param {string} channelId
  */
-exports.clearClubReminder = async function (channelId) {
+async function clearClubReminder(channelId) {
 	if (channelId in reminderTimeouts) {
 		clearTimeout(reminderTimeouts[channelId]);
 		delete reminderTimeouts[channelId];
 	}
 }
+
+module.exports = {
+	updateClubDetails,
+	createClubEvent,
+	cancelClubEvent,
+	scheduleClubReminderAndEvent,
+	sendClubReminder,
+	clearClubReminder
+};

@@ -8,7 +8,7 @@ const { embedTemplateBuilder } = require("./messageEngine.js");
  * @type {Record<string, string[]>} */
 let petitions = require('../../config/petitionList.json');
 
-exports.getPetitions = function () {
+function getPetitions() {
 	return petitions;
 }
 
@@ -16,10 +16,10 @@ exports.getPetitions = function () {
  * @param {string} petitionListInput
  * @param {GuildChannelManager} channelManager
  */
-exports.setPetitions = function (petitionListInput, channelManager) {
+function setPetitions(petitionListInput, channelManager) {
 	petitions = petitionListInput;
 	ensuredPathSave(petitions, 'petitionList.json');
-	exports.updateList(channelManager, "petition");
+	updateList(channelManager, "petition");
 }
 
 /** Create a topic channel for a petition if it has enough ids
@@ -28,7 +28,7 @@ exports.setPetitions = function (petitionListInput, channelManager) {
  * @param {User} author
  * @returns {{petitions: number, threshold: number}}
  */
-exports.checkPetition = function (guild, topicName, author = null) {
+function checkPetition(guild, topicName, author = null) {
 	if (!petitions[topicName]) {
 		petitions[topicName] = [];
 	}
@@ -44,11 +44,11 @@ exports.checkPetition = function (guild, topicName, author = null) {
 	const petitionCount = petitions[topicName].length ?? 0;
 	const threshold = Math.ceil(guild.memberCount * 0.05) + 1;
 	if (petitionCount >= threshold) {
-		exports.addTopicChannel(guild, topicName);
+		addTopicChannel(guild, topicName);
 	} else {
-		exports.setPetitions(petitions, guild.channels);
+		setPetitions(petitions, guild.channels);
 	}
-	exports.updateList(guild.channels, "petition");
+	updateList(guild.channels, "petition");
 	return {
 		petitions: petitionCount,
 		threshold
@@ -61,14 +61,14 @@ const topics = new Collection();
 /** Get the array of topic channel ids
  * @returns {string[]}
  */
-exports.getTopicIds = function () {
+function getTopicIds() {
 	return Array.from(topics.keys());
 }
 
 /** Get the array of topic channel names
  * @returns {string[]}
  */
-exports.getTopicNames = function () {
+function getTopicNames() {
 	return Array.from(topics.values());
 }
 
@@ -76,7 +76,7 @@ exports.getTopicNames = function () {
  * @param {string} id
  * @param {string} channelName
  */
-exports.addTopic = function (id, channelName) {
+function addTopic(id, channelName) {
 	topics.set(id, channelName);
 }
 
@@ -84,10 +84,10 @@ exports.addTopic = function (id, channelName) {
  * @param {string} channelId
  * @param {Guild} guild
  */
-exports.removeTopic = function (channelId, guild) {
+function removeTopic(channelId, guild) {
 	topics.delete(channelId);
 	ensuredPathSave(topics, 'topicList.json');
-	exports.updateList(guild.channels, "petition");
+	updateList(guild.channels, "petition");
 }
 
 /** Add the new topic channel topic list to prevent duplicate petitions
@@ -95,7 +95,7 @@ exports.removeTopic = function (channelId, guild) {
  * @param {string} topicName
  * @returns {Promise<TextChannel>}
  */
-exports.addTopicChannel = function (guild, topicName) {
+function addTopicChannel(guild, topicName) {
 	return guild.channels.create({
 		name: topicName,
 		parent: topicCategoryId,
@@ -109,9 +109,9 @@ exports.addTopicChannel = function (guild, topicName) {
 			channel.send(`This channel has been created thanks to: <@${petitions[topicName].join('> <@')}>`);
 		}
 		delete petitions[topicName];
-		exports.addTopic(channel.id, channel.name);
+		addTopic(channel.id, channel.name);
 		ensuredPathSave(topics, 'topicList.json');
-		exports.setPetitions(petitions, guild.channels);
+		setPetitions(petitions, guild.channels);
 		return channel;
 	}).catch(console.error);
 }
@@ -123,14 +123,14 @@ Object.values(require('../../config/clubList.json')).forEach(club => {
 	clubDictionary[club.id] = Object.assign(new Club(), serializedClub);
 });
 
-exports.getClubDictionary = function () {
+function getClubDictionary() {
 	return clubDictionary;
 }
 
 /** Update a club's details in the internal dictionary and in the club list embed
  * @param {Club} club
  */
-exports.updateClub = function (club) {
+function updateClub(club) {
 	clubDictionary[club.id] = club;
 	ensuredPathSave(clubDictionary, 'clubList.json');
 }
@@ -139,21 +139,21 @@ exports.updateClub = function (club) {
  * @param {string} id
  * @param {GuildChannelManager} channelManager
  */
-exports.removeClub = function (id, channelManager) {
+function removeClub(id, channelManager) {
 	delete clubDictionary[id];
 	ensuredPathSave(clubDictionary, 'clubList.json');
-	exports.updateList(channelManager, "club");
+	updateList(channelManager, "club");
 }
 
 /** @type {{petition: {channelId: string; messageId: string}, club: {channelId: string; messageId: string;}, rules: {channelId: string; messageId: string;}}} */
-exports.referenceMessages = require('../../config/referenceMessageIds.json');
+let referenceMessages = require('../../config/referenceMessageIds.json');
 
 /** Builds the MessageOptions for the specified list message
  * @param {number} memberCount
  * @param {"petition" | "club"} listType
  * @returns {Promise<import('discord.js').BaseMessageOptions>}
  */
-exports.buildListMessagePayload = function (memberCount, listType) {
+function buildListMessagePayload(memberCount, listType) {
 	let description;
 
 	const messageOptions = {
@@ -262,26 +262,26 @@ exports.buildListMessagePayload = function (memberCount, listType) {
  * @param {"petition" | "club"} listType
  * @returns {Promise<Message>}
  */
-exports.updateList = async function (channelManager, listType) {
-	const { channelId, messageId } = exports.referenceMessages[listType];
+async function updateList(channelManager, listType) {
+	const { channelId, messageId } = referenceMessages[listType];
 	if (channelId && messageId) {
 		const channel = await channelManager.fetch(channelId).catch(error => {
 			if (error.code === 10003) { // Unknown Channel
-				exports.referenceMessages[listType].channelId = "";
-				exports.referenceMessages[listType].messageId = "";
-				ensuredPathSave(exports.referenceMessages, "referenceMessageIds.json");
+				referenceMessages[listType].channelId = "";
+				referenceMessages[listType].messageId = "";
+				ensuredPathSave(referenceMessages, "referenceMessageIds.json");
 			}
 			console.error(error);
 		});
 		const message = await channel?.messages.fetch(messageId).catch(error => {
 			if (error.code === 10008) { // Unknown Message
-				exports.referenceMessages[listType].channelId = "";
-				exports.referenceMessages[listType].messageId = "";
-				ensuredPathSave(exports.referenceMessages, "referenceMessageIds.json");
+				referenceMessages[listType].channelId = "";
+				referenceMessages[listType].messageId = "";
+				ensuredPathSave(referenceMessages, "referenceMessageIds.json");
 			}
 			console.error(error);
 		});
-		const messageOptions = await exports.buildListMessagePayload(channelManager.guild.memberCount, listType);
+		const messageOptions = await buildListMessagePayload(channelManager.guild.memberCount, listType);
 		message?.edit(messageOptions);
 		if (messageOptions.files.length === 0) {
 			message?.removeAttachments();
@@ -289,3 +289,20 @@ exports.updateList = async function (channelManager, listType) {
 		return message;
 	}
 }
+
+module.exports = {
+	getPetitions,
+	setPetitions,
+	checkPetition,
+	getTopicIds,
+	getTopicNames,
+	addTopic,
+	removeTopic,
+	addTopicChannel,
+	getClubDictionary,
+	updateClub,
+	removeClub,
+	referenceMessages,
+	buildListMessagePayload,
+	updateList
+};
