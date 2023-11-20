@@ -1,4 +1,4 @@
-const { PermissionFlagsBits: { ViewChannel, ManageMessages }, ChannelType, MessageFlags, PermissionFlagsBits } = require('discord.js');
+const { ChannelType, MessageFlags, PermissionFlagsBits } = require('discord.js');
 const { Club, CommandWrapper } = require('../classes');
 const { updateClub, updateList } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
@@ -25,25 +25,25 @@ module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice cha
 			permissionOverwrites: [
 				{
 					id: channelManager.client.user,
-					allow: [ViewChannel]
+					allow: [PermissionFlagsBits.ViewChannel]
 				},
 				{
 					id: modRoleId,
-					allow: [ViewChannel],
+					allow: [PermissionFlagsBits.ViewChannel],
 					type: 0
 				},
 				{
 					id: interaction.guildId,
-					deny: [ViewChannel],
+					deny: [PermissionFlagsBits.ViewChannel],
 					type: 0
 				},
 				{
 					id: host,
-					allow: [ViewChannel, ManageMessages]
+					allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageMessages]
 				},
 				{
 					id: "536330483852771348",
-					allow: [ViewChannel],
+					allow: [PermissionFlagsBits.ViewChannel],
 					type: 1
 				}
 			],
