@@ -70,7 +70,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 					club.title = titleInput;
 					textChannel.setName(titleInput);
 					const voiceChannel = await modalSubmission.guild.channels.fetch(club.voiceChannelId);
-					voiceChannel.setName(titleInput + " Voice");
+					voiceChannel.setName(`${titleInput} ${club.voiceType === "private" ? "Voice" : "Stage"}`);
 				}
 				const descriptionInput = fields.getTextInputValue("description");
 				if (club.description !== descriptionInput) {

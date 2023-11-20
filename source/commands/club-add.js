@@ -50,7 +50,7 @@ module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice cha
 			type: ChannelType.GuildText
 		}).then(textChannel => {
 			channelManager.create({
-				name: "New Club Voice",
+				name: `New Club ${voiceType === "private" ? "Voice" : "Stage"}`,
 				parent: categoryId,
 				...voiceChannelOptions[voiceType](interaction.guild, modRoleId, host)
 			}).then(voiceChannel => {
