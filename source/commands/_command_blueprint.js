@@ -1,5 +1,5 @@
 const { CommandWrapper } = require('../classes');
-const { createSubcommandMappings } = require('../util/configUtil');
+const { createSubcommandMappings } = require('../util/fileUtil.js');
 
 const mainId = "name";
 const { slashData: subcommandSlashData, executeDictionary: subcommandExecuteDictionary } = createSubcommandMappings(mainId, []);

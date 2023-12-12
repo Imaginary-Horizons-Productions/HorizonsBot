@@ -1,6 +1,6 @@
 const { PermissionFlagsBits } = require('discord.js');
 const { CommandWrapper } = require('../../classes/index.js');
-const { createSubcommandMappings } = require('../../util/configUtil.js');
+const { createSubcommandMappings } = require('../../util/fileUtil.js');
 
 const mainId = "manage-mods";
 const { slashData: subcommandSlashData, executeDictionary: subcommandExecuteDictionary } = createSubcommandMappings(mainId, [
