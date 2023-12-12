@@ -3,7 +3,7 @@ const { CommandWrapper } = require('../../classes/InteractionWrapper.js');
 const { createSubcommandMappings } = require('../../util/configUtil.js');
 
 const mainId = "at-permission";
-const { slashData: subcommandSlashData, executeDictionary: subcommandExecuteDictionary } = await createSubcommandMappings(mainId, [
+const { slashData: subcommandSlashData, executeDictionary: subcommandExecuteDictionary } = createSubcommandMappings(mainId, [
 	"allow.js",
 	"disallow.js"
 ]);
