@@ -5,13 +5,7 @@ const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const mainId = "club-invite";
-const options = [
-	// can't use channel mention because users can't mention channels that are invisible to them (even by constructing the mention manually)
-	{ type: "String", name: "club-id", description: "The club text channel's id", required: false, choices: [] },
-	{ type: "String", name: "invitees", description: "The mention(s) of the user(s)", required: false, choices: [] }
-];
-const subcommands = [];
-module.exports = new CommandWrapper(mainId, "Send a user (default: self) an invite to a club", null, true, 3000, options, subcommands,
+module.exports = new CommandWrapper(mainId, "Send a user (default: self) an invite to a club", null, true, 3000,
 	/** Provide full details on the given club */
 	async (interaction) => {
 		const clubId = interaction.options.getString("club-id") || interaction.channelId;
@@ -56,4 +50,8 @@ module.exports = new CommandWrapper(mainId, "Send a user (default: self) an invi
 		}
 		interaction.reply({ content: `Details about and an invite to <#${clubId}> details have been sent to ${recipients.join(", ")}.`, ephemeral: true });
 	}
+).setOptions(
+	// can't use channel mention because users can't mention channels that are invisible to them (even by constructing the mention manually)
+	{ type: "String", name: "club-id", description: "The club text channel's id", required: false, choices: [] },
+	{ type: "String", name: "invitees", description: "The mention(s) of the user(s)", required: false, choices: [] }
 );

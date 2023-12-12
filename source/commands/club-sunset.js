@@ -3,9 +3,7 @@ const { CommandWrapper } = require('../classes/InteractionWrapper.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const mainId = "club-sunset";
-const options = [{ type: "Integer", name: "delay", description: "Number of hours to delay deleting the club", required: true, choices: [] }];
-const subcomands = [];
-module.exports = new CommandWrapper(mainId, "Delete a club on a delay", PermissionFlagsBits.ManageMessages, false, 3000, options, subcomands,
+module.exports = new CommandWrapper(mainId, "Delete a club on a delay", PermissionFlagsBits.ManageMessages, false, 3000,
 	/** Set a club to be deleted on a delay */
 	(interaction) => {
 		if (interaction.channelId in getClubDictionary()) {
@@ -25,4 +23,6 @@ module.exports = new CommandWrapper(mainId, "Delete a club on a delay", Permissi
 				.catch(console.error);
 		}
 	}
+).setOptions(
+	{ type: "Integer", name: "delay", description: "Number of hours to delay deleting the club", required: true, choices: [] }
 );

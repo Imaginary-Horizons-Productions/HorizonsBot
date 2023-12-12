@@ -5,18 +5,7 @@ const { rulesEmbedBuilder, pressKitEmbedBuilder } = require('../engines/messageE
 const { MessageFlags, PermissionFlagsBits } = require('discord.js');
 
 const mainId = "post-reference";
-const options = [
-	{
-		type: "String", name: "reference", description: "which message to post", required: true, choices: [
-			{ name: "the petiton list", value: "petition" },
-			{ name: "the club list", value: "club" },
-			{ name: "the rules embed", value: "rules" },
-			{ name: "the press kit", value: "press-kit" }
-		]
-	}
-];
-const subcomands = [];
-module.exports = new CommandWrapper(mainId, "Post a reference message in this channel", PermissionFlagsBits.ManageChannels, false, 3000, options, subcomands,
+module.exports = new CommandWrapper(mainId, "Post a reference message in this channel", PermissionFlagsBits.ManageChannels, false, 3000,
 	/** Send a reference message (petitions, clubs, rules) to the receiving channel */
 	async (interaction) => {
 		const listType = interaction.options.getString("reference").toLowerCase();
@@ -43,5 +32,14 @@ module.exports = new CommandWrapper(mainId, "Post a reference message in this ch
 
 		interaction.reply({ content: `The ${listType} reference has been posted.`, ephemeral: true })
 			.catch(console.error);
+	}
+).setOptions(
+	{
+		type: "String", name: "reference", description: "which message to post", required: true, choices: [
+			{ name: "the petiton list", value: "petition" },
+			{ name: "the club list", value: "club" },
+			{ name: "the rules embed", value: "rules" },
+			{ name: "the press kit", value: "press-kit" }
+		]
 	}
 );

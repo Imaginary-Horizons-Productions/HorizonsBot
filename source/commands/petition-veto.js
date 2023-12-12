@@ -3,11 +3,7 @@ const { CommandWrapper } = require('../classes');
 const { getPetitions, setPetitions } = require('../engines/referenceEngine.js');
 
 const mainId = "petition-veto";
-const options = [
-	{ type: "String", name: "topic", description: "The petition to close", required: true, choices: [] },
-];
-const subcomands = [];
-module.exports = new CommandWrapper(mainId, "Veto a petition", PermissionFlagsBits.ManageChannels, true, 3000, options, subcomands,
+module.exports = new CommandWrapper(mainId, "Veto a petition", PermissionFlagsBits.ManageChannels, true, 3000,
 	/** Remove the given petition from the petition list */
 	(interaction) => {
 		const vetoedPetition = interaction.options.getString('topic');
@@ -22,4 +18,6 @@ module.exports = new CommandWrapper(mainId, "Veto a petition", PermissionFlagsBi
 				.catch(console.error);
 		}
 	}
+).setOptions(
+	{ type: "String", name: "topic", description: "The petition to close", required: true, choices: [] }
 );

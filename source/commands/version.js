@@ -2,12 +2,7 @@ const { CommandWrapper } = require('../classes');
 const { versionEmbedBuilder } = require('../engines/messageEngine.js');
 
 const mainId = "version";
-const options = [
-	{ type: "Boolean", name: "full-notes", description: "Get the file with the full version notes?", required: true, choices: [] }
-];
-const subcomands = [];
-module.exports = new CommandWrapper(mainId, "Get HorizonsBot's version notes", null, true, 3000, options, subcomands,
-	/** Send version information */
+module.exports = new CommandWrapper(mainId, "Get HorizonsBot's version notes", null, true, 3000,
 	(interaction) => {
 		if (interaction.options.getBoolean("full-notes")) {
 			interaction.reply({
@@ -24,4 +19,6 @@ module.exports = new CommandWrapper(mainId, "Get HorizonsBot's version notes", n
 			}).catch(console.error);
 		}
 	}
+).setOptions(
+	{ type: "Boolean", name: "full-notes", description: "Get the file with the full version notes?", required: true, choices: [] }
 );

@@ -2,14 +2,7 @@ const { CommandWrapper } = require('../classes');
 const { timeConversion } = require('../helpers.js');
 
 const mainId = "timestamp";
-const options = [
-	{ type: "String", name: "start", description: "The timestamp to start from (default: now)", required: false, choices: [] },
-	{ type: "Number", name: "days-from-start", description: "86400 seconds", required: false, choices: [] },
-	{ type: "Number", name: "hours-from-start", description: "3600 seconds", required: false, choices: [] },
-	{ type: "Number", name: "minutes-from-start", description: "60 seconds", required: false, choices: [] }
-];
-const subcomands = [];
-module.exports = new CommandWrapper(mainId, "Calculate the unix timestamp for a moment in time, which Discord displays with timezones applied", null, true, 3000, options, subcomands,
+module.exports = new CommandWrapper(mainId, "Calculate the unix timestamp for a moment in time, which Discord displays with timezones applied", null, true, 3000,
 	/** Calculate the unix timestamp given days, hours, minutes, and seconds from now (or the provided start) */
 	(interaction) => {
 		const days = interaction.options.getNumber("days-from-start") ?? 0;
@@ -35,4 +28,9 @@ module.exports = new CommandWrapper(mainId, "Calculate the unix timestamp for a 
 			interaction.reply({ content: "Please provide start timestamp in <t:seconds> format.", ephemeral: true });
 		}
 	}
+).setOptions(
+	{ type: "String", name: "start", description: "The timestamp to start from (default: now)", required: false, choices: [] },
+	{ type: "Number", name: "days-from-start", description: "86400 seconds", required: false, choices: [] },
+	{ type: "Number", name: "hours-from-start", description: "3600 seconds", required: false, choices: [] },
+	{ type: "Number", name: "minutes-from-start", description: "60 seconds", required: false, choices: [] }
 );

@@ -4,9 +4,7 @@ const { updateClubDetails } = require('../engines/clubEngine.js');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 
 const mainId = "club-update-host";
-const options = [{ type: "User", name: "user", description: "The user's mention", required: true, choices: [] }];
-const subcommands = [];
-module.exports = new CommandWrapper(mainId, "Promote another user to club host", PermissionFlagsBits.ManageMessages, false, 3000, options, subcommands,
+module.exports = new CommandWrapper(mainId, "Promote another user to club host", PermissionFlagsBits.ManageMessages, false, 3000,
 	/** Update the club's host to the given user */
 	(interaction) => {
 		const club = getClubDictionary()[interaction.channelId];
@@ -26,4 +24,6 @@ module.exports = new CommandWrapper(mainId, "Promote another user to club host",
 		updateList(interaction.guild.channels, "club");
 		updateClub(club);
 	}
+).setOptions(
+	{ type: "User", name: "user", description: "The user's mention", required: true, choices: [] }
 );

@@ -3,12 +3,7 @@ const { CommandWrapper } = require('../classes');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 
 const mainId = "club-kick";
-const options = [
-	{ type: "User", name: "target", description: "The user's mention", required: true, choices: [] },
-	{ type: "Boolean", name: "ban", description: "Prevent the user from rejoining?", required: false, choices: [] }
-];
-const subcomands = [];
-module.exports = new CommandWrapper(mainId, "Remove a user from a club", PermissionFlagsBits.ManageMessages, false, 3000, options, subcomands,
+module.exports = new CommandWrapper(mainId, "Remove a user from a club", PermissionFlagsBits.ManageMessages, false, 3000,
 	/** Remove visibility of receiving channel from mentioned user */
 	(interaction) => {
 		const club = getClubDictionary()[interaction.channelId];
@@ -32,4 +27,7 @@ module.exports = new CommandWrapper(mainId, "Remove a user from a club", Permiss
 				.catch(console.error);
 		}
 	}
+).setOptions(
+	{ type: "User", name: "target", description: "The user's mention", required: true, choices: [] },
+	{ type: "Boolean", name: "ban", description: "Prevent the user from rejoining?", required: false, choices: [] }
 );

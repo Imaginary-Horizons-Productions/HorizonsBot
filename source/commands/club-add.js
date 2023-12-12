@@ -6,12 +6,7 @@ const { modRoleId } = require('../engines/permissionEngine.js');
 const { voiceChannelOptions } = require('../constants.js');
 
 const mainId = "club-add";
-const options = [
-	{ type: "User", name: "club-host", description: "The user's mention", required: true, choices: [] },
-	{ type: "String", name: "voice-channel-type", description: "Stage channels are visible to everyone", required: true, choices: [{ name: "stage", value: "stage" }, { name: "private", value: "private" }] }
-];
-const subcommands = [];
-module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice channel)", PermissionFlagsBits.ManageChannels, false, 3000, options, subcommands,
+module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice channel)", PermissionFlagsBits.ManageChannels, false, 3000,
 	/** Create a new club including a text and voice channel in the receiving channel's category and set the mentioned user as host */
 	(interaction) => {
 		const host = interaction.options.getUser("club-host");
@@ -66,4 +61,7 @@ module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice cha
 			}).catch(console.error);
 		})
 	}
+).setOptions(
+	{ type: "User", name: "club-host", description: "The user's mention", required: true, choices: [] },
+	{ type: "String", name: "voice-channel-type", description: "Stage channels are visible to everyone", required: true, choices: [{ name: "stage", value: "stage" }, { name: "private", value: "private" }] }
 );
