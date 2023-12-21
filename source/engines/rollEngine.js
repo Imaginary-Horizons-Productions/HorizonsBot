@@ -65,21 +65,21 @@ const keep_ops = { // Operations for keeping or dropping rolls of a result set
 
 class ResultSet {
 
-	constructor() {}
+	constructor() { }
 
 	static #surroundedByParens(str, symbolPos) {
 		var rightParensUnenclosed = 0,
 			leftParensUnenclosed = 0;
-		var leftSide = str.slice(0,symbolPos),
-			rightSide = str.slice(symbolPos+1,str.length-1);
-		for (var i = leftSide.length - 1; i >= 0 ; i-=1) {
+		var leftSide = str.slice(0, symbolPos),
+			rightSide = str.slice(symbolPos + 1, str.length - 1);
+		for (var i = leftSide.length - 1; i >= 0; i -= 1) {
 			if (leftSide[i] == ')' && leftParensUnenclosed <= 0) {
 				leftParensUnenclosed -= 1;
 			} else if (leftSide[i] == '(') {
 				leftParensUnenclosed += 1;
 			}
 		}
-		for (var i = 0; i < rightSide.length; i+=1) {
+		for (var i = 0; i < rightSide.length; i += 1) {
 			if (rightSide[i] == '(' && rightParensUnenclosed <= 0) {
 				rightParensUnenclosed -= 1;
 			} else if (rightSide[i] == ')') {
@@ -98,14 +98,14 @@ class ResultSet {
 		for (var i = 0; i < str.length; i++) {
 			const bothQuotes = startQuote && endQuote;
 			const isSkippableCharacter = (str[i] == '[' && i == 0) ||
-					(!bothQuotes && str[i] == ']' && i == str.length-1) ||
-					(bothQuotes && str[i] == ' ');
+				(!bothQuotes && str[i] == ']' && i == str.length - 1) ||
+				(bothQuotes && str[i] == ' ');
 			if (isSkippableCharacter) {
 				continue;
 			} else if (isSkippableCharacter && str[i] == ' ') {
 				spaceCount++;
 				continue;
-			} else if (bothQuotes && str[i] == ']' && i == str.length-1) {
+			} else if (bothQuotes && str[i] == ']' && i == str.length - 1) {
 				strList.push(newEntry.trim());
 				newEntry = "";
 				startQuote = false;
@@ -153,10 +153,10 @@ class ResultSet {
 
 	static parse(value) { // Calls the right ResultSet constructor for the given string
 		var parsingString = value.slice(0); // Copy the string
-		parsingString = parsingString.replace(/(?<!\[[^\]]*)\s(?![^\[]*\])/g,''); //Remove all white space
-		parsingString = parsingString.replace(/\+\s*\-/g,'-'); //Simplify adding a negative to subtraction
-		while (parsingString[0] == '(' && parsingString[parsingString.length-1] == ')') { // If parentheses wrap the expression, remove them
-			parsingString = parsingString.slice(1, value.length-1);
+		parsingString = parsingString.replace(/(?<!\[[^\]]*)\s(?![^\[]*\])/g, ''); //Remove all white space
+		parsingString = parsingString.replace(/\+\s*\-/g, '-'); //Simplify adding a negative to subtraction
+		while (parsingString[0] == '(' && parsingString[parsingString.length - 1] == ')') { // If parentheses wrap the expression, remove them
+			parsingString = parsingString.slice(1, value.length - 1);
 		}
 		// Handle base cases
 		if (/^1?d(\%|\d+)$/.test(parsingString)) { //parse single die roll //(\%|\d+) -> d%, 1d5, d75
@@ -165,22 +165,22 @@ class ResultSet {
 			var dPos = parsingString.search('d');
 			var selPos = parsingString.search(/[dk][lh]?\d+$/);
 			var endNumPos = parsingString.search(/\d+$/);
-			return new DieSelectResultSet(parsingString.slice(0,dPos),parsingString.slice(dPos - parsingString.length, selPos), parsingString.slice(selPos - parsingString.length, endNumPos), parsingString.slice(endNumPos,parsingString.length))
+			return new DieSelectResultSet(parsingString.slice(0, dPos), parsingString.slice(dPos - parsingString.length, selPos), parsingString.slice(selPos - parsingString.length, endNumPos), parsingString.slice(endNumPos, parsingString.length))
 		} else if (/^\d+d(\%|\d+)$/.test(parsingString)) { //parse multiple die roll
 			var dPos = parsingString.search('d');
-			return new MultiDieResultSet(parsingString.slice(0,dPos),parsingString.slice(dPos - parsingString.length));
+			return new MultiDieResultSet(parsingString.slice(0, dPos), parsingString.slice(dPos - parsingString.length));
 		} else if (/^-?\d+$/.test(parsingString)) { //parse number result
-			return new SingleResultSet(parsingString,false);
+			return new SingleResultSet(parsingString, false);
 		} else if (/^1?u?l\[.*\]/.test(parsingString)) { //parse single list roll
-			var bracketList = parsingString.replace(/^1?u?l/,'');
+			var bracketList = parsingString.replace(/^1?u?l/, '');
 			return new ListResultSet(1, this.#parseStringList(bracketList));
 		} else if (/^\d+l\[.*\]/.test(parsingString)) { // parse multiple list pick
-			var bracketList = parsingString.replace(/^\d+l/,'');
-			var num = parsingString.replace(/l\[.*\]/,'');
+			var bracketList = parsingString.replace(/^\d+l/, '');
+			var num = parsingString.replace(/l\[.*\]/, '');
 			return new ListResultSet(num, this.#parseStringList(bracketList));
 		} else if (/^\d+ul\[.*\]/.test(parsingString)) { // parse multiple list pick with unique selections
-			var bracketList = parsingString.replace(/^\d+ul/,'');
-			var num = parsingString.replace(/ul\[.*\]/,'');
+			var bracketList = parsingString.replace(/^\d+ul/, '');
+			var num = parsingString.replace(/ul\[.*\]/, '');
 			var forceUnique = !(num === '' || Number.parseInt(num) === 1);
 			return new ListResultSet(num, this.#parseStringList(bracketList), forceUnique);
 		}
@@ -194,22 +194,22 @@ class ResultSet {
 		var addSubPattern = /[\+\-]/;
 		var multPattern = /\*/;
 		var hasListPattern = /\d*u?l\[.*\]/;
-		if(!multPattern.test(parsingString) && !hasListPattern.test(parsingString) && addSubPattern.test(parsingString)) {
-			var toPureSums = parsingString.replace(/\-/g,'+-');
+		if (!multPattern.test(parsingString) && !hasListPattern.test(parsingString) && addSubPattern.test(parsingString)) {
+			var toPureSums = parsingString.replace(/\-/g, '+-');
 			var parsableList = toPureSums.split('+');
 			return new SumSeriesResultSet(parsableList);
 		}
 		if (addSubPattern.test(parsingString)) {
-			for (var i = parsingString.length - 1; i >= 0; i-=1) {
-				if (addSubPattern.test(parsingString[i]) && !this.#surroundedByParens(parsingString,i)) {
-					return new TwoOpResultSet(parsingString.slice(0,i),parsingString.slice(i+1,parsingString.length),parsingString[i]);
+			for (var i = parsingString.length - 1; i >= 0; i -= 1) {
+				if (addSubPattern.test(parsingString[i]) && !this.#surroundedByParens(parsingString, i)) {
+					return new TwoOpResultSet(parsingString.slice(0, i), parsingString.slice(i + 1, parsingString.length), parsingString[i]);
 				}
 			}
 		}
 		if (multPattern.test(parsingString)) {
-			for (var i = parsingString.length - 1; i >= 0; i-=1) {
-				if (multPattern.test(parsingString[i]) && !this.#surroundedByParens(parsingString,i)) {
-					return new TwoOpResultSet(parsingString.slice(0,i),parsingString.slice(i+1,parsingString.length),parsingString[i]);
+			for (var i = parsingString.length - 1; i >= 0; i -= 1) {
+				if (multPattern.test(parsingString[i]) && !this.#surroundedByParens(parsingString, i)) {
+					return new TwoOpResultSet(parsingString.slice(0, i), parsingString.slice(i + 1, parsingString.length), parsingString[i]);
 				}
 			}
 		}
@@ -217,15 +217,15 @@ class ResultSet {
 		throw `Part of the input to parse into a roll is malformed: ${parsingString}`;
 	}
 
-	getResults() { throw `ResultSet function 'getResults' not properly implemented by child class ${this.constructor.name}.`; } // Implemented by child classes
+	getResults() { throw new Error(`ResultSet function 'getResults' not properly implemented by child class ${this.constructor.name}.`); } // Implemented by child classes
 
-	getMaxResults() { throw `ResultSet function 'getMaxResults' not properly implemented by child class ${this.constructor.name}.`; } // Implemented by child classes
+	getMaxResults() { throw new Error(`ResultSet function 'getMaxResults' not properly implemented by child class ${this.constructor.name}.`); } // Implemented by child classes
 
-	getMinResults() { throw `ResultSet function 'getMinResults' not properly implemented by child class ${this.constructor.name}.`; } // Implemented by child classes
+	getMinResults() { throw new Error(`ResultSet function 'getMinResults' not properly implemented by child class ${this.constructor.name}.`); } // Implemented by child classes
 
-	toString(frac = false) { throw `ResultSet function 'toString' not properly implemented by child class ${this.constructor.name}.`; } // Implemented by child classes
+	toString(frac = false) { throw new Error(`ResultSet function 'toString' not properly implemented by child class ${this.constructor.name}.`); } // Implemented by child classes
 
-	toResultArray() { throw `ResultSet function 'toResultArray' not properly implemented by child class ${this.constructor.name}.`} // Implemented by child classes
+	toResultArray() { throw new Error(`ResultSet function 'toResultArray' not properly implemented by child class ${this.constructor.name}.`); } // Implemented by child classes
 }
 
 class SingleResultSet extends ResultSet {
@@ -280,9 +280,9 @@ class ListResultSet extends ResultSet {
 
 	getResults() { return this.#result.map(r => r.getResult()).join(', '); }
 
-	getMaxResults() { return `${this.#choices}${this.#forceUnique ? ' unique choices': ''} from the list ${this.#stringList.join(', ')}` }
+	getMaxResults() { return `${this.#choices}${this.#forceUnique ? ' unique choices' : ''} from the list ${this.#stringList.join(', ')}` }
 
-	getMinResults() { return `${this.#choices}${this.#forceUnique ? ' unique choices': ''} from the list ${this.#stringList.join(', ')}` }
+	getMinResults() { return `${this.#choices}${this.#forceUnique ? ' unique choices' : ''} from the list ${this.#stringList.join(', ')}` }
 
 	toString(frac = false) { return this.#result.map(r => r.toString(frac)).join(', '); }
 
@@ -411,18 +411,18 @@ class MultiDieResultSet extends ResultSet {
 	#dieList = []
 	#dieSides
 
-	constructor(numDice,dieSides) {
+	constructor(numDice, dieSides) {
 		super();
-		let convertedDieSides = dieSides.replace('d','');
+		let convertedDieSides = dieSides.replace('d', '');
 		convertedDieSides = convertedDieSides == '%' ? '100' : convertedDieSides;
 		this.#dieSides = parseInt(convertedDieSides);
-		for(var i = 0; i < parseInt(numDice); i+=1) {
+		for (var i = 0; i < parseInt(numDice); i += 1) {
 			this.#dieList.push(new RollResult(this.#dieSides));
 		}
 
 	}
 
-	getResults() { return this.#dieList.reduce((acc, roll) => acc + roll.getResult(),0); }
+	getResults() { return this.#dieList.reduce((acc, roll) => acc + roll.getResult(), 0); }
 
 	getMaxResults() { return this.#dieList.length * this.#dieSides; }
 
@@ -443,7 +443,7 @@ class SumSeriesResultSet extends ResultSet {
 
 	constructor(listToSum) {
 		super();
-		for (var i = 0; i < listToSum.length; i+=1) {
+		for (var i = 0; i < listToSum.length; i += 1) {
 			if (listToSum[i][0] == '-') {
 				this.#opList.push(two_ops.SUBTRACT);
 				listToSum[i] = listToSum[i].slice(1);
@@ -456,7 +456,7 @@ class SumSeriesResultSet extends ResultSet {
 
 	getResults() {
 		var sum = 0;
-		for (var i = 0; i < this.#resultList.length; i+=1) {
+		for (var i = 0; i < this.#resultList.length; i += 1) {
 			if (this.#opList[i] == two_ops.ADD) {
 				sum += this.#resultList[i].getResults();
 			} else {
@@ -468,7 +468,7 @@ class SumSeriesResultSet extends ResultSet {
 
 	getMaxResults() {
 		var max = 0;
-		for (var i = 0; i < this.#resultList.length; i+=1) {
+		for (var i = 0; i < this.#resultList.length; i += 1) {
 			if (this.#opList[i] = two_ops.ADD) {
 				max += this.#resultList[i].getMaxResults();
 			} else {
@@ -480,7 +480,7 @@ class SumSeriesResultSet extends ResultSet {
 
 	getMinResults() {
 		var min = 0;
-		for (var i = 0; i < this.#resultList.length; i+=1) {
+		for (var i = 0; i < this.#resultList.length; i += 1) {
 			if (this.#opList[i] = two_ops.ADD) {
 				min += this.#resultList[i].getMinResults();
 			} else {
@@ -514,9 +514,9 @@ class DieSelectResultSet extends ResultSet {
 	#selectOp
 	#selectNum
 
-	constructor(numDice,dieSides,selectOp,selectNum) {
+	constructor(numDice, dieSides, selectOp, selectNum) {
 		super();
-		let convertedDieSides = dieSides.replace('d','');
+		let convertedDieSides = dieSides.replace('d', '');
 		convertedDieSides = convertedDieSides == '%' ? '100' : convertedDieSides;
 		this.#dieSides = parseInt(convertedDieSides);
 		this.#selectNum = selectNum ? parseInt(selectNum) : 1;
@@ -528,7 +528,7 @@ class DieSelectResultSet extends ResultSet {
 				case keep_ops.KEEP_HIGHEST:
 				case keep_ops.KEEP_LOWEST:
 					this.#selectNum = numDice;
-					for(var i = 0; i < numDice; i+=1) {
+					for (var i = 0; i < numDice; i += 1) {
 						this.#dieList.push(new RollResult(this.#dieSides));
 					}
 					break;
@@ -540,7 +540,7 @@ class DieSelectResultSet extends ResultSet {
 					break;
 			}
 		} else {
-			for(var i = 0; i < parseInt(numDice); i+=1) {
+			for (var i = 0; i < parseInt(numDice); i += 1) {
 				this.#dieList.push(new RollResult(this.#dieSides));
 			}
 		}
@@ -551,24 +551,24 @@ class DieSelectResultSet extends ResultSet {
 			return 0;
 		}
 		var kept = [],
-		resultDice = this.#dieList.slice().sort((r1, r2) => r1.getResult() - r2.getResult());
+			resultDice = this.#dieList.slice().sort((r1, r2) => r1.getResult() - r2.getResult());
 		switch (this.#selectOp) {
 			case keep_ops.KEEP:
 			case keep_ops.KEEP_HIGHEST:
 				kept = resultDice.slice(-this.#selectNum);
 				break;
 			case keep_ops.KEEP_LOWEST:
-				kept = resultDice.slice(0,this.#selectNum);
+				kept = resultDice.slice(0, this.#selectNum);
 				break;
 			case keep_ops.DROP:
 			case keep_ops.DROP_LOWEST:
 				kept = resultDice.slice(this.#selectNum);
 				break;
 			case keep_ops.DROP_HIGHEST:
-				kept = resultDice.slice(0,-this.#selectNum);
+				kept = resultDice.slice(0, -this.#selectNum);
 				break;
 		}
-		return kept.reduce((acc, roll) => acc + roll.getResult(),0);
+		return kept.reduce((acc, roll) => acc + roll.getResult(), 0);
 	}
 
 	getMaxResults() {
@@ -616,7 +616,7 @@ class DieSelectResultSet extends ResultSet {
 			return frac ? `0/0` : `0`;
 		}
 		var isKeep = this.#selectOp.startsWith('k'),
-		dieMap = this.#dieList.map(result => { return { roll: result, keep: !isKeep } });
+			dieMap = this.#dieList.map(result => { return { roll: result, keep: !isKeep } });
 		var skipIndices = [], repeats = this.#selectNum;
 		switch (this.#selectOp) {
 			case keep_ops.KEEP:
@@ -725,10 +725,10 @@ class ResultBundle {
 }
 
 function parseRoll(input) { //This needs some wild revision before it'll work
-	input = input.replace(/\(/g,' ( ').replace(/\)/g,' ) ').replace(/\+/g,' + ').replace(/\*/g,' * ').replace(/\-(^\d)/g,' - ');
+	input = input.replace(/\(/g, ' ( ').replace(/\)/g, ' ) ').replace(/\+/g, ' + ').replace(/\*/g, ' * ').replace(/\-(^\d)/g, ' - ');
 	var splitInput = input.split(/(?<!\[[^\]]*) (?![^\[]*\])/);
 	var rollArray = splitInput.reduce((acc, cur) => {
-		if (acc[acc.length-1] == '║' || cur == '') {
+		if (acc[acc.length - 1] == '║' || cur == '') {
 			return acc;
 		} else if (/[\+\-\*]/.test(cur) || /\-?\d+$/.test(cur) || /\d*d(\%|\d+)([dk][lh]?\d+)?$/.test(cur) || /\d*u?l\[.*\]$/.test(cur) || /\(/.test(cur) || /\)/.test(cur)) {
 			acc.push(cur);
@@ -738,11 +738,11 @@ function parseRoll(input) { //This needs some wild revision before it'll work
 			return acc;
 		}
 	}, []);
-	rollArray[rollArray.length-1] == '║' ? rollArray.pop() : ()=>{};
+	rollArray[rollArray.length - 1] == '║' ? rollArray.pop() : () => { };
 	var textArray = splitInput.reduceRight((acc, cur) => {
 		if (acc[0] == '║' || cur == '') {
 			return acc;
-		} else if (/\-?\d+$/.test(cur) || /\d*d(\%|\d+)([dk][lh]?\d+)?$/.test(cur) || /\d*u?l\[.*\]$/.test(cur)  || /\)/.test(cur)) {
+		} else if (/\-?\d+$/.test(cur) || /\d*d(\%|\d+)([dk][lh]?\d+)?$/.test(cur) || /\d*u?l\[.*\]$/.test(cur) || /\)/.test(cur)) {
 			acc.unshift('║');
 			return acc;
 		} else {
@@ -750,8 +750,8 @@ function parseRoll(input) { //This needs some wild revision before it'll work
 			return acc;
 		}
 	}, []);
-	textArray[0] == '║' ? textArray.shift() : ()=>{};
-	return new ResultBundle(rollArray.join(''),textArray.join(' '));
+	textArray[0] == '║' ? textArray.shift() : () => { };
+	return new ResultBundle(rollArray.join(''), textArray.join(' '));
 }
 
 function getRollString(input, frac = false, simple = false) {
@@ -762,4 +762,4 @@ function getRollArray(input) {
 	return parseRoll(input).toResultArray();
 }
 
-module.exports = {parseRoll, getRollString, getRollArray}
+module.exports = { parseRoll, getRollString, getRollArray }
