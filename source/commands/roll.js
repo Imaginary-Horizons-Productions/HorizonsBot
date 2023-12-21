@@ -26,7 +26,6 @@ module.exports = new CommandWrapper(mainId, "Roll any number of dice with any nu
 					interaction.reply({ content: `Roll Result:\n\`${getRollString(rollInput, false, true)}\``, flags: MessageFlags.SuppressNotifications });
 					break;
 			}
-			return;
 		} catch (error) {
 			interaction.reply({ content: error, ephemeral: true });
 		}

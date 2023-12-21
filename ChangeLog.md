@@ -1,4 +1,10 @@
 # HorizonsBot Change Log
+#### HorizonsBot Version 2.5.0:
+- Added new functionality to the `/roll` command
+	- `#d%` is a shortcut for rolling # d100s (default 1)
+	- `2l["Lethal Company", "PlateUp!", "Smithworks"]` will now randomly pick between `Lethal Company`, `PlateUp!`, and `Smithworks` 2 times
+	- `4ul[first,second,third,fourth]`will now randomly pick between `first`, `second`, `third`, and `fourth` 4 times without repeats
+	- strings can now be concatenated with the + operator, and duplicated with the * operator (number must be first operand)
 #### HorizonsBot Version 2.4.0:
 - Fixed a crash when setting a club's next meeting
 - Various refactors and optimzations
