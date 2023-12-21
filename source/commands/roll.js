@@ -11,27 +11,25 @@ module.exports = new CommandWrapper(mainId, "Roll any number of dice with any nu
 		if (label) {
 			rollInput = rollInput.concat(` ${label}`);
 		}
-		let rollResult;
 		try {
 			switch (interaction.options.getString('display')) {
 				case "max":
-					rollResult = getRollString(rollInput, true, true);
+					interaction.reply({ content: `Roll Result:\n\`${getRollString(rollInput, true, true)}\``, flags: MessageFlags.SuppressNotifications });
 					break;
 				case "individual":
-					rollResult = getRollString(rollInput, false, false);
+					interaction.reply({ content: `Roll Result:\n\`${getRollString(rollInput, false, false)}\``, flags: MessageFlags.SuppressNotifications });
 					break;
 				case "verbose":
-					rollResult = getRollString(rollInput, true, false);
+					interaction.reply({ content: `Roll Result:\n\`${getRollString(rollInput, true, false)}\``, flags: MessageFlags.SuppressNotifications });
 					break;
 				default:
-					rollResult = getRollString(rollInput, false, true);
+					interaction.reply({ content: `Roll Result:\n\`${getRollString(rollInput, false, true)}\``, flags: MessageFlags.SuppressNotifications });
 					break;
 			}
+			return;
 		} catch (error) {
 			interaction.reply({ content: error, ephemeral: true });
-			return;
 		}
-		interaction.reply({ content: `Roll Result:\n\`${rollResult}\``, flags: MessageFlags.SuppressNotifications });
 	}
 ).setOptions(
 	{ type: "String", name: "dice", description: "The dice to roll in #d# format", required: true, choices: [] },
