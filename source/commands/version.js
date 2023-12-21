@@ -2,14 +2,9 @@ const { CommandWrapper } = require('../classes');
 const { versionEmbedBuilder } = require('../engines/messageEngine.js');
 
 const mainId = "version";
-const options = [
-	{ type: "Boolean", name: "full-notes", description: "Get the file with the full version notes?", required: true, choices: [] }
-];
-const subcomands = [];
-module.exports = new CommandWrapper(mainId, "Get HorizonsBot's version notes", null, true, 3000, options, subcomands,
-	/** Send version information */
+module.exports = new CommandWrapper(mainId, "Get HorizonsBot's version notes", null, true, 3000,
 	(interaction) => {
-		if (interaction.options.getBoolean("full-notes")) {
+		if (interaction.options.getString("notes-length") === "last-version") {
 			interaction.reply({
 				content: "Here are all the changes so far: ",
 				files: [{
@@ -23,5 +18,16 @@ module.exports = new CommandWrapper(mainId, "Get HorizonsBot's version notes", n
 				interaction.reply({ embeds: [embed], ephemeral: true });
 			}).catch(console.error);
 		}
+	}
+).setOptions(
+	{
+		type: "String",
+		name: "notes-length",
+		description: "Get the changes in last version or the full change log",
+		choices: [
+			{ name: "Last version", value: "last-version" },
+			{ name: "Full change log", value: "full-change-log" }
+		],
+		required: true
 	}
 );

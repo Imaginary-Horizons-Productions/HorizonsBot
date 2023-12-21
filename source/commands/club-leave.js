@@ -4,9 +4,7 @@ const { SAFE_DELIMITER } = require('../constants.js');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 
 const mainId = "club-leave";
-const options = [];
-const subcomands = [];
-module.exports = new CommandWrapper(mainId, "Leave this club", null, false, 3000, options, subcomands,
+module.exports = new CommandWrapper(mainId, "Leave this club", null, false, 3000,
 	/** Do cleanup associated with user leaving a club or topic */
 	(interaction) => {
 		const { user: { id: userId }, channelId } = interaction;

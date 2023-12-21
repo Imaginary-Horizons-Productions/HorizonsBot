@@ -1,7 +1,14 @@
 const { CommandWrapper } = require('../classes');
+const { createSubcommandMappings } = require('../util/fileUtil.js');
 
 const mainId = "name";
-const options = [
+const { slashData: subcommandSlashData, executeDictionary: subcommandExecuteDictionary } = createSubcommandMappings(mainId, []);
+module.exports = new CommandWrapper(mainId, "description", null, false, 3000,
+	/** Command specifications go here */
+	(interaction) => {
+
+	}
+).setOptions(
 	{
 		type: "",
 		name: "",
@@ -9,25 +16,4 @@ const options = [
 		required: false,
 		choices: [] // elements are objects with properties: name, value
 	}
-];
-const subcommands = [
-	{
-		name: "",
-		description: "",
-		optionsInput: [
-			{
-				type: "",
-				name: "",
-				description: "",
-				required: false,
-				choices: [] // elements are objects with properties: name, value
-			}
-		]
-	}
-];
-module.exports = new CommandWrapper(mainId, "description", null, false, 3000, options, subcommands,
-	/** Command specifications go here */
-	(interaction) => {
-
-	}
-);
+).setSubcommands(subcommandSlashData);

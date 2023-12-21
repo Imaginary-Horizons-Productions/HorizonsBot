@@ -1,13 +1,7 @@
-const { PermissionFlagsBits } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 
 const mainId = "at-event";
-const options = [
-	{ type: "String", name: "event-id", description: "The id of the event to make an announcement for", required: true, choices: [] },
-	{ type: "String", name: "message", description: "The text of the notification", required: true, choices: [] }
-];
-const subcomands = [];
-module.exports = new CommandWrapper(mainId, "Send a ping to users interested in an event", null, false, 300000, options, subcomands,
+module.exports = new CommandWrapper(mainId, "Send a ping to users interested in an event", null, false, 300000,
 	/** Send a rate-limited ping to users interested in an event */
 	async (interaction) => {
 		const unparsedEventId = interaction.options.getString("event-id");
@@ -27,4 +21,7 @@ module.exports = new CommandWrapper(mainId, "Send a ping to users interested in 
 			interaction.reply(`<@${subscribers.map((wrappedUser, userId) => userId).join(">, <@")}> ${interaction.options.getString("message")}`);
 		})
 	}
+).setOptions(
+	{ type: "String", name: "event-id", description: "The id of the event to make an announcement for", required: true, choices: [] },
+	{ type: "String", name: "message", description: "The text of the notification", required: true, choices: [] }
 );

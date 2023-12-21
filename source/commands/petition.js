@@ -2,11 +2,7 @@ const { CommandWrapper } = require('../classes');
 const { checkPetition, getTopicNames } = require('../engines/referenceEngine.js');
 
 const mainId = "petition";
-const options = [
-	{ type: "String", name: "topic-name", description: "Make sure the topic doesn't already exist", required: true, choices: [] }
-];
-const subcomands = [];
-module.exports = new CommandWrapper(mainId, "Petition for a topic text channel", null, false, 3000, options, subcomands,
+module.exports = new CommandWrapper(mainId, "Petition for a topic text channel", null, false, 3000,
 	/** Record a user's petition for a text channel, create channel if sufficient number of petitions */
 	(interaction) => {
 		const topicName = interaction.options.getString("topic-name").toLowerCase();
@@ -19,4 +15,6 @@ module.exports = new CommandWrapper(mainId, "Petition for a topic text channel",
 				.catch(console.error);
 		}
 	}
+).setOptions(
+	{ type: "String", name: "topic-name", description: "Make sure the topic doesn't already exist", required: true, choices: [] }
 );

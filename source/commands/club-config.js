@@ -5,9 +5,7 @@ const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const mainId = "club-config";
-const options = [];
-const subcommands = [];
-module.exports = new CommandWrapper(mainId, "Change the configuration of the current club", PermissionFlagsBits.ManageMessages, false, 3000, options, subcommands,
+module.exports = new CommandWrapper(mainId, "Change the configuration of the current club", PermissionFlagsBits.ManageMessages, false, 3000,
 	/** Send the user an ephemeral message containing club configuration controls */
 	(interaction) => {
 		const club = getClubDictionary()[interaction.channelId];

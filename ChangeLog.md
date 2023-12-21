@@ -1,4 +1,7 @@
 # HorizonsBot Change Log
+#### HorizonsBot Version 2.4.0:
+- Fixed a crash when setting a club's next meeting
+- Various refactors and optimzations
 #### HorizonsBot Version 2.3.0:
 - Clubs can now be "Staged" clubs, which have a stage channel instead of a private voice channel
 - Selecting multiple clubs to view the summary of (either from `/list` or the club list) only sends one message now

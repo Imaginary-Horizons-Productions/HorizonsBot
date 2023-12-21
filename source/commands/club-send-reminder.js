@@ -4,9 +4,7 @@ const { sendClubReminder } = require('../engines/clubEngine.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const mainId = "club-send-reminder";
-const options = [];
-const subcommands = [];
-module.exports = new CommandWrapper(mainId, "Re-post the reminder message for the club's next meeting", PermissionFlagsBits.ManageMessages, false, 3000, options, subcommands,
+module.exports = new CommandWrapper(mainId, "Re-post the reminder message for the club's next meeting", PermissionFlagsBits.ManageMessages, false, 3000,
 	/** Re-post the reminder message for the club's next meeting */
 	(interaction) => {
 		const club = getClubDictionary()[interaction.channelId];

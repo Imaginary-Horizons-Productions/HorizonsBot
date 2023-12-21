@@ -4,9 +4,7 @@ const { randomEmbedFooter } = require('../engines/messageEngine.js');
 const { imaginaryHorizonsIconURL } = require('../constants.js');
 
 const mainId = "roles-rundown";
-const options = [];
-const subcommands = [];
-module.exports = new CommandWrapper(mainId, "See what the roles on the server mean and how to get them", null, false, 3000, options, subcommands,
+module.exports = new CommandWrapper(mainId, "See what the roles on the server mean and how to get them", null, false, 3000,
 	/** See what the roles on the server mean and how to get them */
 	(interaction) => {
 		interaction.reply({

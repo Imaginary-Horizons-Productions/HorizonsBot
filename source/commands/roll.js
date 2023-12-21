@@ -3,20 +3,7 @@ const { CommandWrapper } = require('../classes');
 const { getRollString } = require('../engines/rollEngine.js');
 
 const mainId = "roll";
-const options = [
-	{ type: "String", name: "dice", description: "The dice to roll in #d# format", required: true, choices: [] },
-	{
-		type: "String", name: "display", description: "Choose output display option", required: false, choices: [
-			{ name: "Result only", value: "simple" },
-			{ name: "Compare to max total roll", value: "max" },
-			{ name: "Result for each die", value: "individual" },
-			{ name: "Compare each die to max roll", value: "verbose" }
-		]
-	},
-	{ type: "String", name: "label", description: "Text after the roll", required: false, choices: [] },
-];
-const subcomands = [];
-module.exports = new CommandWrapper(mainId, "Roll any number of dice with any number of sides", PermissionFlagsBits.SendMessages, true, 3000, options, subcomands,
+module.exports = new CommandWrapper(mainId, "Roll any number of dice with any number of sides", PermissionFlagsBits.SendMessages, true, 3000,
 	/** Roll the specified dice */
 	(interaction) => {
 		let rollInput = interaction.options.getString('dice');
@@ -41,4 +28,15 @@ module.exports = new CommandWrapper(mainId, "Roll any number of dice with any nu
 		}
 		interaction.reply({ content: `Roll Result:\n\`${rollResult}\``, flags: MessageFlags.SuppressNotifications });
 	}
+).setOptions(
+	{ type: "String", name: "dice", description: "The dice to roll in #d# format", required: true, choices: [] },
+	{
+		type: "String", name: "display", description: "Choose output display option", required: false, choices: [
+			{ name: "Result only", value: "simple" },
+			{ name: "Compare to max total roll", value: "max" },
+			{ name: "Result for each die", value: "individual" },
+			{ name: "Compare each die to max roll", value: "verbose" }
+		]
+	},
+	{ type: "String", name: "label", description: "Text after the roll", required: false, choices: [] },
 );

@@ -4,10 +4,7 @@ const { randomEmbedFooter } = require('../engines/messageEngine.js');
 const { imaginaryHorizonsIconURL } = require('../constants.js');
 
 const mainId = "about";
-const options = [];
-const subcommands = [];
-module.exports = new CommandWrapper(mainId, "Get the HorizonsBot credits", null, false, 3000, options, subcommands,
-	/** Get the HorizonsBot credits */
+module.exports = new CommandWrapper(mainId, "Get the HorizonsBot credits", null, false, 3000,
 	(interaction) => {
 		interaction.reply({
 			embeds: [
