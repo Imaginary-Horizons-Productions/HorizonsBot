@@ -96,30 +96,30 @@ class ResultSet {
 		let endQuote = false;
 		let spaceCount = 0;
 		for (var i = 0; i < str.length; i++) {
-			if (
-				(str[i] == '[' && i == 0) ||
-				(!(startQuote && endQuote) && str[i] == ']' && i == str.length-1) ||
-				(startQuote && endQuote && str[i] == ' ')
-				) {
-					if (str[i] == ' ') {
-						spaceCount++;
-					}
+			const bothQuotes = startQuote && endQuote;
+			const isSkippableCharacter = (str[i] == '[' && i == 0) ||
+					(!bothQuotes && str[i] == ']' && i == str.length-1) ||
+					(bothQuotes && str[i] == ' ');
+			if (isSkippableCharacter) {
 				continue;
-			} else if (startQuote && endQuote && str[i] == ']' && i == str.length-1) {
+			} else if (isSkippableCharacter && str[i] == ' ') {
+				spaceCount++;
+				continue;
+			} else if (bothQuotes && str[i] == ']' && i == str.length-1) {
 				strList.push(newEntry.trim());
 				newEntry = "";
 				startQuote = false;
 				endQuote = false;
 				spaceCount = 0;
 				continue;
-			} else if (startQuote && endQuote && str[i] === ',') {
+			} else if (bothQuotes && str[i] === ',') {
 				strList.push(newEntry.trim());
 				newEntry = "";
 				startQuote = false;
 				endQuote = false;
 				spaceCount = 0;
 				continue;
-			} else if (startQuote && endQuote) {
+			} else if (bothQuotes) {
 				newEntry = `"${newEntry}"${' '.repeat(spaceCount)}${str[i]}`;
 				startQuote = false;
 				endQuote = false;
@@ -159,7 +159,7 @@ class ResultSet {
 			parsingString = parsingString.slice(1, value.length-1);
 		}
 		// Handle base cases
-		if (/^1?d(\%|\d+)$/.test(parsingString)) { //parse single die roll //(\%|\d+)
+		if (/^1?d(\%|\d+)$/.test(parsingString)) { //parse single die roll //(\%|\d+) -> d%, 1d5, d75
 			return new SingleResultSet(parsingString);
 		} else if (/^\d+d(\%|\d+)[dk][lh]?\d+$/.test(parsingString)) { //parse multiple die with selection
 			var dPos = parsingString.search('d');
@@ -611,7 +611,7 @@ class DieSelectResultSet extends ResultSet {
 		return trueDieLength;
 	}
 
-	toString(frac = false) { // TODO
+	toString(frac = false) {
 		if (this.#dieList.length == 0) {
 			return frac ? `0/0` : `0`;
 		}
@@ -694,14 +694,8 @@ class ResultBundle {
 	#resultset
 	#extraText
 
-	constructor(rs, et = ""){
-		var resultSet;
-		if (rs instanceof ResultSet) { // If it is a result set, just use it as-is
-			resultSet = rs;
-		} else { // Parse the string into a roll set
-			resultSet = ResultSet.parse(rs);
-		}
-		this.#resultset = resultSet;
+	constructor(rs, et = "") {
+		this.#resultset = rs instanceof ResultSet ? rs : ResultSet.parse(rs);
 		this.#extraText = et;
 	}
 
