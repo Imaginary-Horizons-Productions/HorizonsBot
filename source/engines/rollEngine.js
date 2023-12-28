@@ -161,24 +161,24 @@ class ResultSet {
 		// Handle base cases
 		if (/^1?d(\%|\d+)$/.test(parsingString)) { //parse single die roll //(\%|\d+) -> d%, 1d5, d75
 			return new SingleResultSet(parsingString);
-		} else if (/^\d+d(\%|\d+)[dk][lh]?\d+$/.test(parsingString)) { //parse multiple die with selection
+		} else if (/^\d+d(\%|\d+)[dk][lh]?\d+$/.test(parsingString)) { //parse multiple die with selection // 1d20dl, 2d4kh2
 			var dPos = parsingString.search('d');
 			var selPos = parsingString.search(/[dk][lh]?\d+$/);
 			var endNumPos = parsingString.search(/\d+$/);
 			return new DieSelectResultSet(parsingString.slice(0, dPos), parsingString.slice(dPos - parsingString.length, selPos), parsingString.slice(selPos - parsingString.length, endNumPos), parsingString.slice(endNumPos, parsingString.length))
-		} else if (/^\d+d(\%|\d+)$/.test(parsingString)) { //parse multiple die roll
+		} else if (/^\d+d(\%|\d+)$/.test(parsingString)) { //parse multiple die roll // 1d20 + 1d6
 			var dPos = parsingString.search('d');
 			return new MultiDieResultSet(parsingString.slice(0, dPos), parsingString.slice(dPos - parsingString.length));
-		} else if (/^-?\d+$/.test(parsingString)) { //parse number result
+		} else if (/^-?\d+$/.test(parsingString)) { //parse number result // 20, -3
 			return new SingleResultSet(parsingString, false);
-		} else if (/^1?u?l\[.*\]/.test(parsingString)) { //parse single list roll
+		} else if (/^1?u?l\[.*\]/.test(parsingString)) { //parse single list roll // 1l["a", "b", "c"], 1ul[a, b, c, d]
 			var bracketList = parsingString.replace(/^1?u?l/, '');
 			return new ListResultSet(1, this.#parseStringList(bracketList));
-		} else if (/^\d+l\[.*\]/.test(parsingString)) { // parse multiple list pick
+		} else if (/^\d+l\[.*\]/.test(parsingString)) { // parse multiple list pick // 2l["a", "b", "c"]
 			var bracketList = parsingString.replace(/^\d+l/, '');
 			var num = parsingString.replace(/l\[.*\]/, '');
 			return new ListResultSet(num, this.#parseStringList(bracketList));
-		} else if (/^\d+ul\[.*\]/.test(parsingString)) { // parse multiple list pick with unique selections
+		} else if (/^\d+ul\[.*\]/.test(parsingString)) { // parse multiple list pick with unique selections // 2ul[a, b, c, d]
 			var bracketList = parsingString.replace(/^\d+ul/, '');
 			var num = parsingString.replace(/ul\[.*\]/, '');
 			var forceUnique = !(num === '' || Number.parseInt(num) === 1);
