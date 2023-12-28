@@ -1,11 +1,16 @@
-const { PermissionFlagsBits } = require('discord.js');
 const { CommandWrapper } = require('../classes/InteractionWrapper.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
+const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 
 const mainId = "club-sunset";
-module.exports = new CommandWrapper(mainId, "Delete a club on a delay", PermissionFlagsBits.ManageMessages, false, 3000,
+module.exports = new CommandWrapper(mainId, "Delete a club on a delay", null, false, 3000,
 	/** Set a club to be deleted on a delay */
 	(interaction) => {
+		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {
+			interaction.reply({ content: "\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.", ephemeral: true });
+			return;
+		}
+
 		if (interaction.channelId in getClubDictionary()) {
 			const delay = parseFloat(interaction.options.getInteger("delay"));
 			if (delay > 0) {

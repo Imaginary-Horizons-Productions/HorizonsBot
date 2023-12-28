@@ -2,11 +2,17 @@ const { PermissionFlagsBits } = require('discord.js');
 const { CommandWrapper } = require('../classes/InteractionWrapper.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
+const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 
 const mainId = "club-update-host";
-module.exports = new CommandWrapper(mainId, "Promote another user to club host", PermissionFlagsBits.ManageMessages, false, 3000,
+module.exports = new CommandWrapper(mainId, "Promote another user to club host", null, false, 3000,
 	/** Update the club's host to the given user */
 	(interaction) => {
+		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {
+			interaction.reply({ content: "\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.", ephemeral: true });
+			return;
+		}
+
 		const club = getClubDictionary()[interaction.channelId];
 		const newHost = interaction.options.getUser("user");
 		club.hostId = newHost.id;

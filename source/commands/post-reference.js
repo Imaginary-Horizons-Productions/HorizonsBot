@@ -3,11 +3,17 @@ const { ensuredPathSave } = require('../helpers.js');
 const { referenceMessages, buildListMessagePayload } = require('../engines/referenceEngine.js');
 const { rulesEmbedBuilder, pressKitEmbedBuilder } = require('../engines/messageEngine.js');
 const { MessageFlags, PermissionFlagsBits } = require('discord.js');
+const { isModerator } = require('../engines/permissionEngine.js');
 
 const mainId = "post-reference";
 module.exports = new CommandWrapper(mainId, "Post a reference message in this channel", PermissionFlagsBits.ManageChannels, false, 3000,
 	/** Send a reference message (petitions, clubs, rules) to the receiving channel */
 	async (interaction) => {
+		if (!isModerator(interaction.member)) {
+			interaction.reply(`\`/${interaction.commandName}\` is a moderator-only command.`);
+			return;
+		}
+
 		const listType = interaction.options.getString("reference").toLowerCase();
 		let messageOptions;
 		switch (listType) {

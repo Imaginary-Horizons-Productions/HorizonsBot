@@ -136,16 +136,6 @@ client.on(Events.InteractionCreate, interaction => {
 		return;
 	} else if (interaction.isCommand()) {
 		const command = getCommand(interaction.commandName);
-		if (command.permissionLevel === "moderator" && !isModerator(interaction.member)) {
-			interaction.reply(`\`/${interaction.commandName}\` is a moderator-only command.`);
-			return;
-		}
-
-		if (command.permissionLevel === "moderator/club host" && !isClubHostOrModerator(interaction.channel.id, interaction.member)) {
-			interaction.reply({ content: "\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.", ephemeral: true });
-			return;
-		}
-
 		const cooldownTimestamp = command.getCooldownTimestamp(interaction.user.id, interactionCooldowns);
 		if (cooldownTimestamp) {
 			interaction.reply({ content: `Please wait, the \`/${interaction.commandName}\` command is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, ephemeral: true });

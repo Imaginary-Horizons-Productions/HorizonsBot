@@ -1,13 +1,19 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { SAFE_DELIMITER } = require('../constants.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
+const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 
 const mainId = "club-config";
-module.exports = new CommandWrapper(mainId, "Change the configuration of the current club", PermissionFlagsBits.ManageMessages, false, 3000,
+module.exports = new CommandWrapper(mainId, "Change the configuration of the current club", null, false, 3000,
 	/** Send the user an ephemeral message containing club configuration controls */
 	(interaction) => {
+		if (!isClubHostOrModerator(interaction.channel.id, interaction.member)) {
+			interaction.reply({ content: "\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.", ephemeral: true });
+			return;
+		}
+
 		const club = getClubDictionary()[interaction.channelId];
 		interaction.reply({
 			embeds: [clubEmbedBuilder(club)],

@@ -1,18 +1,18 @@
-const { PermissionsBitField, MessageFlags, PermissionFlagsBits } = require('discord.js');
+const { PermissionsBitField, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
+const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 
 const mainId = "club-kick";
-module.exports = new CommandWrapper(mainId, "Remove a user from a club", PermissionFlagsBits.ManageMessages, false, 3000,
+module.exports = new CommandWrapper(mainId, "Remove a user from a club", null, false, 3000,
 	/** Remove visibility of receiving channel from mentioned user */
 	(interaction) => {
-		const club = getClubDictionary()[interaction.channelId];
-		if (!club) {
-			interaction.reply(`Please use the \`/${mainId}\` command from the club's text channel.`)
-				.catch(console.error);
+		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {
+			interaction.reply({ content: "\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.", ephemeral: true });
 			return;
 		}
 
+		const club = getClubDictionary()[interaction.channelId];
 		const user = interaction.options.getUser("target");
 		club.userIds = club.userIds.filter(memberId => memberId != user.id);
 		updateList(interaction.guild.channels, "club");
