@@ -194,19 +194,19 @@ class ResultSet {
 		var addSubPattern = /[\+\-]/;
 		var multPattern = /\*/;
 		var hasListPattern = /\d*u?l\[.*\]/;
-		if (!multPattern.test(parsingString) && !hasListPattern.test(parsingString) && addSubPattern.test(parsingString)) {
+		if (!multPattern.test(parsingString) && !hasListPattern.test(parsingString) && addSubPattern.test(parsingString)) { // eg 1 + 3, 20 - 2, 1 + 2 + 3
 			var toPureSums = parsingString.replace(/\-/g, '+-');
 			var parsableList = toPureSums.split('+');
 			return new SumSeriesResultSet(parsableList);
 		}
-		if (addSubPattern.test(parsingString)) {
+		if (addSubPattern.test(parsingString)) { // eg 3 + 8, 2 - 1
 			for (var i = parsingString.length - 1; i >= 0; i -= 1) {
 				if (addSubPattern.test(parsingString[i]) && !this.#surroundedByParens(parsingString, i)) {
 					return new TwoOpResultSet(parsingString.slice(0, i), parsingString.slice(i + 1, parsingString.length), parsingString[i]);
 				}
 			}
 		}
-		if (multPattern.test(parsingString)) {
+		if (multPattern.test(parsingString)) { // eg 7 * 4
 			for (var i = parsingString.length - 1; i >= 0; i -= 1) {
 				if (multPattern.test(parsingString[i]) && !this.#surroundedByParens(parsingString, i)) {
 					return new TwoOpResultSet(parsingString.slice(0, i), parsingString.slice(i + 1, parsingString.length), parsingString[i]);
