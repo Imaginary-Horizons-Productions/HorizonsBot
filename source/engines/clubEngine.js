@@ -83,7 +83,7 @@ async function scheduleClubReminderAndEvent(clubId, nextMeetingTimestamp, channe
 		timeout = setTimeout(
 			async (clubId, channelManager) => {
 				const club = getClubDictionary()[clubId];
-				if (club.timeslot.nextMeeting) {
+				if (club?.timeslot.nextMeeting) {
 					await sendClubReminder(clubId, channelManager);
 					if (club.timeslot.periodCount && club.timeslot.periodUnits) {
 						const nextTimestamp = club.timeslot.nextMeeting + timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
