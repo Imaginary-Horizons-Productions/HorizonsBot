@@ -6,6 +6,7 @@
 	- `4ul[first,second,third,fourth]`will now randomly pick between `first`, `second`, `third`, and `fourth` 4 times without repeats
 	- strings can now be concatenated with the + operator, and duplicated with the * operator (number must be first operand)
 - Club host commands are now always visible due to conditional visibility not working anymore
+- Fixed a crash trying to schedule a deleted club's meeting event
 #### HorizonsBot Version 2.4.0:
 - Fixed a crash when setting a club's next meeting
 - Various refactors and optimzations
