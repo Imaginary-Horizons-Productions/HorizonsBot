@@ -18,7 +18,7 @@ module.exports = new CommandWrapper(mainId, "Send a user (default: self) an invi
 		const idRegExp = RegExp(/<@(\d+)>/, "g");
 		const inviteeIds = [];
 		let results;
-		while ((results = idRegExp.exec(interaction.options.getString(options[1].name))) != null) {
+		while ((results = idRegExp.exec(interaction.options.getString("invitees"))) != null) {
 			inviteeIds.push(results[1]);
 		}
 
