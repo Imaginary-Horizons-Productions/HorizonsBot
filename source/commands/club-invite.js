@@ -18,14 +18,17 @@ module.exports = new CommandWrapper(mainId, "Send a user (default: self) an invi
 		const idRegExp = RegExp(/<@(\d+)>/, "g");
 		const inviteeIds = [];
 		let results;
-		while ((results = idRegExp.exec(interaction.options.getString("invitees"))) != null) {
-			inviteeIds.push(results[1]);
+		while ((results = idRegExp.exec(interaction.options.getString("invitees"))) !== null) {
+			const id = results[1];
+			if (!inviteeIds.includes(id)) {
+				inviteeIds.push(id);
+			}
 		}
 
 		const recipients = [];
-		if (results) {
-			for (const member of (await interaction.guild.members.fetch(results)).values()) {
-				if (!member.bot) {
+		if (inviteeIds.length > 0) {
+			for (const member of (await interaction.guild.members.fetch({ user: inviteeIds })).values()) {
+				if (!member.user.bot) {
 					recipients.push(member);
 				}
 			}
