@@ -751,6 +751,23 @@ function parseRoll(input) { //This needs some wild revision before it'll work
 		}
 	}, []);
 	textArray[0] == '║' ? textArray.shift() : () => { };
+
+	// Early error cases
+	let errMsgArray = []
+	let listEmptyErrRolls = [];
+	for (const roll of rollArray) {
+		if (/\d*u?l\[\]/.test(roll)) { // 1l[], ul[]
+			listEmptyErrRolls.push(roll);
+		}
+	}
+	if (listErrRolls.length) {
+		errMsgArray.push(`The list of items to roll cannot be empty. The following rolls had this issue: ${listEmptyErrRolls.join('; ')}`);
+	}
+	if (errMsgArray.length) {
+		throw `The following issues have been found:\n\t${errMsgArray.join('\n\t')}`;
+	}
+
+	// Generate the roll bundle that can have extracted results
 	return new ResultBundle(rollArray.join(''), textArray.join(' '));
 }
 
