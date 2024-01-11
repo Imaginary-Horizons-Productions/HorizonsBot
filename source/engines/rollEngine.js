@@ -161,24 +161,24 @@ class ResultSet {
 		// Handle base cases
 		if (/^1?d(\%|\d+)$/.test(parsingString)) { //parse single die roll //(\%|\d+) -> d%, 1d5, d75
 			return new SingleResultSet(parsingString);
-		} else if (/^\d+d(\%|\d+)[dk][lh]?\d+$/.test(parsingString)) { //parse multiple die with selection
+		} else if (/^\d+d(\%|\d+)[dk][lh]?\d+$/.test(parsingString)) { //parse multiple die with selection // 2d20dl1, 2d4kh2
 			var dPos = parsingString.search('d');
 			var selPos = parsingString.search(/[dk][lh]?\d+$/);
 			var endNumPos = parsingString.search(/\d+$/);
 			return new DieSelectResultSet(parsingString.slice(0, dPos), parsingString.slice(dPos - parsingString.length, selPos), parsingString.slice(selPos - parsingString.length, endNumPos), parsingString.slice(endNumPos, parsingString.length))
-		} else if (/^\d+d(\%|\d+)$/.test(parsingString)) { //parse multiple die roll
+		} else if (/^\d+d(\%|\d+)$/.test(parsingString)) { //parse multiple die roll // 1d20, 2d6
 			var dPos = parsingString.search('d');
 			return new MultiDieResultSet(parsingString.slice(0, dPos), parsingString.slice(dPos - parsingString.length));
-		} else if (/^-?\d+$/.test(parsingString)) { //parse number result
+		} else if (/^-?\d+$/.test(parsingString)) { //parse number result // 20, -3
 			return new SingleResultSet(parsingString, false);
-		} else if (/^1?u?l\[.*\]/.test(parsingString)) { //parse single list roll
+		} else if (/^1?u?l\[.*\]/.test(parsingString)) { //parse single list roll // l["a", "b", "c"], 1ul[a, b, c, d]
 			var bracketList = parsingString.replace(/^1?u?l/, '');
 			return new ListResultSet(1, this.#parseStringList(bracketList));
-		} else if (/^\d+l\[.*\]/.test(parsingString)) { // parse multiple list pick
+		} else if (/^\d+l\[.*\]/.test(parsingString)) { // parse multiple list pick // 2l["a", "b", "c"]
 			var bracketList = parsingString.replace(/^\d+l/, '');
 			var num = parsingString.replace(/l\[.*\]/, '');
 			return new ListResultSet(num, this.#parseStringList(bracketList));
-		} else if (/^\d+ul\[.*\]/.test(parsingString)) { // parse multiple list pick with unique selections
+		} else if (/^\d+ul\[.*\]/.test(parsingString)) { // parse multiple list pick with unique selections // 2ul[a, b, c, d]
 			var bracketList = parsingString.replace(/^\d+ul/, '');
 			var num = parsingString.replace(/ul\[.*\]/, '');
 			var forceUnique = !(num === '' || Number.parseInt(num) === 1);
@@ -194,19 +194,19 @@ class ResultSet {
 		var addSubPattern = /[\+\-]/;
 		var multPattern = /\*/;
 		var hasListPattern = /\d*u?l\[.*\]/;
-		if (!multPattern.test(parsingString) && !hasListPattern.test(parsingString) && addSubPattern.test(parsingString)) {
+		if (!multPattern.test(parsingString) && !hasListPattern.test(parsingString) && addSubPattern.test(parsingString)) { // eg 1 + 3, 20 - 2, 1 + 2 + 3
 			var toPureSums = parsingString.replace(/\-/g, '+-');
 			var parsableList = toPureSums.split('+');
 			return new SumSeriesResultSet(parsableList);
 		}
-		if (addSubPattern.test(parsingString)) {
+		if (addSubPattern.test(parsingString)) { // eg 3 + 8, 2 - 1
 			for (var i = parsingString.length - 1; i >= 0; i -= 1) {
 				if (addSubPattern.test(parsingString[i]) && !this.#surroundedByParens(parsingString, i)) {
 					return new TwoOpResultSet(parsingString.slice(0, i), parsingString.slice(i + 1, parsingString.length), parsingString[i]);
 				}
 			}
 		}
-		if (multPattern.test(parsingString)) {
+		if (multPattern.test(parsingString)) { // eg 7 * 4
 			for (var i = parsingString.length - 1; i >= 0; i -= 1) {
 				if (multPattern.test(parsingString[i]) && !this.#surroundedByParens(parsingString, i)) {
 					return new TwoOpResultSet(parsingString.slice(0, i), parsingString.slice(i + 1, parsingString.length), parsingString[i]);
