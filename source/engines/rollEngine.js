@@ -521,14 +521,14 @@ class DieSelectResultSet extends ResultSet {
 		this.#dieSides = parseInt(convertedDieSides);
 		this.#selectNum = selectNum ? parseInt(selectNum) : 1;
 		this.#selectOp = selectOp;
-		let numDice = parseInt(numDice);
-		if (numDice - this.#selectNum <= 0) {
+		let parsedNumDice = parseInt(numDice);
+		if (parsedNumDice - this.#selectNum <= 0) {
 			switch (this.#selectOp) {
 				case keep_ops.KEEP:
 				case keep_ops.KEEP_HIGHEST:
 				case keep_ops.KEEP_LOWEST:
-					this.#selectNum = numDice;
-					for (let i = 0; i < numDice; i += 1) {
+					this.#selectNum = parsedNumDice;
+					for (let i = 0; i < parsedNumDice; i += 1) {
 						this.#dieList.push(new RollResult(this.#dieSides));
 					}
 					break;
@@ -540,7 +540,7 @@ class DieSelectResultSet extends ResultSet {
 					break;
 			}
 		} else {
-			for (let i = 0; i < parseInt(numDice); i += 1) {
+			for (let i = 0; i < parsedNumDice; i += 1) {
 				this.#dieList.push(new RollResult(this.#dieSides));
 			}
 		}
