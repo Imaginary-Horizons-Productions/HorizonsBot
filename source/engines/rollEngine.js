@@ -70,7 +70,7 @@ class ResultSet {
 	static #surroundedByParens(str, symbolPos) {
 		let rightParensUnenclosed = 0,
 			leftParensUnenclosed = 0;
-		let leftSide = str.slice(0, symbolPos),
+		const leftSide = str.slice(0, symbolPos),
 			rightSide = str.slice(symbolPos + 1, str.length - 1);
 		for (let i = leftSide.length - 1; i >= 0; i -= 1) {
 			if (leftSide[i] == ')' && leftParensUnenclosed <= 0) {
@@ -144,7 +144,7 @@ class ResultSet {
 		if (startQuote && !endQuote) {
 			throw `Mismatched quotation marks in list:\n${str}`;
 		}
-		let lastEntry = newEntry.trim();
+		const lastEntry = newEntry.trim();
 		if (lastEntry) {
 			strList.push(lastEntry);
 		}
@@ -162,26 +162,26 @@ class ResultSet {
 		if (/^1?d(\%|\d+)$/.test(parsingString)) { //parse single die roll //(\%|\d+) -> d%, 1d5, d75
 			return new SingleResultSet(parsingString);
 		} else if (/^\d+d(\%|\d+)[dk][lh]?\d+$/.test(parsingString)) { //parse multiple die with selection // 2d20dl1, 2d4kh2
-			let dPos = parsingString.search('d');
-			let selPos = parsingString.search(/[dk][lh]?\d+$/);
-			let endNumPos = parsingString.search(/\d+$/);
+			const dPos = parsingString.search('d');
+			const selPos = parsingString.search(/[dk][lh]?\d+$/);
+			const endNumPos = parsingString.search(/\d+$/);
 			return new DieSelectResultSet(parsingString.slice(0, dPos), parsingString.slice(dPos - parsingString.length, selPos), parsingString.slice(selPos - parsingString.length, endNumPos), parsingString.slice(endNumPos, parsingString.length))
 		} else if (/^\d+d(\%|\d+)$/.test(parsingString)) { //parse multiple die roll // 1d20, 2d6
-			let dPos = parsingString.search('d');
+			const dPos = parsingString.search('d');
 			return new MultiDieResultSet(parsingString.slice(0, dPos), parsingString.slice(dPos - parsingString.length));
 		} else if (/^-?\d+$/.test(parsingString)) { //parse number result // 20, -3
 			return new SingleResultSet(parsingString, false);
 		} else if (/^1?u?l\[.*\]/.test(parsingString)) { //parse single list roll // l["a", "b", "c"], 1ul[a, b, c, d]
-			let bracketList = parsingString.replace(/^1?u?l/, '');
+			const bracketList = parsingString.replace(/^1?u?l/, '');
 			return new ListResultSet(1, this.#parseStringList(bracketList));
 		} else if (/^\d+l\[.*\]/.test(parsingString)) { // parse multiple list pick // 2l["a", "b", "c"]
-			let bracketList = parsingString.replace(/^\d+l/, '');
-			let num = parsingString.replace(/l\[.*\]/, '');
+			const bracketList = parsingString.replace(/^\d+l/, '');
+			const num = parsingString.replace(/l\[.*\]/, '');
 			return new ListResultSet(num, this.#parseStringList(bracketList));
 		} else if (/^\d+ul\[.*\]/.test(parsingString)) { // parse multiple list pick with unique selections // 2ul[a, b, c, d]
-			let bracketList = parsingString.replace(/^\d+ul/, '');
-			let num = parsingString.replace(/ul\[.*\]/, '');
-			let forceUnique = !(num === '' || Number.parseInt(num) === 1);
+			const bracketList = parsingString.replace(/^\d+ul/, '');
+			const num = parsingString.replace(/ul\[.*\]/, '');
+			const forceUnique = !(num === '' || Number.parseInt(num) === 1);
 			return new ListResultSet(num, this.#parseStringList(bracketList), forceUnique);
 		}
 		/*
@@ -191,12 +191,12 @@ class ResultSet {
 		 * If the conditions are not met, try the next symbol set
 		 */
 		//Handle addition/subtraction
-		let addSubPattern = /[\+\-]/;
-		let multPattern = /\*/;
-		let hasListPattern = /\d*u?l\[.*\]/;
+		const addSubPattern = /[\+\-]/;
+		const multPattern = /\*/;
+		const hasListPattern = /\d*u?l\[.*\]/;
 		if (!multPattern.test(parsingString) && !hasListPattern.test(parsingString) && addSubPattern.test(parsingString)) { // eg 1 + 3, 20 - 2, 1 + 2 + 3
-			let toPureSums = parsingString.replace(/\-/g, '+-');
-			let parsableList = toPureSums.split('+');
+			const toPureSums = parsingString.replace(/\-/g, '+-');
+			const parsableList = toPureSums.split('+');
 			return new SumSeriesResultSet(parsableList);
 		}
 		if (addSubPattern.test(parsingString)) { // eg 3 + 8, 2 - 1
@@ -234,7 +234,7 @@ class SingleResultSet extends ResultSet {
 	constructor(value, isRoll = true) {
 		super();
 		if (isRoll) {
-			let valueArr = value.split('d');
+			const valueArr = value.split('d');
 			let poppedVal = valueArr.pop();
 			poppedVal = poppedVal == '%' ? '100' : poppedVal;
 			this.#result = new RollResult(parseInt(poppedVal));
@@ -270,7 +270,7 @@ class ListResultSet extends ResultSet {
 		this.#stringList = list;
 		let tempUsedList = list.slice();
 		for (let i = 0; i < choices; i++) {
-			let randomSelection = tempUsedList[Math.floor(Math.random() * tempUsedList.length)];
+			const randomSelection = tempUsedList[Math.floor(Math.random() * tempUsedList.length)];
 			this.#result.push(new StringResult(randomSelection, tempUsedList));
 			if (forceUnique) {
 				tempUsedList = tempUsedList.filter(str => str != randomSelection);
@@ -318,7 +318,7 @@ class TwoOpResultSet extends ResultSet {
 					throw 'Cannot multiply two strings. Multiplication with a number and a string must have the number on the left side of the string to repeat the string.';
 				}
 				if (this.hasStringInRight()) {
-					let resultArray = new Array(this.#left.getResults()).fill(this.#right.getResults())
+					const resultArray = new Array(this.#left.getResults()).fill(this.#right.getResults())
 					return resultArray.join(' ');
 				}
 				return this.#left.getResults() * this.#right.getResults();
@@ -328,8 +328,8 @@ class TwoOpResultSet extends ResultSet {
 	getMaxResults() {
 		switch (this.#op) {
 			case two_ops.ADD:
-				let leftPart = this.hasStringInLeft() ? `${this.#left.getMaxResults()} ` : this.#left.getMaxResults();
-				let rightPart = this.hasStringInRight() ? ` ${this.#right.getMaxResults()}` : this.#right.getMaxResults();
+				const leftPart = this.hasStringInLeft() ? `${this.#left.getMaxResults()} ` : this.#left.getMaxResults();
+				const rightPart = this.hasStringInRight() ? ` ${this.#right.getMaxResults()}` : this.#right.getMaxResults();
 				return leftPart + rightPart;
 			case two_ops.SUBTRACT:
 				if (this.#left instanceof ListResultSet || this.#right instanceof ListResultSet) {
@@ -350,8 +350,8 @@ class TwoOpResultSet extends ResultSet {
 	getMinResults() {
 		switch (this.#op) {
 			case two_ops.ADD:
-				let leftPart = this.hasStringInLeft() ? `${this.#left.getMinResults()} ` : this.#left.getMinResults();
-				let rightPart = this.hasStringInRight() ? ` ${this.#right.getMinResults()}` : this.#right.getMinResults();
+				const leftPart = this.hasStringInLeft() ? `${this.#left.getMinResults()} ` : this.#left.getMinResults();
+				const rightPart = this.hasStringInRight() ? ` ${this.#right.getMinResults()}` : this.#right.getMinResults();
 				return leftPart + rightPart;
 			case two_ops.SUBTRACT:
 				if (this.#left instanceof ListResultSet || this.#right instanceof ListResultSet) {
@@ -373,8 +373,8 @@ class TwoOpResultSet extends ResultSet {
 		if (this.#op == two_ops.SUBTRACT && (this.#left instanceof ListResultSet || this.#right instanceof ListResultSet)) {
 			throw 'It is not possible to use subtraction on list rolls. Make sure you are not using subtraction on a list and your parentheses are correct.';
 		}
-		let leftString = this.#left.toString(frac);
-		let rightString = this.#right.toString(frac)
+		const leftString = this.#left.toString(frac);
+		const rightString = this.#right.toString(frac)
 		return `(${leftString} ${this.#op} ${rightString})`;
 	}
 
@@ -521,7 +521,7 @@ class DieSelectResultSet extends ResultSet {
 		this.#dieSides = parseInt(convertedDieSides);
 		this.#selectNum = selectNum ? parseInt(selectNum) : 1;
 		this.#selectOp = selectOp;
-		let parsedNumDice = parseInt(numDice);
+		const parsedNumDice = parseInt(numDice);
 		if (parsedNumDice - this.#selectNum <= 0) {
 			switch (this.#selectOp) {
 				case keep_ops.KEEP:
@@ -550,8 +550,8 @@ class DieSelectResultSet extends ResultSet {
 		if (this.#dieList.length == 0) {
 			return 0;
 		}
-		let kept = [],
-			resultDice = this.#dieList.slice().sort((r1, r2) => r1.getResult() - r2.getResult());
+		let kept = [];
+		const resultDice = this.#dieList.slice().sort((r1, r2) => r1.getResult() - r2.getResult());
 		switch (this.#selectOp) {
 			case keep_ops.KEEP:
 			case keep_ops.KEEP_HIGHEST:
@@ -726,8 +726,8 @@ class ResultBundle {
 
 function parseRoll(input) { //This needs some wild revision before it'll work
 	input = input.replace(/\(/g, ' ( ').replace(/\)/g, ' ) ').replace(/\+/g, ' + ').replace(/\*/g, ' * ').replace(/\-(^\d)/g, ' - ');
-	let splitInput = input.split(/(?<!\[[^\]]*) (?![^\[]*\])/);
-	let rollArray = splitInput.reduce((acc, cur) => {
+	const splitInput = input.split(/(?<!\[[^\]]*) (?![^\[]*\])/);
+	const rollArray = splitInput.reduce((acc, cur) => {
 		if (acc[acc.length - 1] == '║' || cur == '') {
 			return acc;
 		} else if (/[\+\-\*]/.test(cur) || /\-?\d+$/.test(cur) || /\d*d(\%|\d+)([dk][lh]?\d+)?$/.test(cur) || /\d*u?l\[.*\]$/.test(cur) || /\(/.test(cur) || /\)/.test(cur)) {
@@ -739,7 +739,7 @@ function parseRoll(input) { //This needs some wild revision before it'll work
 		}
 	}, []);
 	rollArray[rollArray.length - 1] == '║' ? rollArray.pop() : () => { };
-	let textArray = splitInput.reduceRight((acc, cur) => {
+	const textArray = splitInput.reduceRight((acc, cur) => {
 		if (acc[0] == '║' || cur == '') {
 			return acc;
 		} else if (/\-?\d+$/.test(cur) || /\d*d(\%|\d+)([dk][lh]?\d+)?$/.test(cur) || /\d*u?l\[.*\]$/.test(cur) || /\)/.test(cur)) {
