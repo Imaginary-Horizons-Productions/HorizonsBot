@@ -65,7 +65,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 					} else {
 						const now = Date.now();
 						if (now > nextMeetingInput * 1000) {
-							errors.nextMeeting = `The timestamp given for the next meeting (${nextMeetingInput}) is in the past.`;
+							errors.nextMeeting = `The timestamp given for the next meeting (${nextMeetingInput}) is in the past (<t:${nextMeetingInput}>).`;
 						} else if (nextMeetingInput * 1000 > now + (5 * YEAR_IN_MS)) {
 							errors.nextMeeting = "Discord does not allow the creation of events 5 years in the future. Please schedule your next meeting later.";
 						} else {
@@ -104,9 +104,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			}
 
 			cancelClubEvent(club, modalSubmission.guild.scheduledEvents);
-			if (club.isRecruiting()) {
-				createClubEvent(club, modalSubmission.guild);
-			}
+			createClubEvent(club, modalSubmission.guild);
 			clearClubReminder(club.id);
 			scheduleClubReminderAndEvent(club.id, club.timeslot.nextMeeting, modalSubmission.guild.channels);
 

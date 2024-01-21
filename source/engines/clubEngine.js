@@ -40,24 +40,26 @@ function updateClubDetails(club, channel) {
  * @param {Guild} guild
  */
 function createClubEvent(club, guild) {
-	return guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
-		const eventPayload = {
-			name: club.title,
-			scheduledStartTime: club.timeslot.nextMeeting * 1000,
-			privacyLevel: 2,
-			entityType: GuildScheduledEventEntityType.Voice,
-			description: club.description,
-			channel: voiceChannel
-		};
-		if (club.imageURL) {
-			eventPayload.image = club.imageURL;
-		}
-		return guild.scheduledEvents.create(eventPayload);
-	}).then(event => {
-		club.timeslot.setEventId(event.id);
-		updateList(guild.channels, "club");
-		updateClub(club);
-	});
+	if (club.isRecruiting() && club.timeslot.nextMeeting) {
+		return guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
+			const eventPayload = {
+				name: club.title,
+				scheduledStartTime: club.timeslot.nextMeeting * 1000,
+				privacyLevel: 2,
+				entityType: GuildScheduledEventEntityType.Voice,
+				description: club.description,
+				channel: voiceChannel
+			};
+			if (club.imageURL) {
+				eventPayload.image = club.imageURL;
+			}
+			return guild.scheduledEvents.create(eventPayload);
+		}).then(event => {
+			club.timeslot.setEventId(event.id);
+			updateList(guild.channels, "club");
+			updateClub(club);
+		});
+	}
 }
 
 /** Delete the scheduled event associated with a club's next meeting
@@ -88,9 +90,7 @@ async function scheduleClubReminderAndEvent(clubId, nextMeetingTimestamp, channe
 					if (club.timeslot.periodCount && club.timeslot.periodUnits) {
 						const nextTimestamp = club.timeslot.nextMeeting + timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
 						club.timeslot.setNextMeeting(nextTimestamp);
-						if (club?.isRecruiting()) {
-							await createClubEvent(club, channelManager.guild);
-						}
+						await createClubEvent(club, channelManager.guild);
 						const clubTextChannel = await channelManager.fetch(club.id);
 						updateClubDetails(club, clubTextChannel);
 						scheduleClubReminderAndEvent(clubId, nextTimestamp, channelManager);
