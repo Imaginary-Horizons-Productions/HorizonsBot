@@ -12,7 +12,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 	/** Set the meeting time/repetition properties for the club with provided id */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
-		const modal = new ModalBuilder().setCustomId(mainId)
+		const modal = new ModalBuilder().setCustomId(interaction.id)
 			.setTitle("Club Meeting Time Settings")
 			.addComponents(
 				new ActionRowBuilder().addComponents(
@@ -52,7 +52,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				)
 			);
 		interaction.showModal(modal);
-		interaction.awaitModalSubmit({ filter: interaction => interaction.customId === mainId, time: timeConversion(5, "m", "ms") }).then(modalSubmission => {
+		interaction.awaitModalSubmit({ filter: submission => submission.customId === interaction.id, time: timeConversion(5, "m", "ms") }).then(modalSubmission => {
 			const { fields } = modalSubmission;
 			const errors = {};
 
