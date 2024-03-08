@@ -760,7 +760,7 @@ function parseRoll(input) { //This needs some wild revision before it'll work
 			listEmptyErrRolls.push(roll);
 		}
 	}
-	if (listErrRolls.length) {
+	if (listEmptyErrRolls.length) {
 		errMsgArray.push(`The list of items to roll cannot be empty. The following rolls had this issue: ${listEmptyErrRolls.join('; ')}`);
 	}
 	if (errMsgArray.length) {
