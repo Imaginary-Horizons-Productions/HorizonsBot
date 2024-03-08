@@ -1,4 +1,7 @@
 # HorizonsBot Change Log
+#### HorizonsBot Version 2.5.1:
+- `/roll` now provides more helpful error messages
+- Fixed a few crashes
 #### HorizonsBot Version 2.5.0:
 - Added new functionality to the `/roll` command
 	- `#d%` is a shortcut for rolling # d100s (default 1)
