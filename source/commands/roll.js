@@ -27,7 +27,7 @@ module.exports = new CommandWrapper(mainId, "Roll any number of dice with any nu
 					break;
 			}
 		} catch (error) {
-			interaction.reply({ content: error, ephemeral: true });
+			interaction.reply({ content: error.message, ephemeral: true });
 		}
 	}
 ).setOptions(
