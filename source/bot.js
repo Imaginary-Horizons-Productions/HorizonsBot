@@ -1,3 +1,19 @@
+const log = console.log;
+
+console.log = function () {
+	log.apply(console, [`<t:${Math.floor(Date.now() / 1000)}> ` + arguments[0]].concat(Array.prototype.slice.call(arguments, 1)));
+}
+
+const error = console.error;
+
+console.error = function () {
+	if (arguments[0] instanceof Error) {
+		error.apply(console, [`<t:${Math.floor(Date.now() / 1000)}> ` + arguments[0].stack].concat(Array.prototype.slice.call(arguments, 1)));
+	} else {
+		error.apply(console, [`<t:${Math.floor(Date.now() / 1000)}> ` + arguments[0]].concat(Array.prototype.slice.call(arguments, 1)));
+	}
+}
+
 //#region Imports
 const { Client, REST, GatewayIntentBits, Routes, ActivityType, Events } = require("discord.js");
 const fsa = require("fs/promises");
@@ -7,7 +23,6 @@ const { getButton } = require("./buttons/_buttonDictionary.js");
 const { getSelect } = require("./selects/_selectDictionary.js");
 const { scheduleClubReminderAndEvent, updateClubDetails } = require("./engines/clubEngine.js");
 const { versionEmbedBuilder, rulesEmbedBuilder, pressKitEmbedBuilder } = require("./engines/messageEngine.js");
-const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
 const { referenceMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
 const { ensuredPathSave } = require("./helpers.js");
 const { SAFE_DELIMITER, guildId } = require('./constants.js');
