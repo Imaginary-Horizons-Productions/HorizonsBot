@@ -4,6 +4,7 @@ const { timeConversion } = require("../helpers.js");
 const { getClubDictionary, updateClub, updateList } = require("./referenceEngine.js");
 const { clubEmbedBuilder } = require("./messageEngine.js");
 const { MAX_SET_TIMEOUT, SAFE_DELIMITER } = require("../constants.js");
+const { commandMention } = require("../util/textUtil.js");
 
 /** @type {{[clubId: string]: NodeJS.Timeout}} */
 const reminderTimeouts = {};
@@ -14,7 +15,7 @@ const reminderTimeouts = {};
  */
 function updateClubDetails(club, channel) {
 	channel.messages.fetch(club.detailSummaryId).then(message => {
-		message.edit({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds: [clubEmbedBuilder(club)], fetchReply: true }).then(detailSummaryMessage => {
+		message.edit({ content: `You can send out invites with ${commandMention("club-invite")}. Prospective members will be shown the following embed:`, embeds: [clubEmbedBuilder(club)], fetchReply: true }).then(detailSummaryMessage => {
 			detailSummaryMessage.pin();
 			club.detailSummaryId = detailSummaryMessage.id;
 			updateList(channel.guild.channels, "club");
@@ -23,7 +24,7 @@ function updateClubDetails(club, channel) {
 	}).catch(error => {
 		if (error.message === "Unknown Message") {
 			// message not found
-			channel.send({ content: "You can send out invites with \`/club-invite\`. Prospective members will be shown the following embed:", embeds: [clubEmbedBuilder(club)], fetchReply: true }).then(detailSummaryMessage => {
+			channel.send({ content: `You can send out invites with ${commandMention("club-invite")}. Prospective members will be shown the following embed:`, embeds: [clubEmbedBuilder(club)], fetchReply: true }).then(detailSummaryMessage => {
 				detailSummaryMessage.pin();
 				club.detailSummaryId = detailSummaryMessage.id;
 				updateList(channel.guild.channels, "club");

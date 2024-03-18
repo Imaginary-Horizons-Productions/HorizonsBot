@@ -21,7 +21,7 @@ const { scheduleClubReminderAndEvent, updateClubDetails } = require("./engines/c
 const { versionEmbedBuilder, rulesEmbedBuilder, pressKitEmbedBuilder } = require("./engines/messageEngine.js");
 const { referenceMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
 const { ensuredPathSave } = require("./helpers.js");
-const { SAFE_DELIMITER, guildId } = require('./constants.js');
+const { SAFE_DELIMITER, guildId, commandIds, testGuildId } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion
 //#region Executing Code
@@ -50,17 +50,28 @@ client.on(Events.ClientReady, () => {
 	console.log(`Connected as ${client.user.tag}`);
 
 	if (process.argv[2] === "prod") {
-		(async () => {
+		(() => {
 			try {
-				await new REST({ version: 9 }).setToken(require(authPath).token).put(
+				new REST({ version: 9 }).setToken(require(authPath).token).put(
 					Routes.applicationCommands(client.user.id),
 					{ body: slashData }
-				)
+				).then(commands => {
+					for (const command of commands) {
+						commandIds[command.name] = command.id;
+					}
+				})
 			} catch (error) {
 				console.error(error);
 			}
 		})()
+	} else {
+		client.application.commands.fetch({ guildId: testGuildId }).then(commandCollection => {
+			commandCollection.each(command => {
+				commandIds[command.name] = command.id;
+			})
+		})
 	}
+
 	client.guilds.fetch(guildId).then(guild => {
 		// Post version notes
 		if (versionData.patchNotesChannelId) {

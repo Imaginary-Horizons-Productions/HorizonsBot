@@ -8,7 +8,7 @@ module.exports = new CommandWrapper(mainId, "Re-post the reminder message for th
 	/** Re-post the reminder message for the club's next meeting */
 	(interaction) => {
 		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {
-			interaction.reply({ content: "\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.", ephemeral: true });
+			interaction.reply({ content: `\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.`, ephemeral: true });
 			return;
 		}
 

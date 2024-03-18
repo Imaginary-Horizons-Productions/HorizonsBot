@@ -1,5 +1,5 @@
 const { ChannelType, PermissionFlagsBits } = require('discord.js');
-const { guildId, topicCategoryId } = require('../config/auth.json');
+const { guildId, topicCategoryId, testGuildId } = require('../config/auth.json');
 
 module.exports = {
 	// JS Constants
@@ -23,7 +23,9 @@ module.exports = {
 
 	// Config
 	guildId,
+	testGuildId,
 	topicCategoryId,
+	commandIds: {},
 
 	// Internal Convention
 	SAFE_DELIMITER: "→",
