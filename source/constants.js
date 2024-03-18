@@ -6,6 +6,8 @@ module.exports = {
 	MAX_SET_TIMEOUT: 2 ** 31 - 1,
 
 	// Discord constants
+	serverGuideMention: "<id:guide>",
+	channelBrowserMention: "<id:customize>",
 	discordIconURL: "https://cdn.discordapp.com/attachments/618523876187570187/1110265047516721333/discord-mark-blue.png",
 	MAX_MESSAGE_CONTENT_LENGTH: 2000,
 	MAX_EMBED_AUTHOR_NAME_LENGTH: 256,
