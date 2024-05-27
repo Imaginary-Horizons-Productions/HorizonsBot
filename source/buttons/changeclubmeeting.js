@@ -96,7 +96,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			}
 			if (fields.fields.has("periodUnit")) {
 				const periodUnitsInput = fields.getTextInputValue("periodUnit");
-				if (["days", "weeks"].includes(periodUnitsInput)) {
+				if (["days", "weeks"].includes(periodUnitsInput.toLowerCase())) {
 					club.timeslot.periodUnits = periodUnitsInput;
 				} else {
 					errors.periodUnits = `Input ${periodUnitsInput} did not match "days" or "weeks"`;
