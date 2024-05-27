@@ -12,6 +12,7 @@ const commandFiles = [
 	"club-leave.js",
 	"club-promote-host.js",
 	"club-send-reminder.js",
+	"club-skip-meeting.js",
 	"club-sunset.js",
 	"commands.js",
 	"data-policy.js",

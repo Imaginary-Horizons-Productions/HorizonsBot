@@ -77,7 +77,7 @@ function clubEmbedBuilder(club) {
 	if (club.timeslot.nextMeeting) {
 		fields.push({
 			name: "Next Meeting",
-			value: `<t:${club.timeslot.nextMeeting}:F>${Boolean(club.timeslot.periodCount) ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}`}`
+			value: `<t:${club.timeslot.nextMeeting}:F>${club.timeslot.periodCount && club.timeslot.periodUnits ? ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}` : ""}`
 		});
 	}
 
