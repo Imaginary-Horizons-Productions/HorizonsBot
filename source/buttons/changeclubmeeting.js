@@ -88,7 +88,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				const periodCountInput = parseInt(unparsedValue);
 				if (!isNaN(periodCountInput)) {
 					club.timeslot.periodCount = periodCountInput;
-				} else if (unparsedValue === "") {
+				} else if (unparsedValue === "" || unparsedValue === "0") {
 					club.timeslot.periodCount = 0;
 				} else {
 					errors.periodCount = `Could not interpret ${unparsedValue} as integer`;
