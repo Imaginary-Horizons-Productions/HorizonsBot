@@ -1,6 +1,8 @@
 # HorizonsBot Change Log
-#### HorizonsBot Version 2.5.1:
+#### HorizonsBot Version 2.6.0:
 - New command: `/club-skip-meeting` allows club leaders and moderators to cancel the reminder for a club's upcoming meeting and advance the next meeting timestamp if repeated meetings
+
+#### HorizonsBot Version 2.5.1:
 - `/roll` now provides more helpful error messages
 - Fixed a few crashes
 #### HorizonsBot Version 2.5.0:
