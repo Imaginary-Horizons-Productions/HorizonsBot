@@ -133,7 +133,7 @@ function rulesEmbedBuilder() {
 			"iconURL": imaginaryHorizonsIconURL,
 			"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 		})
-		.setTitle("Server Rules (/info rules)")
+		.setTitle(`Server Rules (${commandMention("server-rules")})`)
 		.setThumbnail(imaginaryHorizonsIconURL)
 		.setDescription("Imaginary Horizons is an community that values dignity, creativity, and diversity. Here are our server's rules:")
 		.addFields({
