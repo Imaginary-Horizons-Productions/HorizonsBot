@@ -2,6 +2,7 @@
 #### HorizonsBot Version 2.6.1:
 - Split the `/list` command into subcommands
 - Added command links to `/press-kit`, `/list clubs`, and `/list petitions`
+- Added a note about channels with extra rules in `/server-rules`
 
 #### HorizonsBot Version 2.6.0:
 - New command: `/club-skip-meeting` allows club leaders and moderators to cancel the reminder for a club's upcoming meeting and advance the next meeting timestamp if repeated meetings

@@ -149,6 +149,10 @@ function rulesEmbedBuilder() {
 				"value": "Please post in appropriate channels so we can keep discussion organized. If you can't find a good channel to post in, check the Channel and Roles Browser at the top of the channel list to see if you can opt-in. If you still can't find a good channel, you can /petition for one to be made."
 			},
 			{
+				"name": "Some Channels Have Additional Rules",
+				"value": "The topic chanels #comfort, #controversial, and #creations have extra rules associated with them. You can find the extra rules pinned in those channels."
+			},
+			{
 				"name": "Discord Usage Tips",
 				"value": "- Start your message with `@silent` to prevent it from waking people up in the middle of the night.\n- Surround text with `||` to mark it a spoiler. ||example||"
 			}
