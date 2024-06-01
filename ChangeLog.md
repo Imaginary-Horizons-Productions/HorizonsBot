@@ -1,7 +1,7 @@
 # HorizonsBot Change Log
 #### HorizonsBot Version 2.6.1:
 - Split the `/list` command into subcommands
-- Added command links to `/press-kit`, `/list clubs`, and `/list petitions`
+- Added command links to `/server-rules`, `/press-kit`, `/list clubs`, and `/list petitions`
 - Added a note about channels with extra rules in `/server-rules`
 
 #### HorizonsBot Version 2.6.0:
