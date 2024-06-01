@@ -2,6 +2,7 @@ const fs = require('fs');
 const { EmbedBuilder, Colors } = require("discord.js");
 const { imaginaryHorizonsIconURL, discordIconURL } = require('../constants');
 const { Club } = require('../classes');
+const { commandMention } = require('../util/textUtil');
 
 /** Create a Message Embed with common settings (author, timestamp, color)
  * @param {string} color
@@ -162,7 +163,7 @@ function pressKitEmbedBuilder() {
 			"iconURL": imaginaryHorizonsIconURL,
 			"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 		})
-		.setTitle("Imaginary Horizons Branding (/info press-kit)")
+		.setTitle(`Imaginary Horizons Branding (${commandMention("press-kit")})`)
 		.setThumbnail(imaginaryHorizonsIconURL)
 		.addFields({
 			"name": "Colors",

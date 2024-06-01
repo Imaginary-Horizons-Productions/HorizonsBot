@@ -16,7 +16,7 @@ const commandFiles = [
 	"club-sunset.js",
 	"commands.js",
 	"data-policy.js",
-	"list.js",
+	"list",
 	"manage-mods",
 	"petition-check.js",
 	"petition-veto.js",

@@ -3,6 +3,7 @@ const { Club, ClubTimeslot } = require("../classes");
 const { topicCategoryId } = require('../constants');
 const { ensuredPathSave } = require('../helpers');
 const { embedTemplateBuilder } = require("./messageEngine.js");
+const { commandMention } = require('../util/textUtil.js');
 
 /**  key: topic, value: petitioner ids
  * @type {Record<string, string[]>} */
@@ -248,7 +249,7 @@ function buildListMessagePayload(memberCount, listType) {
 		return new Promise((resolve, reject) => {
 			messageOptions.embeds = [
 				embedTemplateBuilder("#f07581")
-					.setTitle(`${listType.toUpperCase()} LIST (/list)`)
+					.setTitle(listType === "club" ? `Clubs List (${commandMention("list club")})` : `Open Petitions List (${commandMention("list petition")})`)
 					.setDescription(description)
 			];
 			messageOptions.files = [];
