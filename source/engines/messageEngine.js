@@ -171,7 +171,7 @@ function pressKitEmbedBuilder() {
 		.setThumbnail(imaginaryHorizonsIconURL)
 		.addFields({
 			"name": "Colors",
-			"value": "Salmon - #f07581\nPeriwinkle - #6b81eb\nSpring Green - #b0ffe8\nWhite - #ffffff"
+			"value": "Salmon - #f07581\nPeriwinkle - #6b81eb\nSpring Green - #b0ffe8\nWhite - #ffffff\nMint - #00BD9D"
 		},
 			{
 				"name": "Links",
