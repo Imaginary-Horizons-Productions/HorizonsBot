@@ -32,10 +32,11 @@ module.exports = new CommandWrapper(mainId, "Post a reference message in this ch
 			case "proxy-thread-info":
 				messageOptions = {
 					embeds: [
-						new EmbedBuilder() //TODONOW color, author, footer
+						new EmbedBuilder().setColor("#1F9AD8")
 							.setTitle("Proxy Thread Hub")
 							.setDescription(`This channel serves as the hub for holding private threads with <@${pluralKitId}>. Server members can use ${commandMention("proxy-thread create")} to make private threads with PluralKit in them to simulate DMs. Due to Discord's implementation of private threads, users with the ManageThreads permission (ie our Moderators) will have access to these threads.`)
 							.addFields({ name: "Inviting more members", value: "Mentioning other users will invite them to the private thread." })
+							.setFooter({ text: "This functionality is prototype for pitch and not affiliated or endorsed by PluralKit." })
 					],
 					flags: MessageFlags.SuppressNotifications
 				};

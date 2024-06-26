@@ -249,7 +249,7 @@ function buildListMessagePayload(memberCount, listType) {
 		return new Promise((resolve, reject) => {
 			messageOptions.embeds = [
 				embedTemplateBuilder("#f07581")
-					.setTitle(listType === "club" ? `Clubs List (${commandMention("list club")})` : `Open Petitions List (${commandMention("list petition")})`)
+					.setTitle(listType === "club" ? `Clubs List (${commandMention("list clubs")})` : `Open Petitions List (${commandMention("list petitions")})`)
 					.setDescription(description)
 			];
 			messageOptions.files = [];
