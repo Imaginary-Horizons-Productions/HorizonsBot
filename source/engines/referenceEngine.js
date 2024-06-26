@@ -146,7 +146,7 @@ function removeClub(id, channelManager) {
 	updateList(channelManager, "club");
 }
 
-/** @type {{petition: {channelId: string; messageId: string}, club: {channelId: string; messageId: string;}, rules: {channelId: string; messageId: string;}}} */
+/** @type {{petition: {channelId: string; messageId: string}, club: {channelId: string; messageId: string;}, rules: {channelId: string; messageId: string;}, "press-kit": {channelId: string; messageId: string;}, "proxy-thread-info": {channelId: string; messageId: string;}}} */
 let referenceMessages = require('../../config/referenceMessageIds.json');
 
 /** Builds the MessageOptions for the specified list message

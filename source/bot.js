@@ -21,7 +21,7 @@ const { scheduleClubReminderAndEvent, updateClubDetails } = require("./engines/c
 const { versionEmbedBuilder, rulesEmbedBuilder, pressKitEmbedBuilder } = require("./engines/messageEngine.js");
 const { referenceMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
 const { ensuredPathSave } = require("./helpers.js");
-const { SAFE_DELIMITER, guildId, commandIds, testGuildId } = require('./constants.js');
+const { SAFE_DELIMITER, guildId, commandIds, testGuildId, SKIP_INTERACTION_HANDLING } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion
 //#region Executing Code
@@ -153,10 +153,7 @@ client.on(Events.ClientReady, () => {
 })
 
 client.on(Events.InteractionCreate, interaction => {
-	if (interaction.isModalSubmit()) {
-		// Modal submissions to be handled in the interaction that shows them
-		return;
-	} else if (interaction.isCommand()) {
+	if (interaction.isCommand()) {
 		const command = getCommand(interaction.commandName);
 		const cooldownTimestamp = command.getCooldownTimestamp(interaction.user.id, interactionCooldowns);
 		if (cooldownTimestamp) {
@@ -165,6 +162,8 @@ client.on(Events.InteractionCreate, interaction => {
 		}
 
 		command.execute(interaction);
+	} else if (interaction.customId.startsWith(SKIP_INTERACTION_HANDLING)) {
+		return;
 	} else {
 		const [mainId, ...args] = interaction.customId.split(SAFE_DELIMITER);
 		let getter;

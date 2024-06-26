@@ -1,5 +1,13 @@
 # HorizonsBot Change Log
-#### HorizonsBot Version 2.6.1:
+#### HorizonsBot Version 2.7.0:
+## /proxy-thread
+This new command bundle allows users to make their own private threads including PluralKit in the #proxy-threads channel (see channel for more info).
+- `/proxy-thread create` makes a new private thread
+- `/proxy-thread rename` allows any thread member to rename the thread
+- `/proxy-thread disband` allows any thread member to disband the thread
+- invite new server members to threads by @'ing them
+
+## Other Changes
 - Split the `/list` command into subcommands
 - Added command links to `/server-rules`, `/press-kit`, `/list clubs`, and `/list petitions`
 - Added a note about channels with extra rules in `/server-rules`
