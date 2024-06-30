@@ -4,6 +4,7 @@ const { getClubDictionary, updateClub, updateList } = require('../engines/refere
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 const { timeConversion } = require('../helpers.js');
+const { SKIP_INTERACTION_HANDLING } = require('../constants.js');
 
 const mainId = "changeclubseats";
 module.exports = new ButtonWrapper(mainId, 3000,
