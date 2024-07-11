@@ -7,7 +7,7 @@ module.exports = new CommandWrapper(mainId, "Delete a club on a delay", null, fa
 	/** Set a club to be deleted on a delay */
 	(interaction) => {
 		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {
-			interaction.reply({ content: "\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.", ephemeral: true });
+			interaction.reply({ content: `\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.`, ephemeral: true });
 			return;
 		}
 

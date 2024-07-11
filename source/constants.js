@@ -1,11 +1,13 @@
 const { ChannelType, PermissionFlagsBits } = require('discord.js');
-const { guildId, topicCategoryId } = require('../config/auth.json');
+const { guildId, topicCategoryId, testGuildId } = require('../config/auth.json');
 
 module.exports = {
 	// JS Constants
 	MAX_SET_TIMEOUT: 2 ** 31 - 1,
 
 	// Discord constants
+	serverGuideMention: "<id:guide>",
+	channelBrowserMention: "<id:customize>",
 	discordIconURL: "https://cdn.discordapp.com/attachments/618523876187570187/1110265047516721333/discord-mark-blue.png",
 	MAX_MESSAGE_CONTENT_LENGTH: 2000,
 	MAX_EMBED_AUTHOR_NAME_LENGTH: 256,
@@ -23,10 +25,14 @@ module.exports = {
 
 	// Config
 	guildId,
+	testGuildId,
 	topicCategoryId,
+	pluralKitId: "466378653216014359",
+	commandIds: {},
 
 	// Internal Convention
 	SAFE_DELIMITER: "→",
+	SKIP_INTERACTION_HANDLING: "❌",
 	imaginaryHorizonsIconURL: "https://cdn.discordapp.com/icons/353575133157392385/c78041f52e8d6af98fb16b8eb55b849a.png",
 	voiceChannelOptions: {
 		"private": (guild, modRoleId, host) => ({

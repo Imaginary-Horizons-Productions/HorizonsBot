@@ -1,4 +1,23 @@
 # HorizonsBot Change Log
+#### HorizonsBot Version 2.7.0:
+## /proxy-thread
+This new command bundle allows users to make their own private threads including PluralKit in the #proxy-threads channel (see channel for more info).
+- `/proxy-thread create` makes a new private thread
+- `/proxy-thread rename` allows any thread member to rename the thread
+- `/proxy-thread disband` allows any thread member to disband the thread
+- invite new server members to threads by @'ing them
+
+## Other Changes
+- Split the `/list` command into subcommands
+- Added command links to `/server-rules`, `/press-kit`, `/list clubs`, and `/list petitions`
+- Added a note about channels with extra rules in `/server-rules`
+
+#### HorizonsBot Version 2.6.0:
+- New command: `/club-skip-meeting` allows club leaders and moderators to cancel the reminder for a club's upcoming meeting and advance the next meeting timestamp if repeated meetings
+
+#### HorizonsBot Version 2.5.1:
+- `/roll` now provides more helpful error messages
+- Fixed a few crashes
 #### HorizonsBot Version 2.5.0:
 - Added new functionality to the `/roll` command
 	- `#d%` is a shortcut for rolling # d100s (default 1)

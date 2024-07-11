@@ -9,6 +9,8 @@ for (const file of [
 	"changeclubseats.js",
 	"delete.js",
 	"join.js",
+	"proxydisband.js",
+	"proxyrename.js",
 	"startevent.js",
 	"switchclubvoicetype.js"
 ]) {

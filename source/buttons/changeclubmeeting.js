@@ -4,6 +4,7 @@ const { getClubDictionary, updateClub, updateList } = require('../engines/refere
 const { updateClubDetails, cancelClubEvent, createClubEvent, scheduleClubReminderAndEvent, clearClubReminder } = require('../engines/clubEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { timeConversion } = require('../helpers.js');
+const { SKIP_INTERACTION_HANDLING, SAFE_DELIMITER } = require('../constants.js');
 
 const YEAR_IN_MS = 31556926000;
 
@@ -12,7 +13,8 @@ module.exports = new ButtonWrapper(mainId, 3000,
 	/** Set the meeting time/repetition properties for the club with provided id */
 	(interaction, [clubId]) => {
 		const club = getClubDictionary()[clubId];
-		const modal = new ModalBuilder().setCustomId(mainId)
+		const modalCustomId = `${SKIP_INTERACTION_HANDLING}${SAFE_DELIMITER}${interaction.id}`;
+		const modal = new ModalBuilder().setCustomId(modalCustomId)
 			.setTitle("Club Meeting Time Settings")
 			.addComponents(
 				new ActionRowBuilder().addComponents(
@@ -52,7 +54,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				)
 			);
 		interaction.showModal(modal);
-		interaction.awaitModalSubmit({ filter: interaction => interaction.customId === mainId, time: timeConversion(5, "m", "ms") }).then(modalSubmission => {
+		interaction.awaitModalSubmit({ filter: submission => submission.customId === modalCustomId, time: timeConversion(5, "m", "ms") }).then(modalSubmission => {
 			const { fields } = modalSubmission;
 			const errors = {};
 
@@ -65,7 +67,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 					} else {
 						const now = Date.now();
 						if (now > nextMeetingInput * 1000) {
-							errors.nextMeeting = `The timestamp given for the next meeting (${nextMeetingInput}) is in the past.`;
+							errors.nextMeeting = `The timestamp given for the next meeting (${nextMeetingInput}) is in the past (<t:${nextMeetingInput}>).`;
 						} else if (nextMeetingInput * 1000 > now + (5 * YEAR_IN_MS)) {
 							errors.nextMeeting = "Discord does not allow the creation of events 5 years in the future. Please schedule your next meeting later.";
 						} else {
@@ -88,7 +90,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				const periodCountInput = parseInt(unparsedValue);
 				if (!isNaN(periodCountInput)) {
 					club.timeslot.periodCount = periodCountInput;
-				} else if (unparsedValue === "") {
+				} else if (unparsedValue === "" || unparsedValue === "0") {
 					club.timeslot.periodCount = 0;
 				} else {
 					errors.periodCount = `Could not interpret ${unparsedValue} as integer`;
@@ -96,7 +98,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			}
 			if (fields.fields.has("periodUnit")) {
 				const periodUnitsInput = fields.getTextInputValue("periodUnit");
-				if (["days", "weeks"].includes(periodUnitsInput)) {
+				if (["days", "weeks"].includes(periodUnitsInput.toLowerCase())) {
 					club.timeslot.periodUnits = periodUnitsInput;
 				} else {
 					errors.periodUnits = `Input ${periodUnitsInput} did not match "days" or "weeks"`;
@@ -104,9 +106,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			}
 
 			cancelClubEvent(club, modalSubmission.guild.scheduledEvents);
-			if (club.isRecruiting()) {
-				createClubEvent(club, modalSubmission.guild);
-			}
+			createClubEvent(club, modalSubmission.guild);
 			clearClubReminder(club.id);
 			scheduleClubReminderAndEvent(club.id, club.timeslot.nextMeeting, modalSubmission.guild.channels);
 

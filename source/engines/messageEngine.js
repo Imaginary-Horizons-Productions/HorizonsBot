@@ -2,6 +2,7 @@ const fs = require('fs');
 const { EmbedBuilder, Colors } = require("discord.js");
 const { imaginaryHorizonsIconURL, discordIconURL } = require('../constants');
 const { Club } = require('../classes');
+const { commandMention } = require('../util/textUtil');
 
 /** Create a Message Embed with common settings (author, timestamp, color)
  * @param {string} color
@@ -77,7 +78,7 @@ function clubEmbedBuilder(club) {
 	if (club.timeslot.nextMeeting) {
 		fields.push({
 			name: "Next Meeting",
-			value: `<t:${club.timeslot.nextMeeting}:F>${Boolean(club.timeslot.periodCount) ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}`}`
+			value: `<t:${club.timeslot.nextMeeting}:F>${club.timeslot.periodCount && club.timeslot.periodUnits ? ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}` : ""}`
 		});
 	}
 
@@ -132,7 +133,7 @@ function rulesEmbedBuilder() {
 			"iconURL": imaginaryHorizonsIconURL,
 			"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 		})
-		.setTitle("Server Rules (/info rules)")
+		.setTitle(`Server Rules (${commandMention("server-rules")})`)
 		.setThumbnail(imaginaryHorizonsIconURL)
 		.setDescription("Imaginary Horizons is an community that values dignity, creativity, and diversity. Here are our server's rules:")
 		.addFields({
@@ -145,7 +146,11 @@ function rulesEmbedBuilder() {
 			},
 			{
 				"name": "Start Discussions in the Appropriate Channel",
-				"value": "Please post in appropriate channels so we can keep discussion organized. If you can't find a good channel to post in, check the Channel and Roles Browser at the top of the channel list to see if you can opt-in. If you still can't find a good channel, you can /petition for one to be made."
+				"value": `Please post in appropriate channels so we can keep discussion organized. If you can't find a good channel to post in, check the Channel and Roles Browser at the top of the channel list to see if you can opt-in. If you still can't find a good channel, you can ${commandMention("petition")} for one to be made.`
+			},
+			{
+				"name": "Some Channels Have Additional Rules",
+				"value": "The topic chanels **#comfort**, **#controversial**, and **#creations** have extra rules associated with them. You can find the extra rules pinned in those channels."
 			},
 			{
 				"name": "Discord Usage Tips",
@@ -162,11 +167,11 @@ function pressKitEmbedBuilder() {
 			"iconURL": imaginaryHorizonsIconURL,
 			"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 		})
-		.setTitle("Imaginary Horizons Branding (/info press-kit)")
+		.setTitle(`Imaginary Horizons Branding (${commandMention("press-kit")})`)
 		.setThumbnail(imaginaryHorizonsIconURL)
 		.addFields({
 			"name": "Colors",
-			"value": "Salmon - #f07581\nPeriwinkle - #6b81eb\nSpring Green - #b0ffe8\nWhite - #ffffff"
+			"value": "Salmon - #f07581\nPeriwinkle - #6b81eb\nSpring Green - #b0ffe8\nWhite - #ffffff\nMint - #00BD9D"
 		},
 			{
 				"name": "Links",

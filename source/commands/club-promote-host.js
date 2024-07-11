@@ -9,7 +9,7 @@ module.exports = new CommandWrapper(mainId, "Promote another user to club host",
 	/** Update the club's host to the given user */
 	(interaction) => {
 		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {
-			interaction.reply({ content: "\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.", ephemeral: true });
+			interaction.reply({ content: `\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.`, ephemeral: true });
 			return;
 		}
 

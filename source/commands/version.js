@@ -1,3 +1,4 @@
+const { AttachmentBuilder } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { versionEmbedBuilder } = require('../engines/messageEngine.js');
 
@@ -7,10 +8,7 @@ module.exports = new CommandWrapper(mainId, "Get HorizonsBot's version notes", n
 		if (interaction.options.getString("notes-length") === "last-version") {
 			interaction.reply({
 				content: "Here are all the changes so far: ",
-				files: [{
-					attachment: "./ChangeLog.md",
-					name: 'HorizonsBotChangeLog.md'
-				}],
+				files: [new AttachmentBuilder("./ChangeLog.md")],
 				ephemeral: true
 			});
 		} else {

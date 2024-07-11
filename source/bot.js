@@ -1,3 +1,15 @@
+const log = console.log;
+
+console.log = function () {
+	log.apply(console, [`<t:${Math.floor(Date.now() / 1000)}> `, ...arguments]);
+}
+
+const error = console.error;
+
+console.error = function () {
+	error.apply(console, [`<t:${Math.floor(Date.now() / 1000)}> `, ...arguments]);
+}
+
 //#region Imports
 const { Client, REST, GatewayIntentBits, Routes, ActivityType, Events } = require("discord.js");
 const fsa = require("fs/promises");
@@ -7,10 +19,9 @@ const { getButton } = require("./buttons/_buttonDictionary.js");
 const { getSelect } = require("./selects/_selectDictionary.js");
 const { scheduleClubReminderAndEvent, updateClubDetails } = require("./engines/clubEngine.js");
 const { versionEmbedBuilder, rulesEmbedBuilder, pressKitEmbedBuilder } = require("./engines/messageEngine.js");
-const { isClubHostOrModerator, isModerator } = require("./engines/permissionEngine.js");
 const { referenceMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
 const { ensuredPathSave } = require("./helpers.js");
-const { SAFE_DELIMITER, guildId } = require('./constants.js');
+const { SAFE_DELIMITER, guildId, commandIds, testGuildId, SKIP_INTERACTION_HANDLING } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion
 //#region Executing Code
@@ -39,17 +50,28 @@ client.on(Events.ClientReady, () => {
 	console.log(`Connected as ${client.user.tag}`);
 
 	if (process.argv[2] === "prod") {
-		(async () => {
+		(() => {
 			try {
-				await new REST({ version: 9 }).setToken(require(authPath).token).put(
+				new REST({ version: 9 }).setToken(require(authPath).token).put(
 					Routes.applicationCommands(client.user.id),
 					{ body: slashData }
-				)
+				).then(commands => {
+					for (const command of commands) {
+						commandIds[command.name] = command.id;
+					}
+				})
 			} catch (error) {
 				console.error(error);
 			}
 		})()
+	} else {
+		client.application.commands.fetch({ guildId: testGuildId }).then(commandCollection => {
+			commandCollection.each(command => {
+				commandIds[command.name] = command.id;
+			})
+		})
 	}
+
 	client.guilds.fetch(guildId).then(guild => {
 		// Post version notes
 		if (versionData.patchNotesChannelId) {
@@ -131,10 +153,7 @@ client.on(Events.ClientReady, () => {
 })
 
 client.on(Events.InteractionCreate, interaction => {
-	if (interaction.isModalSubmit()) {
-		// Modal submissions to be handled in the interaction that shows them
-		return;
-	} else if (interaction.isCommand()) {
+	if (interaction.isCommand()) {
 		const command = getCommand(interaction.commandName);
 		const cooldownTimestamp = command.getCooldownTimestamp(interaction.user.id, interactionCooldowns);
 		if (cooldownTimestamp) {
@@ -143,6 +162,8 @@ client.on(Events.InteractionCreate, interaction => {
 		}
 
 		command.execute(interaction);
+	} else if (interaction.customId.startsWith(SKIP_INTERACTION_HANDLING)) {
+		return;
 	} else {
 		const [mainId, ...args] = interaction.customId.split(SAFE_DELIMITER);
 		let getter;

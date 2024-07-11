@@ -3,6 +3,7 @@ const { Club, ClubTimeslot } = require("../classes");
 const { topicCategoryId } = require('../constants');
 const { ensuredPathSave } = require('../helpers');
 const { embedTemplateBuilder } = require("./messageEngine.js");
+const { commandMention } = require('../util/textUtil.js');
 
 /**  key: topic, value: petitioner ids
  * @type {Record<string, string[]>} */
@@ -145,7 +146,7 @@ function removeClub(id, channelManager) {
 	updateList(channelManager, "club");
 }
 
-/** @type {{petition: {channelId: string; messageId: string}, club: {channelId: string; messageId: string;}, rules: {channelId: string; messageId: string;}}} */
+/** @type {{petition: {channelId: string; messageId: string}, club: {channelId: string; messageId: string;}, rules: {channelId: string; messageId: string;}, "press-kit": {channelId: string; messageId: string;}, "proxy-thread-info": {channelId: string; messageId: string;}}} */
 let referenceMessages = require('../../config/referenceMessageIds.json');
 
 /** Builds the MessageOptions for the specified list message
@@ -248,7 +249,7 @@ function buildListMessagePayload(memberCount, listType) {
 		return new Promise((resolve, reject) => {
 			messageOptions.embeds = [
 				embedTemplateBuilder("#f07581")
-					.setTitle(`${listType.toUpperCase()} LIST (/list)`)
+					.setTitle(listType === "club" ? `Clubs List (${commandMention("list clubs")})` : `Open Petitions List (${commandMention("list petitions")})`)
 					.setDescription(description)
 			];
 			messageOptions.files = [];
