@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { EmbedBuilder, Colors } = require("discord.js");
-const { imaginaryHorizonsIconURL, discordIconURL } = require('../constants');
+const { imaginaryHorizonsIconURL, discordIconURL, MAX_EMBED_DESCRIPTION_LENGTH } = require('../constants');
 const { Club } = require('../classes');
 const { commandMention } = require('../util/textUtil');
 
@@ -115,11 +115,11 @@ function versionEmbedBuilder() {
 
 		if (knownIssuesStart && knownIssuesStart < knownIssuesEnd) {
 			// Known Issues section found
-			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesStart))
+			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesStart).slice(MAX_EMBED_DESCRIPTION_LENGTH))
 				.addField(`Known Issues`, data.slice(knownIssuesStart + 16, knownIssuesEnd))
 		} else {
 			// Known Issues section not found
-			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesEnd));
+			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesEnd).slice(MAX_EMBED_DESCRIPTION_LENGTH));
 		}
 
 		return embed.addFields({ name: "Other Discord Bots", value: "Check out other Imaginary Horizons Productions bots or commission your own on the [IHP GitHub](https://github.com/Imaginary-Horizons-Productions)" });
