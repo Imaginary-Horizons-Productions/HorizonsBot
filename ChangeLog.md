@@ -1,4 +1,7 @@
 # HorizonsBot Change Log
+#### HorizonsBot Version 2.8.0:
+- Proxy threads send silenced everyone mentions (then delete them) to simulate DM red bubbles
+
 #### HorizonsBot Version 2.7.0:
 ## /proxy-thread
 This new command bundle allows users to make their own private threads including PluralKit in the #proxy-threads channel (see channel for more info).
