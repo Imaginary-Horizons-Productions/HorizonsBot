@@ -25,7 +25,7 @@ module.exports.Club = class {
 	 * @returns {boolean}
 	 */
 	isRecruiting() {
-		return this.userIds.length < this.seats;
+		return this.userIds.length < this.seats || this.voiceType === "stage";
 	}
 }
 
