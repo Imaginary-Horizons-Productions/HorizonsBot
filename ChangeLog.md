@@ -1,6 +1,7 @@
 # HorizonsBot Change Log
 #### HorizonsBot Version 2.8.0:
 - Proxy threads send silenced everyone mentions (then delete them) to simulate DM red bubbles
+- `/club-invite` now sends a message with a channel select menu and a user select menu instead of making users copy/paste the club's text channel id
 
 #### HorizonsBot Version 2.7.0:
 ## /proxy-thread

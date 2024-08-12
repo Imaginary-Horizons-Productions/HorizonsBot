@@ -1,60 +1,88 @@
-const { ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js');
+const { ButtonBuilder, ActionRowBuilder, ButtonStyle, StringSelectMenuBuilder, PermissionFlagsBits, UserSelectMenuBuilder } = require('discord.js');
 const { CommandWrapper } = require('../classes');
-const { SAFE_DELIMITER } = require('../constants.js');
+const { SAFE_DELIMITER, SKIP_INTERACTION_HANDLING } = require('../constants.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const mainId = "club-invite";
-module.exports = new CommandWrapper(mainId, "Send a user (default: self) an invite to a club", null, true, 3000,
-	/** Provide full details on the given club */
+module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", PermissionFlagsBits.SendMessages, true, 3000,
 	async (interaction) => {
-		const clubId = interaction.options.getString("club-id") || interaction.channelId;
-		const club = getClubDictionary()[clubId];
-		if (!club) {
-			interaction.reply({ content: `The club you indicated could not be found. Please check for typos!`, ephemeral: true })
-				.catch(console.error);
-		}
-
-		const idRegExp = RegExp(/<@(\d+)>/, "g");
-		const inviteeIds = [];
-		let results;
-		while ((results = idRegExp.exec(interaction.options.getString("invitees"))) !== null) {
-			const id = results[1];
-			if (!inviteeIds.includes(id)) {
-				inviteeIds.push(id);
+		const clubDictionary = getClubDictionary();
+		const clubSelectId = `${SKIP_INTERACTION_HANDLING}${SAFE_DELIMITER}club`;
+		const userSelectId = `${SKIP_INTERACTION_HANDLING}${SAFE_DELIMITER}users`;
+		const clubSelect = new StringSelectMenuBuilder().setCustomId(clubSelectId)
+			.setPlaceholder("Select club...");
+		for (const id in clubDictionary) {
+			const club = clubDictionary[id];
+			if (club.isRecruiting()) {
+				clubSelect.addOptions(
+					{
+						label: club.title,
+						description: `${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members`,
+						value: club.id
+					}
+				)
 			}
 		}
 
-		const recipients = [];
-		if (inviteeIds.length > 0) {
-			for (const member of (await interaction.guild.members.fetch({ user: inviteeIds })).values()) {
-				if (!member.user.bot) {
-					recipients.push(member);
+		interaction.reply({
+			content: "HorizonsBot will send a DM with the selected club's details embed to the selected user. The message will contain a join button if the user isn't already a part of the club.",
+			components: [
+				new ActionRowBuilder().addComponents(clubSelect),
+				new ActionRowBuilder().addComponents(
+					new UserSelectMenuBuilder().setCustomId(userSelectId)
+						.setPlaceholder("Select user...")
+						.setDisabled(true)
+				)
+			],
+			ephemeral: true,
+			fetchReply: true
+		}).then(reply => {
+			let selectedClubId;
+			const collector = reply.createMessageComponentCollector({ max: 2 });
+			collector.on("collect", collectedInteraction => {
+				switch (collectedInteraction.customId) {
+					case clubSelectId:
+						[selectedClubId] = collectedInteraction.values;
+						collectedInteraction.update({
+							components: [
+								new ActionRowBuilder().addComponents(
+									new StringSelectMenuBuilder().setCustomId(clubSelectId)
+										.setPlaceholder(getClubDictionary()[selectedClubId].title)
+										.setDisabled(true)
+										.setOptions({ label: "placeholder", value: "placeholder" })
+								),
+								new ActionRowBuilder().addComponents(
+									new UserSelectMenuBuilder().setCustomId(userSelectId)
+										.setPlaceholder("Select user...")
+								)
+							]
+						});
+						break;
+					case userSelectId:
+						const club = getClubDictionary()[selectedClubId];
+						const member = collectedInteraction.users.first();
+						const components = [];
+						if (member.id !== club.hostId && !club.userIds.includes(member.id)) {
+							components.push(new ActionRowBuilder(
+								{
+									components: [
+										new ButtonBuilder({
+											custom_id: `join${SAFE_DELIMITER}${club.id}`,
+											label: `Join ${club.title}`,
+											style: ButtonStyle.Success
+										})
+									]
+								}
+							));
+						}
+						member.send({ embeds: [clubEmbedBuilder(club)], components });
+						collectedInteraction.reply({ content: `Details about and an invite to <#${selectedClubId}> have been sent to ${member}.`, ephemeral: true });
+						interaction.deleteReply();
+						break;
 				}
-			}
-		}
-		if (recipients.length < 1) {
-			recipients.push(interaction.member);
-		}
 
-		for (const member of recipients) {
-			const components = member.id !== club.hostId && !club.userIds.includes(member.id) ? [new ActionRowBuilder(
-				{
-					components: [
-						new ButtonBuilder({
-							custom_id: `join${SAFE_DELIMITER}${club.id}`,
-							label: `Join ${club.title}`,
-							style: ButtonStyle.Success
-						})
-					]
-				}
-			)] : [];
-			member.send({ embeds: [clubEmbedBuilder(club)], components });
-		}
-		interaction.reply({ content: `Details about and an invite to <#${clubId}> details have been sent to ${recipients.join(", ")}.`, ephemeral: true });
+			})
+		})
 	}
-).setOptions(
-	// can't use channel mention because users can't mention channels that are invisible to them (even by constructing the mention manually)
-	{ type: "String", name: "club-id", description: "The club text channel's id", required: false, choices: [] },
-	{ type: "String", name: "invitees", description: "The mention(s) of the user(s)", required: false, choices: [] }
 );
