@@ -115,11 +115,11 @@ function versionEmbedBuilder() {
 
 		if (knownIssuesStart && knownIssuesStart < knownIssuesEnd) {
 			// Known Issues section found
-			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesStart).slice(MAX_EMBED_DESCRIPTION_LENGTH))
+			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesStart).slice(0, MAX_EMBED_DESCRIPTION_LENGTH))
 				.addField(`Known Issues`, data.slice(knownIssuesStart + 16, knownIssuesEnd))
 		} else {
 			// Known Issues section not found
-			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesEnd).slice(MAX_EMBED_DESCRIPTION_LENGTH));
+			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesEnd).slice(0, MAX_EMBED_DESCRIPTION_LENGTH));
 		}
 
 		return embed.addFields({ name: "Other Discord Bots", value: "Check out other Imaginary Horizons Productions bots or commission your own on the [IHP GitHub](https://github.com/Imaginary-Horizons-Productions)" });
