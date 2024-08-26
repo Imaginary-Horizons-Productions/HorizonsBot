@@ -11,7 +11,7 @@ console.error = function () {
 }
 
 //#region Imports
-const { Client, REST, GatewayIntentBits, Routes, ActivityType, Events, MessageFlags } = require("discord.js");
+const { Client, REST, GatewayIntentBits, Routes, ActivityType, Events } = require("discord.js");
 const fsa = require("fs/promises");
 
 const { getCommand, slashData } = require("./commands/_commandDictionary.js");
@@ -181,16 +181,6 @@ client.on(Events.InteractionCreate, interaction => {
 		}
 
 		interactionWrapper.execute(interaction, args);
-	}
-})
-
-client.on(Events.MessageCreate, message => {
-	if (!message.author.bot && !message.webhookId && message.channel.parentId === referenceMessages["proxy-thread-info"].channelId) {
-		message.channel.send({ content: "@everyone", flags: MessageFlags.SuppressNotifications }).then(pingMessage => {
-			setTimeout(() => {
-				pingMessage.delete();
-			}, 250);
-		});
 	}
 })
 
