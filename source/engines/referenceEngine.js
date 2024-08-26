@@ -1,7 +1,7 @@
 const { GuildChannelManager, Guild, User, Collection, ChannelType, ActionRowBuilder, StringSelectMenuBuilder, Message, MessageFlags } = require('discord.js');
 const { Club, ClubTimeslot } = require("../classes");
 const { topicCategoryId } = require('../constants');
-const { ensuredPathSave } = require('../helpers');
+const { ensuredPathSave } = require('../util/fileUtil.js');
 const { embedTemplateBuilder } = require("./messageEngine.js");
 const { commandMention } = require('../util/textUtil.js');
 

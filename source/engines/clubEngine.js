@@ -1,6 +1,6 @@
 const { Guild, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildScheduledEventEntityType } = require("discord.js");
 const { Club } = require("../classes");
-const { timeConversion } = require("../helpers.js");
+const { timeConversion } = require("../util/mathUtil.js");
 const { getClubDictionary, updateClub, updateList } = require("./referenceEngine.js");
 const { clubEmbedBuilder } = require("./messageEngine.js");
 const { MAX_SET_TIMEOUT, SAFE_DELIMITER } = require("../constants.js");

@@ -1,7 +1,7 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
-const { timeConversion } = require('../helpers.js');
+const { timeConversion } = require('../util/mathUtil.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { SAFE_DELIMITER, SKIP_INTERACTION_HANDLING } = require('../constants.js');

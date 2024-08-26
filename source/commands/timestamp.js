@@ -1,5 +1,5 @@
 const { CommandWrapper } = require('../classes');
-const { timeConversion } = require('../helpers.js');
+const { timeConversion } = require('../util/mathUtil');
 
 const mainId = "timestamp";
 module.exports = new CommandWrapper(mainId, "Calculate the unix timestamp for a moment in time, which Discord displays with timezones applied", null, true, 3000,

@@ -1,5 +1,5 @@
 const { CommandWrapper } = require('../classes');
-const { ensuredPathSave } = require('../helpers.js');
+const { ensuredPathSave } = require('../util/fileUtil.js');
 const { referenceMessages, buildListMessagePayload } = require('../engines/referenceEngine.js');
 const { rulesEmbedBuilder, pressKitEmbedBuilder } = require('../engines/messageEngine.js');
 const { MessageFlags, PermissionFlagsBits, EmbedBuilder } = require('discord.js');

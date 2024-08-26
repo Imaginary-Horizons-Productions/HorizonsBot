@@ -20,7 +20,7 @@ const { getSelect } = require("./selects/_selectDictionary.js");
 const { scheduleClubReminderAndEvent, updateClubDetails } = require("./engines/clubEngine.js");
 const { versionEmbedBuilder, rulesEmbedBuilder, pressKitEmbedBuilder } = require("./engines/messageEngine.js");
 const { referenceMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
-const { ensuredPathSave } = require("./helpers.js");
+const { ensuredPathSave } = require("./util/fileUtil.js");
 const { SAFE_DELIMITER, guildId, commandIds, testGuildId, SKIP_INTERACTION_HANDLING } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion

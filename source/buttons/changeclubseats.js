@@ -3,7 +3,7 @@ const { ButtonWrapper } = require('../classes');
 const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
-const { timeConversion } = require('../helpers.js');
+const { timeConversion } = require('../util/mathUtil.js');
 const { SKIP_INTERACTION_HANDLING, SAFE_DELIMITER } = require('../constants.js');
 
 const mainId = "changeclubseats";

@@ -1,5 +1,5 @@
 const { GuildMember } = require("discord.js");
-const { ensuredPathSave } = require("../helpers");
+const { ensuredPathSave } = require("../util/fileUtil");
 const { getClubDictionary } = require("./referenceEngine");
 
 let { modIds, noAts, modRoleId } = require("../../config/modData.json");
