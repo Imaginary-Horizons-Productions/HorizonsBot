@@ -1,3 +1,4 @@
+const { MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes/InteractionWrapper.js');
 const { noAts } = require('../engines/permissionEngine.js');
 
@@ -6,7 +7,13 @@ module.exports = new CommandWrapper(mainId, "Send a ping to the current channel"
 	/** Send a rate-limited ping */
 	(interaction) => {
 		if (!noAts.includes(interaction.user.id)) {
-			interaction.reply(`${interaction.options.getString("type")} ${interaction.options.getString("message")}`);
+			const mention = interaction.options.getString("type");
+			interaction.reply(`${mention} ${interaction.options.getString("message")}`);
+			interaction.channel.send({ content: mention, flags: MessageFlags.SuppressNotifications }).then(pingMessage => {
+				setTimeout(() => {
+					pingMessage.delete();
+				}, 250);
+			});
 		} else {
 			interaction.reply({ content: `You are not currently permitted to use \`/${mainId}\`. Please speak to a moderator if you believe this to be in error.`, ephemeral: true });
 		}
