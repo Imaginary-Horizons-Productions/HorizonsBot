@@ -1,6 +1,7 @@
 const { BuildError } = require("./BuildError");
 const { Club, ClubTimeslot } = require("./Club");
 const { ButtonWrapper, CommandWrapper, SelectWrapper } = require("./InteractionWrapper");
+const { Petition } = require("./Petition");
 
 module.exports = {
 	BuildError,
@@ -8,5 +9,6 @@ module.exports = {
 	ClubTimeslot,
 	ButtonWrapper,
 	CommandWrapper,
-	SelectWrapper
+	SelectWrapper,
+	Petition
 };

@@ -1,6 +1,6 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
-const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
+const { getClubDictionary, updateClub, updateListReference } = require('../engines/referenceEngine.js');
 const { updateClubDetails, cancelClubEvent, createClubEvent, scheduleClubReminderAndEvent, clearClubReminder } = require('../engines/clubEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { timeConversion } = require('../util/mathUtil.js');
@@ -111,7 +111,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			scheduleClubReminderAndEvent(club.id, club.timeslot.nextMeeting, modalSubmission.guild.channels);
 
 			updateClubDetails(club, modalSubmission.channel);
-			updateList(modalSubmission.guild.channels, "club");
+			updateListReference(modalSubmission.guild.channels, "club");
 			updateClub(club);
 
 			const payload = { embeds: [clubEmbedBuilder(club)] };

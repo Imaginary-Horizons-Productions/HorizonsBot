@@ -1,4 +1,4 @@
-const { CommandWrapper } = require('../classes');
+const { CommandWrapper, BuildError } = require('../classes');
 
 const commandFiles = [
 	"about.js",
@@ -15,20 +15,23 @@ const commandFiles = [
 	"club-skip-meeting.js",
 	"club-sunset.js",
 	"commands.js",
+	"create-opt-in-channel.js",
+	"create-pingable-role.js",
 	"data-policy.js",
 	"list",
 	"manage-mods",
-	"petition-check.js",
+	"petition-check-channel.js",
+	"petition-check-role.js",
 	"petition-veto.js",
-	"petition.js",
+	"petition",
 	"post-reference.js",
 	"press-kit.js",
 	"proxy-thread",
 	"roles-rundown.js",
 	"roll.js",
 	"server-rules.js",
+	"set-pingable-role-emoji.js",
 	"timestamp.js",
-	"topic-add.js",
 	"version.js"
 ];
 /** @type {Record<string, CommandWrapper>} */
@@ -38,6 +41,9 @@ const slashData = [];
 for (const file of commandFiles) {
 	/** @type {CommandWrapper} */
 	const command = require(`./${file}`);
+	if (command.mainId in commandDictionary) {
+		throw new BuildError(`Duplicate command custom id: ${command.mainId}`);
+	}
 	commandDictionary[command.mainId] = command;
 	slashData.push(command.builder.toJSON());
 }

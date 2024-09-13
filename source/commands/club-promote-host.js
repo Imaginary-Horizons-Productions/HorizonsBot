@@ -1,7 +1,7 @@
 const { PermissionFlagsBits } = require('discord.js');
 const { CommandWrapper } = require('../classes/InteractionWrapper.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
-const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
+const { getClubDictionary, updateClub, updateListReference } = require('../engines/referenceEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 
 const mainId = "club-update-host";
@@ -27,7 +27,7 @@ module.exports = new CommandWrapper(mainId, "Promote another user to club host",
 		interaction.reply(`This club is now hosted by ${newHost}.`)
 			.catch(console.error);
 		updateClubDetails(club, interaction.channel);
-		updateList(interaction.guild.channels, "club");
+		updateListReference(interaction.guild.channels, "club");
 		updateClub(club);
 	}
 ).setOptions(

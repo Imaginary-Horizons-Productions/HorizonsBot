@@ -2,7 +2,7 @@ const { PermissionsBitField, Message } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
 const { guildId } = require('../constants.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
-const { updateList, getClubDictionary } = require('../engines/referenceEngine.js');
+const { updateListReference, getClubDictionary } = require('../engines/referenceEngine.js');
 
 const mainId = "join";
 module.exports = new ButtonWrapper(mainId, 3000,
@@ -43,7 +43,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 						clubChannel.send(`Welcome to ${channelName}, ${interaction.user}!`);
 					})
 					updateClubDetails(club, clubChannel);
-					updateList(guild.channels, "club");
+					updateListReference(guild.channels, "club");
 					interaction.reply(`You have joined ${clubChannel}!`);
 				} else {
 					interaction.reply(`You are currently banned from ${channelName}. Speak to a Moderator if you believe this is in error.`);

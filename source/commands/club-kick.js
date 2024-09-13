@@ -1,6 +1,6 @@
 const { PermissionsBitField, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes');
-const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
+const { getClubDictionary, updateClub, updateListReference } = require('../engines/referenceEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 
 const mainId = "club-kick";
@@ -15,7 +15,7 @@ module.exports = new CommandWrapper(mainId, "Remove a user from a club", null, f
 		const club = getClubDictionary()[interaction.channelId];
 		const user = interaction.options.getUser("target");
 		club.userIds = club.userIds.filter(memberId => memberId != user.id);
-		updateList(interaction.guild.channels, "club");
+		updateListReference(interaction.guild.channels, "club");
 		updateClub(club);
 		if (interaction.options.getBoolean("ban")) {
 			interaction.channel.permissionOverwrites.create(user.id, { [PermissionsBitField.Flags.ViewChannel]: false }, `Banned by ${interaction.user}`);

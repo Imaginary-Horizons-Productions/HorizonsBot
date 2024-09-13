@@ -1,6 +1,6 @@
 const { ChannelType, MessageFlags, PermissionFlagsBits } = require('discord.js');
 const { Club, CommandWrapper } = require('../classes');
-const { updateClub, updateList } = require('../engines/referenceEngine.js');
+const { updateClub, updateListReference } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { modRoleId, isModerator } = require('../engines/permissionEngine.js');
 const { voiceChannelOptions } = require('../constants.js');
@@ -60,7 +60,7 @@ module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice cha
 				textChannel.send({ content: `When invites are sent with ${commandMention("club-invite")}, the invitee will be shown the following embed:`, embeds: [clubEmbedBuilder(club)], fetchReply: true, flags: MessageFlags.SuppressNotifications }).then(invitePreviewMessage => {
 					invitePreviewMessage.pin();
 					club.detailSummaryId = invitePreviewMessage.id;
-					updateList(interaction.guild.channels, "club");
+					updateListReference(interaction.guild.channels, "club");
 					updateClub(club);
 				})
 				interaction.reply({ content: "The new club has been created.", ephemeral: true });
