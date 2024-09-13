@@ -6,7 +6,6 @@ const { topicCategoryId } = require('../constants');
 // type not associated correctly if the require and destructure are done in same line
 const optInChannelsData = require('../../config/optInChannels.json');
 const rolesData = require('../../config/pingableRoles.json');
-const petition = require('../commands/petition');
 
 /** @param {Guild} guild */
 function updateOnboarding(guild) {
