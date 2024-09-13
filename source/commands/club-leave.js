@@ -1,7 +1,7 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { SAFE_DELIMITER } = require('../constants.js');
-const { getClubDictionary, updateClub, updateList } = require('../engines/referenceEngine.js');
+const { getClubDictionary, updateClub, updateListReference } = require('../engines/referenceEngine.js');
 
 const mainId = "club-leave";
 module.exports = new CommandWrapper(mainId, "Leave this club", null, false, 3000,
@@ -26,7 +26,7 @@ module.exports = new CommandWrapper(mainId, "Leave this club", null, false, 3000
 					interaction.guild.channels.resolve(club.voiceChannelId).permissionOverwrites.delete(interaction.user, `/${mainId}`)
 						.catch(console.error);
 				}
-				updateList(interaction.guild.channels, "club");
+				updateListReference(interaction.guild.channels, "club");
 				updateClub(club);
 				interaction.reply({ content: `${interaction.user} has left this channel.`, flags: MessageFlags.SuppressNotifications })
 					.catch(console.error);

@@ -18,9 +18,10 @@ const { getCommand, slashData } = require("./commands/_commandDictionary.js");
 const { getButton } = require("./buttons/_buttonDictionary.js");
 const { getSelect } = require("./selects/_selectDictionary.js");
 const { scheduleClubReminderAndEvent, updateClubDetails } = require("./engines/clubEngine.js");
+const { deletePingableRole, updateOnboarding, removeAllPetitionsBy, checkAllPetitions, isOptInChannel, deleteOptInChannel } = require("./engines/customizationEngine.js");
 const { versionEmbedBuilder, rulesEmbedBuilder, pressKitEmbedBuilder } = require("./engines/messageEngine.js");
-const { referenceMessages, getClubDictionary, getPetitions, setPetitions, checkPetition, getTopicIds, addTopic, removeTopic, removeClub, updateList } = require("./engines/referenceEngine.js");
-const { ensuredPathSave } = require("./helpers.js");
+const { referenceMessages, getClubDictionary, removeClub, updateListReference } = require("./engines/referenceEngine.js");
+const { ensuredPathSave } = require("./util/fileUtil.js");
 const { SAFE_DELIMITER, guildId, commandIds, testGuildId, SKIP_INTERACTION_HANDLING } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion
@@ -97,15 +98,10 @@ client.on(Events.ClientReady, () => {
 			});
 		}
 
-		// Generate topic collection
-		const channelManager = guild.channels;
-		require('../config/topicList.json').forEach(id => {
-			channelManager.fetch(id).then(channel => {
-				addTopic(id, channel.name);
-			}).catch(console.error);
-		})
+		updateOnboarding(guild);
 
 		// Start up club reminder and event scheduling
+		const channelManager = guild.channels;
 		for (const club of Object.values(getClubDictionary())) {
 			const isNextMeetingInFuture = Date.now() < club.timeslot.nextMeeting * 1000;
 			if (isNextMeetingInFuture) {
@@ -118,10 +114,10 @@ client.on(Events.ClientReady, () => {
 
 		// Update reference messages
 		if (referenceMessages.petition?.channelId && referenceMessages.petition?.messageId) {
-			updateList(channelManager, "petition");
+			updateListReference(channelManager, "petition");
 		}
 		if (referenceMessages.club?.channelId && referenceMessages.club?.messageId) {
-			updateList(channelManager, "club");
+			updateListReference(channelManager, "club");
 		}
 		Object.entries({
 			"rules": rulesEmbedBuilder(),
@@ -153,7 +149,16 @@ client.on(Events.ClientReady, () => {
 })
 
 client.on(Events.InteractionCreate, interaction => {
-	if (interaction.isCommand()) {
+	if (interaction.customId?.startsWith(SKIP_INTERACTION_HANDLING)) {
+		return;
+	}
+
+	if (interaction.isAutocomplete()) {
+		const command = getCommand(interaction.commandName);
+		const focusedOption = interaction.options.getFocused(true);
+		const choices = command.autocomplete?.[focusedOption.name](focusedOption.value.toLowerCase()) ?? [];
+		interaction.respond(choices.slice(0, 25));
+	} else if (interaction.isCommand()) {
 		const command = getCommand(interaction.commandName);
 		const cooldownTimestamp = command.getCooldownTimestamp(interaction.user.id, interactionCooldowns);
 		if (cooldownTimestamp) {
@@ -162,8 +167,6 @@ client.on(Events.InteractionCreate, interaction => {
 		}
 
 		command.execute(interaction);
-	} else if (interaction.customId.startsWith(SKIP_INTERACTION_HANDLING)) {
-		return;
 	} else {
 		const [mainId, ...args] = interaction.customId.split(SAFE_DELIMITER);
 		let getter;
@@ -198,19 +201,15 @@ client.on(Events.GuildMemberRemove, ({ id: memberId, guild }) => {
 		})
 	}
 
-	// Remove member from petitions and check if member leaving completes any petitions
-	const petitions = getPetitions();
-	for (const topicName in petitions) {
-		petitions[topicName] = petitions[topicName].filter(id => id != memberId);
-		setPetitions(petitions, guild.channels);
-		checkPetition(guild, topicName);
-	}
+	removeAllPetitionsBy(memberId);
+	checkAllPetitions(guild); // because guild member count has decreased, petitions may now be completed
+	updateListReference(guild.channels, "petition");
 })
 
 client.on(Events.ChannelDelete, ({ id, guild }) => {
 	// Check if deleted channel is a topic
-	if (getTopicIds()?.includes(id)) {
-		removeTopic(id, guild);
+	if (isOptInChannel(id)) {
+		deleteOptInChannel(id, guild);
 	} else {
 		const clubDictionary = getClubDictionary();
 		// Check if deleted channel is a club's text channel
@@ -235,5 +234,9 @@ client.on(Events.ChannelDelete, ({ id, guild }) => {
 			}
 		}
 	}
+})
+
+client.on(Events.GuildRoleDelete, role => {
+	deletePingableRole(role);
 })
 //#endregion

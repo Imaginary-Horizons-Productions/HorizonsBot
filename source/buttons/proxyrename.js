@@ -1,6 +1,6 @@
 const { ButtonWrapper } = require('../classes');
-const { TextInputStyle, ModalBuilder, TextInputBuilder, ActionRow, ActionRowBuilder } = require('discord.js');
-const { timeConversion } = require('../helpers');
+const { TextInputStyle, ModalBuilder, TextInputBuilder, ActionRowBuilder } = require('discord.js');
+const { timeConversion } = require('../util/mathUtil');
 const { SKIP_INTERACTION_HANDLING, SAFE_DELIMITER } = require('../constants');
 
 const mainId = "proxyrename";

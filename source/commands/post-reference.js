@@ -1,6 +1,6 @@
 const { CommandWrapper } = require('../classes');
-const { ensuredPathSave } = require('../helpers.js');
-const { referenceMessages, buildListMessagePayload } = require('../engines/referenceEngine.js');
+const { ensuredPathSave } = require('../util/fileUtil.js');
+const { referenceMessages, buildPetitionListPayload, buildClubListPayload } = require('../engines/referenceEngine.js');
 const { rulesEmbedBuilder, pressKitEmbedBuilder } = require('../engines/messageEngine.js');
 const { MessageFlags, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 const { isModerator } = require('../engines/permissionEngine.js');
@@ -20,8 +20,10 @@ module.exports = new CommandWrapper(mainId, "Post a reference message in this ch
 		let messageOptions;
 		switch (listType) {
 			case "petition":
+				messageOptions = await buildPetitionListPayload(interaction.guild.memberCount);
+				break;
 			case "club":
-				messageOptions = await buildListMessagePayload(interaction.guild.memberCount, listType);
+				messageOptions = await buildClubListPayload();
 				break;
 			case "rules":
 				messageOptions = { embeds: [rulesEmbedBuilder()], flags: MessageFlags.SuppressNotifications };

@@ -81,7 +81,6 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 						interaction.deleteReply();
 						break;
 				}
-
 			})
 		})
 	}

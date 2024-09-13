@@ -1,7 +1,7 @@
 const { Guild, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildScheduledEventEntityType } = require("discord.js");
 const { Club } = require("../classes");
-const { timeConversion } = require("../helpers.js");
-const { getClubDictionary, updateClub, updateList } = require("./referenceEngine.js");
+const { timeConversion } = require("../util/mathUtil.js");
+const { getClubDictionary, updateClub, updateListReference } = require("./referenceEngine.js");
 const { clubEmbedBuilder } = require("./messageEngine.js");
 const { MAX_SET_TIMEOUT, SAFE_DELIMITER } = require("../constants.js");
 const { commandMention } = require("../util/textUtil.js");
@@ -18,7 +18,7 @@ function updateClubDetails(club, channel) {
 		message.edit({ content: `You can send out invites with ${commandMention("club-invite")}. Prospective members will be shown the following embed:`, embeds: [clubEmbedBuilder(club)], fetchReply: true }).then(detailSummaryMessage => {
 			detailSummaryMessage.pin();
 			club.detailSummaryId = detailSummaryMessage.id;
-			updateList(channel.guild.channels, "club");
+			updateListReference(channel.guild.channels, "club");
 			updateClub(club);
 		});
 	}).catch(error => {
@@ -27,7 +27,7 @@ function updateClubDetails(club, channel) {
 			channel.send({ content: `You can send out invites with ${commandMention("club-invite")}. Prospective members will be shown the following embed:`, embeds: [clubEmbedBuilder(club)], fetchReply: true }).then(detailSummaryMessage => {
 				detailSummaryMessage.pin();
 				club.detailSummaryId = detailSummaryMessage.id;
-				updateList(channel.guild.channels, "club");
+				updateListReference(channel.guild.channels, "club");
 				updateClub(club);
 			});
 		} else {
@@ -57,7 +57,7 @@ function createClubEvent(club, guild) {
 			return guild.scheduledEvents.create(eventPayload);
 		}).then(event => {
 			club.timeslot.setEventId(event.id);
-			updateList(guild.channels, "club");
+			updateListReference(guild.channels, "club");
 			updateClub(club);
 		});
 	}
@@ -101,7 +101,7 @@ async function scheduleClubReminderAndEvent(clubId, nextMeetingTimestamp, channe
 						cancelClubEvent(club, channelManager.guild.scheduledEvents);
 						updateClub(club);
 					}
-					updateList(channelManager, "club");
+					updateListReference(channelManager, "club");
 				}
 			},
 			msToTimestamp,
