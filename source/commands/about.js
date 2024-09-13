@@ -14,7 +14,7 @@ module.exports = new CommandWrapper(mainId, "Get the HorizonsBot credits", null,
 						"iconURL": imaginaryHorizonsIconURL,
 						"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
 					})
-					.setTitle("HorizonsBot v2.4.0")
+					.setTitle("HorizonsBot v2.8.0")
 					.setDescription("HorizonsBot helps with channel management and other stuff on the Imaginary Horizons Community Discord.")
 					.addFields({
 						"name": "Design & Engineering",
@@ -22,7 +22,7 @@ module.exports = new CommandWrapper(mainId, "Get the HorizonsBot credits", null,
 					},
 						{
 							"name": "Dice Roller",
-							"value": "Lucas Ensign ( <@112785244733628416> | [Twitter](https://twitter.com/SillySalamndr) )"
+							"value": "Lucas Ensign ( <@112785244733628416> )"
 						}
 					)
 					.setFooter(randomEmbedFooter())
