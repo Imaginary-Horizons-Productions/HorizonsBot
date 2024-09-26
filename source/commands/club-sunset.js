@@ -1,9 +1,10 @@
 const { CommandWrapper } = require('../classes/InteractionWrapper.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
+const { InteractionContextType } = require('discord.js');
 
 const mainId = "club-sunset";
-module.exports = new CommandWrapper(mainId, "Delete a club on a delay", null, false, 3000,
+module.exports = new CommandWrapper(mainId, "Delete a club on a delay", null, [InteractionContextType.Guild], 3000,
 	/** Set a club to be deleted on a delay */
 	(interaction) => {
 		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {

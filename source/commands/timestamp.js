@@ -1,8 +1,9 @@
+const { InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { timeConversion } = require('../util/mathUtil');
 
 const mainId = "timestamp";
-module.exports = new CommandWrapper(mainId, "Calculate the unix timestamp for a moment in time, which Discord displays with timezones applied", null, true, 3000,
+module.exports = new CommandWrapper(mainId, "Calculate the unix timestamp for a moment in time, which Discord displays with timezones applied", null, [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel], 3000,
 	/** Calculate the unix timestamp given days, hours, minutes, and seconds from now (or the provided start) */
 	(interaction) => {
 		const days = interaction.options.getNumber("days-from-start") ?? 0;

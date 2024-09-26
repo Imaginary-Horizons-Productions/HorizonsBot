@@ -1,10 +1,10 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { randomEmbedFooter } = require('../engines/messageEngine.js');
 const { imaginaryHorizonsIconURL } = require('../constants.js');
 
 const mainId = "about";
-module.exports = new CommandWrapper(mainId, "Get the HorizonsBot credits", null, false, 3000,
+module.exports = new CommandWrapper(mainId, "Get the HorizonsBot credits", null, [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel], 3000,
 	(interaction) => {
 		interaction.reply({
 			embeds: [

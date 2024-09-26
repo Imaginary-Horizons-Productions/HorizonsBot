@@ -1,4 +1,4 @@
-const { PermissionFlagsBits } = require('discord.js');
+const { PermissionFlagsBits, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../../classes/index.js');
 const { createSubcommandMappings } = require('../../util/fileUtil.js');
 const { isModerator } = require('../../engines/permissionEngine.js');
@@ -8,7 +8,7 @@ const { slashData: subcommandSlashData, executeDictionary: subcommandExecuteDict
 	"promote.js",
 	"demote.js"
 ]);
-module.exports = new CommandWrapper(mainId, "Promote/demote a user to moderator", PermissionFlagsBits.ManageGuild, false, 3000,
+module.exports = new CommandWrapper(mainId, "Promote/demote a user to moderator", PermissionFlagsBits.ManageGuild, [InteractionContextType.Guild], 3000,
 	(interaction) => {
 		if (!isModerator(interaction.member)) {
 			interaction.reply(`\`/${interaction.commandName}\` is a moderator-only command.`);

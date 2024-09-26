@@ -1,11 +1,11 @@
-const { PermissionFlagsBits } = require('discord.js');
+const { PermissionFlagsBits, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes/InteractionWrapper.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 const { getClubDictionary, updateClub, updateListReference } = require('../engines/referenceEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 
 const mainId = "club-update-host";
-module.exports = new CommandWrapper(mainId, "Promote another user to club host", null, false, 3000,
+module.exports = new CommandWrapper(mainId, "Promote another user to club host", null, [InteractionContextType.Guild], 3000,
 	/** Update the club's host to the given user */
 	(interaction) => {
 		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {

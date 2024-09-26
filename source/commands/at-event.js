@@ -1,7 +1,8 @@
+const { InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 
 const mainId = "at-event";
-module.exports = new CommandWrapper(mainId, "Send a ping to users interested in an event", null, false, 300000,
+module.exports = new CommandWrapper(mainId, "Send a ping to users interested in an event", null, [InteractionContextType.Guild], 300000,
 	/** Send a rate-limited ping to users interested in an event */
 	async (interaction) => {
 		const unparsedEventId = interaction.options.getString("event-id");

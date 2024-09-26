@@ -1,10 +1,10 @@
-const { PermissionsBitField, MessageFlags } = require('discord.js');
+const { PermissionsBitField, MessageFlags, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { getClubDictionary, updateClub, updateListReference } = require('../engines/referenceEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 
 const mainId = "club-kick";
-module.exports = new CommandWrapper(mainId, "Remove a user from a club", null, false, 3000,
+module.exports = new CommandWrapper(mainId, "Remove a user from a club", null, [InteractionContextType.Guild], 3000,
 	/** Remove visibility of receiving channel from mentioned user */
 	(interaction) => {
 		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {

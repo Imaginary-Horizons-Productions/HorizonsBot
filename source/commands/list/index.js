@@ -1,3 +1,4 @@
+const { InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../../classes/index.js');
 const { createSubcommandMappings } = require('../../util/fileUtil.js');
 
@@ -6,7 +7,7 @@ const { slashData: subcommandSlashData, executeDictionary: subcommandExecuteDict
 	"clubs.js",
 	"petitions.js"
 ]);
-module.exports = new CommandWrapper(mainId, "Get the petition or club list", null, true, 3000,
+module.exports = new CommandWrapper(mainId, "Get the petition or club list", null, [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel], 3000,
 	/** Provide the user the petition or club list as requested */
 	(interaction) => {
 		subcommandExecuteDictionary[interaction.options.getSubcommand()](interaction);

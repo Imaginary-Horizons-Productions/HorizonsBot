@@ -1,4 +1,4 @@
-const { PermissionFlagsBits, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const { PermissionFlagsBits, ActionRowBuilder, StringSelectMenuBuilder, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { updateListReference } = require('../engines/referenceEngine.js');
 const { isModerator } = require('../engines/permissionEngine.js');
@@ -7,7 +7,7 @@ const { SKIP_INTERACTION_HANDLING, SAFE_DELIMITER } = require('../constants.js')
 const { listifyEN } = require('../util/textUtil.js');
 
 const mainId = "petition-veto";
-module.exports = new CommandWrapper(mainId, "Veto a petition", PermissionFlagsBits.ManageChannels, true, 3000,
+module.exports = new CommandWrapper(mainId, "Veto a petition", PermissionFlagsBits.ManageChannels, [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel], 3000,
 	(interaction) => {
 		if (!isModerator(interaction.member)) {
 			interaction.reply(`\`/${interaction.commandName}\` is a moderator-only command.`);

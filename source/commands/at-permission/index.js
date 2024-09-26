@@ -1,4 +1,4 @@
-const { PermissionFlagsBits } = require('discord.js');
+const { PermissionFlagsBits, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../../classes/InteractionWrapper.js');
 const { createSubcommandMappings } = require('../../util/fileUtil.js');
 const { isModerator } = require('../../engines/permissionEngine.js');
@@ -8,7 +8,7 @@ const { slashData: subcommandSlashData, executeDictionary: subcommandExecuteDict
 	"allow.js",
 	"disallow.js"
 ]);
-module.exports = new CommandWrapper(mainId, "Disallow/Re-allow a user to use /at-channel", PermissionFlagsBits.ManageRoles, false, 3000,
+module.exports = new CommandWrapper(mainId, "Disallow/Re-allow a user to use /at-channel", PermissionFlagsBits.ManageRoles, [InteractionContextType.Guild], 3000,
 	(interaction) => {
 		if (!isModerator(interaction.member)) {
 			interaction.reply(`\`/${interaction.commandName}\` is a moderator-only command.`);

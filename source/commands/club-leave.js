@@ -1,10 +1,10 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { SAFE_DELIMITER } = require('../constants.js');
 const { getClubDictionary, updateClub, updateListReference } = require('../engines/referenceEngine.js');
 
 const mainId = "club-leave";
-module.exports = new CommandWrapper(mainId, "Leave this club", null, false, 3000,
+module.exports = new CommandWrapper(mainId, "Leave this club", null, [InteractionContextType.Guild], 3000,
 	/** Do cleanup associated with user leaving a club or topic */
 	(interaction) => {
 		const { user: { id: userId }, channelId } = interaction;

@@ -1,10 +1,10 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { randomEmbedFooter } = require('../engines/messageEngine.js');
 const { imaginaryHorizonsIconURL } = require('../constants.js');
 
 const mainId = "roles-rundown";
-module.exports = new CommandWrapper(mainId, "See what the roles on the server mean and how to get them", null, false, 3000,
+module.exports = new CommandWrapper(mainId, "See what the roles on the server mean and how to get them", null, [InteractionContextType.Guild], 3000,
 	/** See what the roles on the server mean and how to get them */
 	(interaction) => {
 		interaction.reply({

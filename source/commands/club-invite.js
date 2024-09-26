@@ -1,11 +1,11 @@
-const { ButtonBuilder, ActionRowBuilder, ButtonStyle, StringSelectMenuBuilder, PermissionFlagsBits, UserSelectMenuBuilder } = require('discord.js');
+const { ButtonBuilder, ActionRowBuilder, ButtonStyle, StringSelectMenuBuilder, PermissionFlagsBits, UserSelectMenuBuilder, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { SAFE_DELIMITER, SKIP_INTERACTION_HANDLING } = require('../constants.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const mainId = "club-invite";
-module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", PermissionFlagsBits.SendMessages, true, 3000,
+module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", PermissionFlagsBits.SendMessages, [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel], 3000,
 	async (interaction) => {
 		const clubDictionary = getClubDictionary();
 		const clubSelectId = `${SKIP_INTERACTION_HANDLING}${SAFE_DELIMITER}club`;

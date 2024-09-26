@@ -1,9 +1,9 @@
-const { MessageFlags } = require('discord.js');
+const { MessageFlags, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes/InteractionWrapper.js');
 const { noAts } = require('../engines/permissionEngine.js');
 
 const mainId = "at-channel";
-module.exports = new CommandWrapper(mainId, "Send a ping to the current channel", null, false, 300000,
+module.exports = new CommandWrapper(mainId, "Send a ping to the current channel", null, [InteractionContextType.Guild], 300000,
 	/** Send a rate-limited ping */
 	(interaction) => {
 		if (!noAts.includes(interaction.user.id)) {

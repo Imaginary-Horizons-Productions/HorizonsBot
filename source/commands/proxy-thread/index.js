@@ -1,4 +1,4 @@
-const { PermissionFlagsBits } = require('discord.js');
+const { PermissionFlagsBits, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../../classes/InteractionWrapper.js');
 const { createSubcommandMappings } = require('../../util/fileUtil.js');
 
@@ -8,7 +8,7 @@ const { slashData: subcommandSlashData, executeDictionary: subcommandExecuteDict
 	"disband.js",
 	"rename.js"
 ]);
-module.exports = new CommandWrapper(mainId, "Manage proxy threads", PermissionFlagsBits.SendMessagesInThreads, false, 3000,
+module.exports = new CommandWrapper(mainId, "Manage proxy threads", PermissionFlagsBits.SendMessagesInThreads, [InteractionContextType.Guild], 3000,
 	(interaction) => {
 		subcommandExecuteDictionary[interaction.options.getSubcommand()](interaction);
 	}

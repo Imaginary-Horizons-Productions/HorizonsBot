@@ -1,8 +1,9 @@
+const { InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes/index.js');
 const { checkRolePetition, getRolePetitions } = require('../engines/customizationEngine.js');
 
 const mainId = "petition-check-role";
-module.exports = new CommandWrapper(mainId, "Check how many more signatures a role petition needs", null, false, 3000,
+module.exports = new CommandWrapper(mainId, "Check how many more signatures a role petition needs", null, [InteractionContextType.Guild], 3000,
 	(interaction) => {
 		const rolePetition = interaction.options.getString("role-petition").toLowerCase();
 		const { petitionCount: roleSignatures, threshold: roleThreshold } = checkRolePetition(interaction.guild, rolePetition);

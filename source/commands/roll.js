@@ -1,9 +1,9 @@
-const { MessageFlags, PermissionFlagsBits } = require('discord.js');
+const { MessageFlags, PermissionFlagsBits, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { getRollString } = require('../engines/rollEngine.js');
 
 const mainId = "roll";
-module.exports = new CommandWrapper(mainId, "Roll any number of dice with any number of sides", PermissionFlagsBits.SendMessages, true, 3000,
+module.exports = new CommandWrapper(mainId, "Roll any number of dice with any number of sides", PermissionFlagsBits.SendMessages, [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel], 3000,
 	/** Roll the specified dice */
 	(interaction) => {
 		let rollInput = interaction.options.getString('dice');

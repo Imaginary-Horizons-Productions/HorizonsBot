@@ -1,9 +1,9 @@
-const { AttachmentBuilder } = require('discord.js');
+const { AttachmentBuilder, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { versionEmbedBuilder } = require('../engines/messageEngine.js');
 
 const mainId = "version";
-module.exports = new CommandWrapper(mainId, "Get HorizonsBot's version notes", null, true, 3000,
+module.exports = new CommandWrapper(mainId, "Get HorizonsBot's version notes", null, [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel], 3000,
 	(interaction) => {
 		if (interaction.options.getString("notes-length") === "last-version") {
 			interaction.reply({

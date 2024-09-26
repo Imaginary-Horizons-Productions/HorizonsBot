@@ -1,10 +1,10 @@
-const { PermissionFlagsBits } = require('discord.js');
+const { PermissionFlagsBits, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes/index.js');
 const { setPingableRoleEmoji, isPingableRoleId, updateOnboarding } = require('../engines/customizationEngine.js');
 const { isAnyDiscordEmoji } = require('../util/textUtil.js');
 
 const mainId = "set-pingable-role-emoji";
-module.exports = new CommandWrapper(mainId, "Set the emoji show with a Pingable Role in Onboarding", PermissionFlagsBits.ManageRoles, false, 3000,
+module.exports = new CommandWrapper(mainId, "Set the emoji show with a Pingable Role in Onboarding", PermissionFlagsBits.ManageRoles, [InteractionContextType.Guild], 3000,
 	(interaction) => {
 		const roleId = interaction.options.getString("role-id");
 		if (!isPingableRoleId(roleId)) {

@@ -1,4 +1,4 @@
-const { ChannelType, MessageFlags, PermissionFlagsBits } = require('discord.js');
+const { ChannelType, MessageFlags, PermissionFlagsBits, InteractionContextType } = require('discord.js');
 const { Club, CommandWrapper } = require('../classes');
 const { updateClub, updateListReference } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
@@ -7,7 +7,7 @@ const { voiceChannelOptions } = require('../constants.js');
 const { commandMention } = require('../util/textUtil.js');
 
 const mainId = "club-add";
-module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice channel)", PermissionFlagsBits.ManageChannels, false, 3000,
+module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice channel)", PermissionFlagsBits.ManageChannels, [InteractionContextType.Guild], 3000,
 	/** Create a new club including a text and voice channel in the receiving channel's category and set the mentioned user as host */
 	(interaction) => {
 		if (!isModerator(interaction.member)) {

@@ -1,10 +1,10 @@
-const { PermissionFlagsBits } = require('discord.js');
+const { PermissionFlagsBits, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes/index.js');
 const { isModerator } = require('../engines/permissionEngine.js');
 const { createOptInChannel, findOptInChannelWithName } = require('../engines/customizationEngine.js');
 
 const mainId = "create-opt-in-channel";
-module.exports = new CommandWrapper(mainId, "Set up an opt-in channel without petitions", PermissionFlagsBits.ManageChannels, false, 3000,
+module.exports = new CommandWrapper(mainId, "Set up an opt-in channel without petitions", PermissionFlagsBits.ManageChannels, [InteractionContextType.Guild], 3000,
 	async (interaction) => {
 		if (!isModerator(interaction.member)) {
 			interaction.reply(`\`/${interaction.commandName}\` is a moderator-only command.`);

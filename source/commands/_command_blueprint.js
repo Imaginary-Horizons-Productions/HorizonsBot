@@ -1,9 +1,10 @@
+const { InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { createSubcommandMappings } = require('../util/fileUtil.js');
 
 const mainId = "name";
 const { slashData: subcommandSlashData, executeDictionary: subcommandExecuteDictionary } = createSubcommandMappings(mainId, []);
-module.exports = new CommandWrapper(mainId, "description", null, false, 3000,
+module.exports = new CommandWrapper(mainId, "description", null, [InteractionContextType.Guild], 3000,
 	/** Command specifications go here */
 	(interaction) => {
 

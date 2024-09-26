@@ -1,10 +1,11 @@
+const { InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { sendClubReminder } = require('../engines/clubEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const mainId = "club-send-reminder";
-module.exports = new CommandWrapper(mainId, "Re-post the reminder message for the club's next meeting", null, false, 3000,
+module.exports = new CommandWrapper(mainId, "Re-post the reminder message for the club's next meeting", null, [InteractionContextType.Guild], 3000,
 	/** Re-post the reminder message for the club's next meeting */
 	(interaction) => {
 		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {
