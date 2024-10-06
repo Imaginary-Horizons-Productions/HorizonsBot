@@ -15,6 +15,7 @@ const { Client, REST, GatewayIntentBits, Routes, ActivityType, Events } = requir
 const fsa = require("fs/promises");
 
 const { getCommand, slashData } = require("./commands/_commandDictionary.js");
+const { getContextMenu, contextMenuData } = require("./context_menus/_contextMenuDictionary.js");
 const { getButton } = require("./buttons/_buttonDictionary.js");
 const { getSelect } = require("./selects/_selectDictionary.js");
 const { scheduleClubReminderAndEvent, updateClubDetails } = require("./engines/clubEngine.js");
@@ -55,7 +56,7 @@ client.on(Events.ClientReady, () => {
 			try {
 				new REST({ version: 9 }).setToken(require(authPath).token).put(
 					Routes.applicationCommands(client.user.id),
-					{ body: slashData }
+					{ body: slashData.concat(contextMenuData) }
 				).then(commands => {
 					for (const command of commands) {
 						commandIds[command.name] = command.id;
@@ -158,6 +159,15 @@ client.on(Events.InteractionCreate, interaction => {
 		const focusedOption = interaction.options.getFocused(true);
 		const choices = command.autocomplete?.[focusedOption.name](focusedOption.value.toLowerCase()) ?? [];
 		interaction.respond(choices.slice(0, 25));
+	} else if (interaction.isContextMenuCommand()) {
+		const contextMenu = getContextMenu(interaction.commandName);
+		const cooldownTimestamp = contextMenu.getCooldownTimestamp(interaction.user.id, interactionCooldowns);
+		if (cooldownTimestamp) {
+			interaction.reply({ content: `Please wait, the \`/${interaction.commandName}\` context menu option is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, ephemeral: true });
+			return;
+		}
+
+		contextMenu.execute(interaction);
 	} else if (interaction.isCommand()) {
 		const command = getCommand(interaction.commandName);
 		const cooldownTimestamp = command.getCooldownTimestamp(interaction.user.id, interactionCooldowns);
