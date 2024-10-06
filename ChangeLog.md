@@ -3,6 +3,7 @@
 - `/club-invite` now sends a message with a channel select menu and a user select menu instead of making users copy/paste the club's text channel id
 - Fixed `/at-channel` not creating notifications
 - `/petition pingable-role` can now be used to petition for pingable roles, old functionality moved to `/petition text-channel`
+- Server members can now invite others to clubs they are a part of (as long as those clubs are recruiting) through the Apps menu when right clicking on the invitee
 
 #### HorizonsBot Version 2.7.0:
 ## /proxy-thread
