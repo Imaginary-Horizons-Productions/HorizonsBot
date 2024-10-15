@@ -1,12 +1,14 @@
 const { ContextMenuWrapper, BuildError } = require("../classes");
 
+const contextMenuFiles = [
+	"Invite_to_Club.js"
+];
+
 /** @type {Record<string, ContextMenuWrapper>} */
 const CONTEXT_MENU_DICTIONARY = {};
 const contextMenuData = [];
 
-for (const file of [
-	"Invite_to_Club.js"
-]) {
+for (const file of contextMenuFiles) {
 	/** @type {ContextMenuWrapper} */
 	const contextMenu = require(`./${file}`);
 	if (contextMenu.mainId in CONTEXT_MENU_DICTIONARY) {
@@ -22,6 +24,7 @@ function getContextMenu(mainId) {
 }
 
 module.exports = {
+	contextMenuFiles,
 	/** @type {import('discord.js').RESTPostAPIChatInputApplicationCommandsJSONBody[]} */
 	contextMenuData,
 	getContextMenu
