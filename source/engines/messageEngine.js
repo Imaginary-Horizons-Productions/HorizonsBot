@@ -97,32 +97,16 @@ function versionEmbedBuilder() {
 	return fs.promises.readFile('./ChangeLog.md', { encoding: 'utf8' }).then(data => {
 		const dividerRegEx = /####/g;
 		const changesStartRegEx = /\.\d+:/g;
-		const knownIssuesStartRegEx = /### Known Issues/g;
 		let titleStart = dividerRegEx.exec(data).index;
 		changesStartRegEx.exec(data);
-		let knownIssuesStart;
-		let knownIssueStartResult = knownIssuesStartRegEx.exec(data);
-		if (knownIssueStartResult) {
-			knownIssuesStart = knownIssueStartResult.index;
-		}
-		let knownIssuesEnd = dividerRegEx.exec(data).index;
+		let sectionEnd = dividerRegEx.exec(data).index;
 
-		let embed = embedTemplateBuilder()
+		return embedTemplateBuilder()
 			.setTitle(data.slice(titleStart + 5, changesStartRegEx.lastIndex))
 			.setURL('https://discord.gg/bcE3Syu')
 			.setThumbnail('https://cdn.discordapp.com/attachments/545684759276421120/734099622846398565/newspaper.png')
-			.setFooter(randomEmbedFooter());
-
-		if (knownIssuesStart && knownIssuesStart < knownIssuesEnd) {
-			// Known Issues section found
-			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesStart).slice(0, MAX_EMBED_DESCRIPTION_LENGTH))
-				.addField(`Known Issues`, data.slice(knownIssuesStart + 16, knownIssuesEnd))
-		} else {
-			// Known Issues section not found
-			embed.setDescription(data.slice(changesStartRegEx.lastIndex, knownIssuesEnd).slice(0, MAX_EMBED_DESCRIPTION_LENGTH));
-		}
-
-		return embed.addFields({ name: "Other Discord Bots", value: "Check out other Imaginary Horizons Productions bots or commission your own on the [IHP GitHub](https://github.com/Imaginary-Horizons-Productions)" });
+			.setDescription(data.slice(changesStartRegEx.lastIndex, sectionEnd).slice(0, MAX_EMBED_DESCRIPTION_LENGTH))
+			.addFields({ name: "Other Discord Bots", value: "Check out other Imaginary Horizons Productions bots or commission your own on the [IHP GitHub](https://github.com/Imaginary-Horizons-Productions)" }).setFooter(randomEmbedFooter());
 	})
 }
 
