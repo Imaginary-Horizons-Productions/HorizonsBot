@@ -94,76 +94,86 @@ function clubEmbedBuilder(club) {
  * @returns {EmbedBuilder}
  */
 function versionEmbedBuilder() {
-	return fs.promises.readFile('./ChangeLog.md', { encoding: 'utf8' }).then(data => {
-		const dividerRegEx = /####/g;
-		const changesStartRegEx = /\.\d+:/g;
-		let titleStart = dividerRegEx.exec(data).index;
-		changesStartRegEx.exec(data);
-		let sectionEnd = dividerRegEx.exec(data).index;
+	const changelogPath = "./ChangeLog.md";
+	return fs.promises.stat(changelogPath).then(stats => {
+		return fs.promises.readFile(changelogPath, { encoding: 'utf8' }).then(data => {
+			const dividerRegEx = /####/g;
+			const changesStartRegEx = /\.\d+:/g;
+			let titleStart = dividerRegEx.exec(data).index;
+			changesStartRegEx.exec(data);
+			let sectionEnd = dividerRegEx.exec(data).index;
 
-		return embedTemplateBuilder()
-			.setTitle(data.slice(titleStart + 5, changesStartRegEx.lastIndex))
-			.setURL('https://discord.gg/bcE3Syu')
-			.setThumbnail('https://cdn.discordapp.com/attachments/545684759276421120/734099622846398565/newspaper.png')
-			.setDescription(data.slice(changesStartRegEx.lastIndex, sectionEnd).slice(0, MAX_EMBED_DESCRIPTION_LENGTH))
-			.addFields({ name: "Other Discord Bots", value: "Check out other Imaginary Horizons Productions bots or commission your own on the [IHP GitHub](https://github.com/Imaginary-Horizons-Productions)" }).setFooter(randomEmbedFooter());
+			return embedTemplateBuilder()
+				.setTitle(data.slice(titleStart + 5, changesStartRegEx.lastIndex))
+				.setURL('https://discord.gg/bcE3Syu')
+				.setThumbnail('https://cdn.discordapp.com/attachments/545684759276421120/734099622846398565/newspaper.png')
+				.setDescription(data.slice(changesStartRegEx.lastIndex, sectionEnd).slice(0, MAX_EMBED_DESCRIPTION_LENGTH))
+				.addFields({ name: "Other Discord Bots", value: "Check out other Imaginary Horizons Productions bots or commission your own on the [IHP GitHub](https://github.com/Imaginary-Horizons-Productions)" }).setFooter(randomEmbedFooter())
+				.setTimestamp(stats.mtime);
+		})
 	})
 }
 
 function rulesEmbedBuilder() {
-	return new EmbedBuilder().setColor(7045611)
-		.setAuthor({
-			"name": "Click here to visit HorizonsBot's GitHub",
-			"iconURL": imaginaryHorizonsIconURL,
-			"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
-		})
-		.setTitle(`Server Rules (${commandMention("server-rules")})`)
-		.setThumbnail(imaginaryHorizonsIconURL)
-		.setDescription("Imaginary Horizons is an community that values dignity, creativity, and diversity. Here are our server's rules:")
-		.addFields({
-			"name": "Give the Benefit of the Doubt",
-			"value": "Always be prepared to see a conflict as a misunderstanding and don't intentionally pick fights. Whenever possible, try to hash out misunderstandings in private messages instead of in public chats."
-		},
-			{
-				"name": "No Ridicule/Verbal Abuse",
-				"value": "We value diversity of opinion and expression in this server. Attacking or making fun of people is not productive. This rule includes excessive self-deprecation, unreciprocated trash talk, as well as bigoted terms of any kind."
+	return fs.promises.stat("./source/engines/messageEngine.js").then(stats => {
+		return new EmbedBuilder().setColor(7045611)
+			.setAuthor({
+				"name": "Click here to visit HorizonsBot's GitHub",
+				"iconURL": imaginaryHorizonsIconURL,
+				"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
+			})
+			.setTitle(`Server Rules (${commandMention("server-rules")})`)
+			.setThumbnail(imaginaryHorizonsIconURL)
+			.setDescription("Imaginary Horizons is an community that values dignity, creativity, and diversity. Here are our server's rules:")
+			.addFields({
+				"name": "Give the Benefit of the Doubt",
+				"value": "Always be prepared to see a conflict as a misunderstanding and don't intentionally pick fights. Whenever possible, try to hash out misunderstandings in private messages instead of in public chats."
 			},
-			{
-				"name": "Start Discussions in the Appropriate Channel",
-				"value": `Please post in appropriate channels so we can keep discussion organized. If you can't find a good channel to post in, check the Channel and Roles Browser at the top of the channel list to see if you can opt-in. If you still can't find a good channel, you can ${commandMention("petition")} for one to be made.`
-			},
-			{
-				"name": "Some Channels Have Additional Rules",
-				"value": "The topic chanels **#comfort**, **#controversial**, and **#creations** have extra rules associated with them. You can find the extra rules pinned in those channels."
-			},
-			{
-				"name": "Discord Usage Tips",
-				"value": "- Start your message with `@silent` to prevent it from waking people up in the middle of the night.\n- Surround text with `||` to mark it a spoiler. ||example||"
-			}
-		)
-		.setFooter(randomEmbedFooter());
+				{
+					"name": "No Ridicule/Verbal Abuse",
+					"value": "We value diversity of opinion and expression in this server. Attacking or making fun of people is not productive. This rule includes excessive self-deprecation, unreciprocated trash talk, as well as bigoted terms of any kind."
+				},
+				{
+					"name": "Start Discussions in the Appropriate Channel",
+					"value": `Please post in appropriate channels so we can keep discussion organized. If you can't find a good channel to post in, check the Channel and Roles Browser at the top of the channel list to see if you can opt-in. If you still can't find a good channel, you can ${commandMention("petition")} for one to be made.`
+				},
+				{
+					"name": "Some Channels Have Additional Rules",
+					"value": "The topic chanels **#comfort**, **#controversial**, and **#creations** have extra rules associated with them. You can find the extra rules pinned in those channels."
+				},
+				{
+					"name": "Discord Usage Tips",
+					"value": "- Start your message with `@silent` to prevent it from waking people up in the middle of the night.\n- Surround text with `||` to mark it a spoiler. ||example||"
+				}
+			)
+			.setFooter(randomEmbedFooter())
+			.setTimestamp(stats.mtime);
+	})
 }
 
 function pressKitEmbedBuilder() {
-	return new EmbedBuilder().setColor(7045611)
-		.setAuthor({
-			"name": "Click here to visit HorizonsBot's GitHub",
-			"iconURL": imaginaryHorizonsIconURL,
-			"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
-		})
-		.setTitle(`Imaginary Horizons Branding (${commandMention("press-kit")})`)
-		.setThumbnail(imaginaryHorizonsIconURL)
-		.addFields({
-			"name": "Colors",
-			"value": "Salmon - #f07581\nPeriwinkle - #6b81eb\nSpring Green - #b0ffe8\nWhite - #ffffff\nMint - #00BD9D"
-		},
-			{
-				"name": "Links",
-				"value": "Server Invite - discord.gg/5EPWvu4\ntop.gg vote page - https://top.gg/servers/353575133157392385/vote"
-			}
-		)
-		.setImage("https://cdn.discordapp.com/attachments/812099861084241982/1094738237169340558/Patreon_Banner_Final.jpg")
-		.setFooter(randomEmbedFooter());
+	return fs.promises.stat("./source/engines/messageEngine.js").then(stats => {
+		return new EmbedBuilder().setColor(7045611)
+			.setAuthor({
+				"name": "Click here to visit HorizonsBot's GitHub",
+				"iconURL": imaginaryHorizonsIconURL,
+				"url": "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
+			})
+			.setTitle(`Imaginary Horizons Branding (${commandMention("press-kit")})`)
+			.setThumbnail(imaginaryHorizonsIconURL)
+			.addFields({
+				"name": "Colors",
+				"value": "Salmon - #f07581\nPeriwinkle - #6b81eb\nSpring Green - #b0ffe8\nWhite - #ffffff\nMint - #00BD9D"
+			},
+				{
+					"name": "Links",
+					"value": "Server Invite - discord.gg/5EPWvu4\ntop.gg vote page - https://top.gg/servers/353575133157392385/vote"
+				}
+			)
+			.setImage("https://cdn.discordapp.com/attachments/812099861084241982/1094738237169340558/Patreon_Banner_Final.jpg")
+			.setFooter(randomEmbedFooter())
+			.setTimestamp(stats.mtime);
+	})
 }
 
 module.exports = {
