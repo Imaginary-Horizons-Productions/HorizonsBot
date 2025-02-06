@@ -126,7 +126,7 @@ class ResultSet {
 	/**
 	 * Creates an empty ResultSet. Invalid and requires calling a child class to construct.
 	 */
-	constructor() { throw new Error(`ResultSet cannot be constructed directly, or child class ${this.constructor.name} did not properly implement a constructor.`); }
+	constructor() { if (this.constructor.name === "ResultSet") throw new Error(`ResultSet cannot be constructed directly, or child class ${this.constructor.name} did not properly implement a constructor.`); }
 
 	/**
 	 * Checks to see if a string is surrounded by a parentheses set. Confirms that
