@@ -339,7 +339,6 @@ class SingleResultSet extends ResultSet {
 	 * @param {boolean} isRoll 
 	 */
 	constructor(value, isRoll = true) {
-		super();
 		if (isRoll) {
 			const valueArr = value.split('d');
 			let poppedVal = valueArr.pop();
@@ -406,7 +405,6 @@ class ListResultSet extends ResultSet {
 	 * @param {boolean} forceUnique 
 	 */
 	constructor(choices, list, forceUnique = false) {
-		super();
 		this.#result = []; // The options we have chosen
 		this.#choices = choices;
 		this.#forceUnique = forceUnique;
@@ -479,7 +477,6 @@ class TwoOpResultSet extends ResultSet {
 	 * @param {(two_ops.ADD|two_ops.SUBTRACT|two_ops.MULTIPLY)} op 
 	 */
 	constructor(left, right, op) {
-		super();
 		this.#left = ResultSet.parse(left);
 		this.#right = ResultSet.parse(right);
 		this.#op = op;
@@ -661,7 +658,6 @@ class MultiDieResultSet extends ResultSet {
 	 * @param {number} dieSides 
 	 */
 	constructor(numDice, dieSides) {
-		super();
 		let convertedDieSides = dieSides.replace('d', '');
 		convertedDieSides = convertedDieSides == '%' ? '100' : convertedDieSides;
 		this.#dieSides = parseInt(convertedDieSides);
@@ -726,7 +722,6 @@ class SumSeriesResultSet extends ResultSet {
 	 * @param {Array<string>} listToSum 
 	 */
 	constructor(listToSum) {
-		super();
 		for (let i = 0; i < listToSum.length; i += 1) {
 			if (listToSum[i][0] == '-') {
 				this.#opList.push(two_ops.SUBTRACT);
@@ -840,7 +835,6 @@ class DieSelectResultSet extends ResultSet {
 	 * @param {number} selectNum 
 	 */
 	constructor(numDice, dieSides, selectOp, selectNum) {
-		super();
 		let convertedDieSides = dieSides.replace('d', '');
 		convertedDieSides = convertedDieSides == '%' ? '100' : convertedDieSides;
 		this.#dieSides = parseInt(convertedDieSides);
