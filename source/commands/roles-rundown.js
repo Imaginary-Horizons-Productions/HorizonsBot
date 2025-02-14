@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { EmbedBuilder, InteractionContextType } = require('discord.js');
+const { EmbedBuilder, InteractionContextType, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { randomEmbedFooter } = require('../engines/messageEngine.js');
 const { imaginaryHorizonsIconURL } = require('../constants.js');
@@ -35,7 +35,7 @@ module.exports = new CommandWrapper(mainId, "See what the roles on the server me
 						).setFooter(randomEmbedFooter())
 						.setTimestamp(stats.mtime)
 				],
-				ephemeral: true
+				flags: [MessageFlags.Ephemeral]
 			})
 		})
 	}

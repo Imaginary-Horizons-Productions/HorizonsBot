@@ -1,4 +1,4 @@
-const { PermissionsBitField } = require('discord.js');
+const { PermissionsBitField, MessageFlags } = require('discord.js');
 const { SelectWrapper } = require('../classes');
 const { guildId } = require('../constants.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
@@ -54,7 +54,7 @@ module.exports = new SelectWrapper(mainId, 3000,
 
 		const messageOptions = {
 			content: "You've joined the clubs.",
-			ephemeral: true
+			flags: [MessageFlags.Ephemeral]
 		}
 		if (errors.length > 0) {
 			messageOptions.content = `The following errors were encountered while adding you to the clubs:\n- ${errors.join("\n- ")}`;

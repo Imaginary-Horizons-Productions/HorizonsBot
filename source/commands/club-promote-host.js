@@ -1,4 +1,4 @@
-const { PermissionFlagsBits, InteractionContextType } = require('discord.js');
+const { PermissionFlagsBits, InteractionContextType, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes/InteractionWrapper.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 const { getClubDictionary, updateClub, updateListReference } = require('../engines/referenceEngine.js');
@@ -9,7 +9,7 @@ module.exports = new CommandWrapper(mainId, "Promote another user to club host",
 	/** Update the club's host to the given user */
 	(interaction) => {
 		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {
-			interaction.reply({ content: `\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.`, ephemeral: true });
+			interaction.reply({ content: `\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.`, flags: [MessageFlags.Ephemeral] });
 			return;
 		}
 

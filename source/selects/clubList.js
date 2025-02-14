@@ -1,4 +1,4 @@
-const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder, MessageFlags } = require('discord.js');
 const { SelectWrapper } = require('../classes');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
@@ -29,7 +29,7 @@ module.exports = new SelectWrapper(mainId, 3000,
 						.setPlaceholder("Join club(s)…")
 				)
 			],
-			ephemeral: true
+			flags: [MessageFlags.Ephemeral]
 		});
 	}
 );

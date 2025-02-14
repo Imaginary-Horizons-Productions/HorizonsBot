@@ -1,4 +1,4 @@
-const { ButtonBuilder, ActionRowBuilder, ButtonStyle, StringSelectMenuBuilder, PermissionFlagsBits, UserSelectMenuBuilder, InteractionContextType } = require('discord.js');
+const { ButtonBuilder, ActionRowBuilder, ButtonStyle, StringSelectMenuBuilder, PermissionFlagsBits, UserSelectMenuBuilder, InteractionContextType, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { SAFE_DELIMITER, SKIP_INTERACTION_HANDLING } = require('../constants.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
@@ -35,9 +35,9 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 						.setDisabled(true)
 				)
 			],
-			ephemeral: true,
-			fetchReply: true
-		}).then(reply => {
+			flags: [MessageFlags.Ephemeral],
+			withResponse: true
+		}).then(response => response.resource.message).then(reply => {
 			let selectedClubId;
 			const collector = reply.createMessageComponentCollector({ max: 2 });
 			collector.on("collect", collectedInteraction => {
@@ -77,7 +77,7 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 							));
 						}
 						member.send({ embeds: [clubEmbedBuilder(club)], components });
-						collectedInteraction.reply({ content: `Details about and an invite to <#${selectedClubId}> have been sent to ${member}.`, ephemeral: true });
+						collectedInteraction.reply({ content: `Details about and an invite to <#${selectedClubId}> have been sent to ${member}.`, flags: [MessageFlags.Ephemeral] });
 						interaction.deleteReply();
 						break;
 				}

@@ -1,4 +1,4 @@
-const { PermissionFlagsBits, InteractionContextType } = require('discord.js');
+const { PermissionFlagsBits, InteractionContextType, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes/index.js');
 const { isModerator } = require('../engines/permissionEngine.js');
 const { createPingableRole, findPingableRoleWithName } = require('../engines/customizationEngine.js');
@@ -14,7 +14,7 @@ module.exports = new CommandWrapper(mainId, "Set up a Pingable Role without peti
 		const roleName = interaction.options.getString("role-name");
 		const dupeRole = await findPingableRoleWithName(roleName, interaction.guild);
 		if (dupeRole) {
-			interaction.reply({ content: `${dupeRole} already exists.`, ephemeral: true });
+			interaction.reply({ content: `${dupeRole} already exists.`, flags: [MessageFlags.Ephemeral] });
 			return;
 		}
 

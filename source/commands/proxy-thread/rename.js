@@ -1,4 +1,4 @@
-const { CommandInteraction } = require("discord.js");
+const { CommandInteraction, MessageFlags } = require("discord.js");
 const { referenceMessages } = require("../../engines/referenceEngine");
 
 /**
@@ -7,7 +7,7 @@ const { referenceMessages } = require("../../engines/referenceEngine");
  */
 async function executeSubcommand(interaction, ...args) {
 	if (interaction.channel.parentId !== referenceMessages["proxy-thread-info"].channelId) {
-		interaction.reply({ content: "This doesn't appear to be a proxy thread.", ephemeral: true });
+		interaction.reply({ content: "This doesn't appear to be a proxy thread.", flags: [MessageFlags.Ephemeral] });
 		return;
 	}
 
