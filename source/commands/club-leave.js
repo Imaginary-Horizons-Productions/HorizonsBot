@@ -16,7 +16,7 @@ module.exports = new CommandWrapper(mainId, "Leave this club", null, [Interactio
 						.setLabel("Leave")
 						.setStyle(ButtonStyle.Danger),
 				);
-				interaction.reply({ content: "If a club's host leaves, the club will be deleted. Really leave?", components: [buttonsRow], ephemeral: true })
+				interaction.reply({ content: "If a club's host leaves, the club will be deleted. Really leave?", components: [buttonsRow], flags: [MessageFlags.Ephemeral] })
 					.catch(console.error);
 			} else {
 				club.userIds = club.userIds.filter(id => id != userId);

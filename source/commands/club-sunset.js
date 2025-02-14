@@ -1,14 +1,14 @@
 const { CommandWrapper } = require('../classes/InteractionWrapper.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
-const { InteractionContextType } = require('discord.js');
+const { InteractionContextType, MessageFlags } = require('discord.js');
 
 const mainId = "club-sunset";
 module.exports = new CommandWrapper(mainId, "Delete a club on a delay", null, [InteractionContextType.Guild], 3000,
 	/** Set a club to be deleted on a delay */
 	(interaction) => {
 		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {
-			interaction.reply({ content: `\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.`, ephemeral: true });
+			interaction.reply({ content: `\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.`, flags: [MessageFlags.Ephemeral] });
 			return;
 		}
 
@@ -22,10 +22,10 @@ module.exports = new CommandWrapper(mainId, "Delete a club on a delay", null, [I
 						.catch(console.error);
 				}, delay * 3600000);
 			} else {
-				interaction.reply({ content: "Please provide a number of hours that is greater than 0 for the delay.", ephemeral: true });
+				interaction.reply({ content: "Please provide a number of hours that is greater than 0 for the delay.", flags: [MessageFlags.Ephemeral] });
 			}
 		} else {
-			interaction.reply({ content: `Please use the \`/${mainId}\` command can only be used on clubs.`, ephemeral: true })
+			interaction.reply({ content: `Please use the \`/${mainId}\` command can only be used on clubs.`, flags: [MessageFlags.Ephemeral] })
 				.catch(console.error);
 		}
 	}

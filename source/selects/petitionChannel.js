@@ -1,3 +1,4 @@
+const { MessageFlags } = require('discord.js');
 const { SelectWrapper } = require('../classes/InteractionWrapper.js');
 const { checkChannelPetition } = require('../engines/customizationEngine.js');
 const { updateListReference } = require('../engines/referenceEngine.js');
@@ -27,18 +28,18 @@ module.exports = new SelectWrapper(mainId, 3000,
 			if (petitionResultMap.petitionFulfilled?.length > 0) {
 				segments.push(`### Petitions Fulfilled\n${listifyEN(petitionResultMap.petitionFulfilled.map(stats => stats.name))}`);
 			}
-			interaction.reply({ content: segments.join("\n"), ephemeral: true });
+			interaction.reply({ content: segments.join("\n"), flags: [MessageFlags.Ephemeral] });
 		} else {
 			const stats = await checkChannelPetition(interaction.guild, interaction.values[0], interaction.user);
 			switch (stats.result) {
 				case "signatureAdded":
-					interaction.reply({ content: `Your petition has been recorded. ${stats.threshold - stats.petitionCount} more petitions are needed to create the channel.`, ephemeral: true });
+					interaction.reply({ content: `Your petition has been recorded. ${stats.threshold - stats.petitionCount} more petitions are needed to create the channel.`, flags: [MessageFlags.Ephemeral] });
 					break;
 				case "duplicateSignature":
-					interaction.reply({ content: `You've already petitioned for a ${interaction.values[0]} channel.`, ephemeral: true });
+					interaction.reply({ content: `You've already petitioned for a ${interaction.values[0]} channel.`, flags: [MessageFlags.Ephemeral] });
 					break;
 				case "petitionFulfilled":
-					interaction.reply({ content: `${stats.channel} has been created.`, ephemeral: true });
+					interaction.reply({ content: `${stats.channel} has been created.`, flags: [MessageFlags.Ephemeral] });
 					break;
 			}
 		}

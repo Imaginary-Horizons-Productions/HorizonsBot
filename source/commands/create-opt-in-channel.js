@@ -1,4 +1,4 @@
-const { PermissionFlagsBits, InteractionContextType } = require('discord.js');
+const { PermissionFlagsBits, InteractionContextType, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes/index.js');
 const { isModerator } = require('../engines/permissionEngine.js');
 const { createOptInChannel, findOptInChannelWithName } = require('../engines/customizationEngine.js');
@@ -14,7 +14,7 @@ module.exports = new CommandWrapper(mainId, "Set up an opt-in channel without pe
 		const channelName = interaction.options.getString("channel-name");
 		const dupeChannel = await findOptInChannelWithName(channelName, interaction.guild);
 		if (dupeChannel) {
-			interaction.reply({ content: `${dupeChannel} already exists.`, ephemeral: true });
+			interaction.reply({ content: `${dupeChannel} already exists.`, flags: [MessageFlags.Ephemeral] });
 			return;
 		}
 

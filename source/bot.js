@@ -11,7 +11,7 @@ console.error = function () {
 }
 
 //#region Imports
-const { Client, REST, GatewayIntentBits, Routes, ActivityType, Events } = require("discord.js");
+const { Client, REST, GatewayIntentBits, Routes, ActivityType, Events, MessageFlags } = require("discord.js");
 const fsa = require("fs/promises");
 
 const { getCommand, slashData } = require("./commands/_commandDictionary.js");
@@ -126,8 +126,8 @@ client.on(Events.ClientReady, () => {
 		}).forEach(([referenceType, embed]) => {
 			if (referenceMessages[referenceType]?.channelId && referenceMessages[referenceType]?.messageId) {
 				channelManager.fetch(referenceMessages[referenceType].channelId).then(channel => {
-					channel.messages.fetch(referenceMessages[referenceType].messageId).then(message => {
-						message.edit({ embeds: [embed] });
+					channel.messages.fetch(referenceMessages[referenceType].messageId).then(async message => {
+						message.edit({ embeds: [await embed] });
 					}).catch(error => {
 						if (error.code === 10008) { // Unknown Message
 							referenceMessages[referenceType].channelId = "";
@@ -163,7 +163,7 @@ client.on(Events.InteractionCreate, interaction => {
 		const contextMenu = getContextMenu(interaction.commandName);
 		const cooldownTimestamp = contextMenu.getCooldownTimestamp(interaction.user.id, interactionCooldowns);
 		if (cooldownTimestamp) {
-			interaction.reply({ content: `Please wait, the \`/${interaction.commandName}\` context menu option is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, ephemeral: true });
+			interaction.reply({ content: `Please wait, the \`/${interaction.commandName}\` context menu option is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, flags: [MessageFlags.Ephemeral] });
 			return;
 		}
 
@@ -172,7 +172,7 @@ client.on(Events.InteractionCreate, interaction => {
 		const command = getCommand(interaction.commandName);
 		const cooldownTimestamp = command.getCooldownTimestamp(interaction.user.id, interactionCooldowns);
 		if (cooldownTimestamp) {
-			interaction.reply({ content: `Please wait, the \`/${interaction.commandName}\` command is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, ephemeral: true });
+			interaction.reply({ content: `Please wait, the \`/${interaction.commandName}\` command is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, flags: [MessageFlags.Ephemeral] });
 			return;
 		}
 
@@ -189,7 +189,7 @@ client.on(Events.InteractionCreate, interaction => {
 		const cooldownTimestamp = interactionWrapper.getCooldownTimestamp(interaction.user.id, interactionCooldowns);
 
 		if (cooldownTimestamp) {
-			interaction.reply({ content: `Please wait, this interaction is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, ephemeral: true });
+			interaction.reply({ content: `Please wait, this interaction is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, flags: [MessageFlags.Ephemeral] });
 			return;
 		}
 

@@ -1,4 +1,4 @@
-const { InteractionContextType } = require('discord.js');
+const { InteractionContextType, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes/index.js');
 const { cancelClubEvent, createClubEvent, clearClubReminder, scheduleClubReminderAndEvent, updateClubDetails } = require('../engines/clubEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
@@ -9,7 +9,7 @@ const mainId = "club-skip-meeting";
 module.exports = new CommandWrapper(mainId, "Skip the next club meeting, cancelling/resetting reminders", null, [InteractionContextType.Guild], 3000,
 	(interaction) => {
 		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {
-			interaction.reply({ content: `\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.`, ephemeral: true });
+			interaction.reply({ content: `\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.`, flags: [MessageFlags.Ephemeral] });
 			return;
 		}
 

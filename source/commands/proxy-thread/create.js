@@ -1,4 +1,4 @@
-const { CommandInteraction, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { CommandInteraction, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require("discord.js");
 const { referenceMessages } = require("../../engines/referenceEngine");
 const { pluralKitId } = require("../../constants");
 
@@ -9,7 +9,7 @@ const { pluralKitId } = require("../../constants");
 async function executeSubcommand(interaction, ...args) {
 	const invitee = interaction.options.getMember("invitee");
 	if (interaction.member.id === invitee || invitee.user.bot) {
-		interaction.reply({ content: "You cannot start a proxy thread where you'd be the only non-bot user.", ephemeral: true });
+		interaction.reply({ content: "You cannot start a proxy thread where you'd be the only non-bot user.", flags: [MessageFlags.Ephemeral] });
 		return;
 	}
 
@@ -21,7 +21,7 @@ async function executeSubcommand(interaction, ...args) {
 		return newMemberIdSet.isSupersetOf(new Set(members.filter(member => !member.user.bot).mapValues(member => member.id)))
 	});
 	if (matchingThread) {
-		interaction.reply({ content: `There is already an active thread open with that set of users: ${matchingThread}`, ephemeral: true });
+		interaction.reply({ content: `There is already an active thread open with that set of users: ${matchingThread}`, flags: [MessageFlags.Ephemeral] });
 		return;
 	}
 
@@ -37,7 +37,7 @@ async function executeSubcommand(interaction, ...args) {
 		[...members, pluralKitId].forEach(userResolvable => {
 			thread.members.add(userResolvable, "proxy thread created");
 		})
-		interaction.reply({ content: `${thread} was created!`, ephemeral: true });
+		interaction.reply({ content: `${thread} was created!`, flags: [MessageFlags.Ephemeral] });
 		return thread.send({
 			content: "Here are the control buttons for this tread:",
 			components: [new ActionRowBuilder().addComponents(

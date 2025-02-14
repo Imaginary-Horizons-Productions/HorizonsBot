@@ -57,13 +57,13 @@ module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice cha
 			}).then(voiceChannel => {
 				const club = new Club(textChannel.id, host.id, voiceChannel.id, voiceType);
 				textChannel.send({ content: `Welcome to your new club's text channel ${host}! As club host, you can pin and delete messages in this channel and configure various settings with ${commandMention("club-config")}.` });
-				textChannel.send({ content: `When invites are sent with ${commandMention("club-invite")}, the invitee will be shown the following embed:`, embeds: [clubEmbedBuilder(club)], fetchReply: true, flags: MessageFlags.SuppressNotifications }).then(invitePreviewMessage => {
+				textChannel.send({ content: `When invites are sent with ${commandMention("club-invite")}, the invitee will be shown the following embed:`, embeds: [clubEmbedBuilder(club)], flags: [MessageFlags.SuppressNotifications] }).then(invitePreviewMessage => {
 					invitePreviewMessage.pin();
 					club.detailSummaryId = invitePreviewMessage.id;
 					updateListReference(interaction.guild.channels, "club");
 					updateClub(club);
 				})
-				interaction.reply({ content: "The new club has been created.", ephemeral: true });
+				interaction.reply({ content: "The new club has been created.", flags: [MessageFlags.Ephemeral] });
 			}).catch(console.error);
 		})
 	}

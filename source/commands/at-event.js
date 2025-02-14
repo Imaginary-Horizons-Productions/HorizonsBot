@@ -1,4 +1,4 @@
-const { InteractionContextType } = require('discord.js');
+const { InteractionContextType, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 
 const mainId = "at-event";
@@ -8,13 +8,13 @@ module.exports = new CommandWrapper(mainId, "Send a ping to users interested in 
 		const unparsedEventId = interaction.options.getString("event-id");
 		const eventId = parseInt(unparsedEventId);
 		if (!eventId) {
-			interaction.reply({ content: `Could not parse **${unparsedEventId}** as an event id.`, ephemeral: true });
+			interaction.reply({ content: `Could not parse **${unparsedEventId}** as an event id.`, flags: [MessageFlags.Ephemeral] });
 			return;
 		}
 
 		const event = await interaction.guild.scheduledEvents.fetch(eventId);
 		if (!event) {
-			interaction.reply({ content: `Could not find an event with id: ${eventId}`, ephemeral: true });
+			interaction.reply({ content: `Could not find an event with id: ${eventId}`, flags: [MessageFlags.Ephemeral] });
 			return;
 		}
 

@@ -1,4 +1,4 @@
-const { InteractionContextType } = require('discord.js');
+const { InteractionContextType, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { timeConversion } = require('../util/mathUtil');
 
@@ -22,11 +22,11 @@ module.exports = new CommandWrapper(mainId, "Calculate the unix timestamp for a 
 
 			timestamp += timeConversion(days, "d", "s") + timeConversion(hours, "h", "s") + timeConversion(minutes, "m", "s");
 			timestamp = Math.round(timestamp);
-			interaction.reply({ content: `${days} days, ${hours} hours, and ${minutes} minutes from ${startValue ? `<t:${startValue}>` : "now"} is:\n\`<t:${timestamp}>\`\n\nDiscord will automatically convert timezones from the above. Following is an example with the styling removed for copying on mobile:`, ephemeral: true }).then(() => {
-				interaction.followUp({ content: `<t:${timestamp}>`, ephemeral: true });
+			interaction.reply({ content: `${days} days, ${hours} hours, and ${minutes} minutes from ${startValue ? `<t:${startValue}>` : "now"} is:\n\`<t:${timestamp}>\`\n\nDiscord will automatically convert timezones from the above. Following is an example with the styling removed for copying on mobile:`, flags: [MessageFlags.Ephemeral] }).then(() => {
+				interaction.followUp({ content: `<t:${timestamp}>`, flags: [MessageFlags.Ephemeral] });
 			});
 		} else {
-			interaction.reply({ content: "Please provide start timestamp in <t:seconds> format.", ephemeral: true });
+			interaction.reply({ content: "Please provide start timestamp in <t:seconds> format.", flags: [MessageFlags.Ephemeral] });
 		}
 	}
 ).setOptions(
