@@ -126,8 +126,8 @@ client.on(Events.ClientReady, () => {
 		}).forEach(([referenceType, embed]) => {
 			if (referenceMessages[referenceType]?.channelId && referenceMessages[referenceType]?.messageId) {
 				channelManager.fetch(referenceMessages[referenceType].channelId).then(channel => {
-					channel.messages.fetch(referenceMessages[referenceType].messageId).then(message => {
-						message.edit({ embeds: [embed] });
+					channel.messages.fetch(referenceMessages[referenceType].messageId).then(async message => {
+						message.edit({ embeds: [await embed] });
 					}).catch(error => {
 						if (error.code === 10008) { // Unknown Message
 							referenceMessages[referenceType].channelId = "";
