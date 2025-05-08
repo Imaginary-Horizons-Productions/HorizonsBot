@@ -7,7 +7,7 @@ const { imaginaryHorizonsIconURL } = require('../constants.js');
 const mainId = "about";
 module.exports = new CommandWrapper(mainId, "Get the HorizonsBot credits", null, [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel], 3000,
 	(interaction) => {
-		fs.promises.stat("./source/commands/about.js").then(stats => {
+		fs.promises.stat(__filename).then(stats => {
 			interaction.reply({
 				embeds: [
 					new EmbedBuilder().setColor(7045611)

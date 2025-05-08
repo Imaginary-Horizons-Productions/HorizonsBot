@@ -8,7 +8,7 @@ const mainId = "roles-rundown";
 module.exports = new CommandWrapper(mainId, "See what the roles on the server mean and how to get them", null, [InteractionContextType.Guild], 3000,
 	/** See what the roles on the server mean and how to get them */
 	(interaction) => {
-		fs.promises.stat("./source/commands/roles-rundown.js").then(stats => {
+		fs.promises.stat(__filename).then(stats => {
 			interaction.reply({
 				embeds: [
 					new EmbedBuilder().setColor(7045611)

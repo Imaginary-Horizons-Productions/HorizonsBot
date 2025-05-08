@@ -115,7 +115,7 @@ function versionEmbedBuilder() {
 }
 
 function rulesEmbedBuilder() {
-	return fs.promises.stat("./source/engines/messageEngine.js").then(stats => {
+	return fs.promises.stat(__filename).then(stats => {
 		return new EmbedBuilder().setColor(7045611)
 			.setAuthor({
 				"name": "Click here to visit HorizonsBot's GitHub",
@@ -152,7 +152,7 @@ function rulesEmbedBuilder() {
 }
 
 function pressKitEmbedBuilder() {
-	return fs.promises.stat("./source/engines/messageEngine.js").then(stats => {
+	return fs.promises.stat(__filename).then(stats => {
 		return new EmbedBuilder().setColor(7045611)
 			.setAuthor({
 				"name": "Click here to visit HorizonsBot's GitHub",
