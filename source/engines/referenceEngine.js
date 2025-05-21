@@ -1,6 +1,6 @@
 const { GuildChannelManager, ActionRowBuilder, StringSelectMenuBuilder, Message, MessageFlags } = require('discord.js');
 const { Club, ClubTimeslot } = require("../classes");
-const { MAX_EMBEDS_PER_MESSAGE, MAX_EMBED_FIELD_NAME_LENGTH, MAX_EMBED_FIELD_VALUE_LENGTH, MAX_EMBED_TOTAL_CHARACTERS, MAX_EMBED_DESCRIPTION_LENGTH } = require('../constants');
+const { EmbedLimits, MessageLimits } = require('@sapphire/discord.js-utilities');
 const { embedTemplateBuilder } = require("./messageEngine.js");
 const { getRolePetitions, getChannelPetitions } = require('./customizationEngine.js');
 const { ensuredPathSave } = require('../util/fileUtil.js');
@@ -86,7 +86,7 @@ function buildPetitionListPayload(memberCount) {
 
 	[channelSelect, roleSelect].forEach(select => {
 		if (select.options.length > 0) {
-			select.setMaxValues(Math.min(select.options.length, MAX_EMBEDS_PER_MESSAGE));
+			select.setMaxValues(Math.min(select.options.length, MessageLimits.MaximumEmbeds));
 		} else {
 			select.setDisabled(true)
 				.addOptions([{
@@ -101,7 +101,7 @@ function buildPetitionListPayload(memberCount) {
 
 	const title = `Open Petition List (${commandMention("list petitions")})`;
 	const description = `Here are the open petitions for channels and pingable roles. They will automatically be added when reaching **${Math.ceil(memberCount * 0.05)} petitions** (5% of the server). You can sign an open petition with the select menus under this message.\n\nChannel petitions will be converted to lowercase because Discord text channels are all lowercase.`;
-	if (title.length + description.length + fields.reduce((total, field) => total + field.name.length + field.value.length, 0) > MAX_EMBED_TOTAL_CHARACTERS || fields.some(field => field.name.length > MAX_EMBED_FIELD_NAME_LENGTH || field.value.length > MAX_EMBED_FIELD_VALUE_LENGTH)) {
+	if (title.length + description.length + fields.reduce((total, field) => total + field.name.length + field.value.length, 0) > EmbedLimits.MaximumTotalCharacters || fields.some(field => field.name.length > EmbedLimits.MaximumFieldNameLength || field.value.length > EmbedLimits.MaximumFieldValueLength)) {
 		return new Promise((resolve, reject) => {
 			const fileText = [title, description, ...fields.map(field => `${field.name}\n${field.value}`)].join("\n\n");
 			fs.writeFile("data/listMessage.txt", fileText, "utf8", error => {
@@ -168,7 +168,7 @@ function buildClubListPayload() {
 	}
 
 	if (selectMenu.options.length > 0) {
-		selectMenu.setMaxValues(Math.min(selectMenu.options.length, MAX_EMBEDS_PER_MESSAGE));
+		selectMenu.setMaxValues(Math.min(selectMenu.options.length, MessageLimits.MaximumEmbeds));
 	} else {
 		selectMenu.setDisabled(true)
 			.addOptions([{
@@ -180,7 +180,7 @@ function buildClubListPayload() {
 
 	messageOptions.components = [new ActionRowBuilder().addComponents(selectMenu)];
 
-	if (description.length > MAX_EMBED_DESCRIPTION_LENGTH) {
+	if (description.length > EmbedLimits.MaximumDescriptionLength) {
 		return new Promise((resolve, reject) => {
 			let fileText = description;
 			fs.writeFile("data/listMessage.txt", fileText, "utf8", error => {
