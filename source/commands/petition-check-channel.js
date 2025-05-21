@@ -7,7 +7,7 @@ module.exports = new CommandWrapper(mainId, "Check how many more signatures a ch
 	async (interaction) => {
 		const channelPetition = interaction.options.getString("channel-petition").toLowerCase();
 		const { petitionCount: channelSignatures, threshold: channelThreshold } = await checkChannelPetition(interaction.guild, channelPetition);
-		interaction.reply({ content: `The channel petition for ${channelPetition} has ${channelSignatures} signatures (needs ${channelThreshold}).`, flags: [MessageFlags.Ephemeral] });
+		interaction.reply({ content: `The channel petition for ${channelPetition} has ${channelSignatures} signatures (needs ${channelThreshold}).`, flags: MessageFlags.Ephemeral });
 	}
 ).setOptions(
 	{

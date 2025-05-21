@@ -34,7 +34,7 @@ module.exports = new CommandWrapper(mainId, "Veto a petition", PermissionFlagsBi
 						.setMaxValues(Math.max(rolePetitionOptions.length, 1))
 				)
 			],
-			flags: [MessageFlags.Ephemeral],
+			flags: MessageFlags.Ephemeral,
 			withResponse: true
 		}).then(response => response.resource.message).then(reply => {
 			const collector = reply.createMessageComponentCollector({ max: 1 });
@@ -55,7 +55,7 @@ module.exports = new CommandWrapper(mainId, "Veto a petition", PermissionFlagsBi
 								.catch(console.error);
 							updateListReference(collectedInteraction.guild.channels, "petition");
 						} else {
-							collectedInteraction.reply({ content: "No valid channel petitions were selected for veto.", flags: [MessageFlags.Ephemeral] })
+							collectedInteraction.reply({ content: "No valid channel petitions were selected for veto.", flags: MessageFlags.Ephemeral })
 								.catch(console.error);
 						}
 						break;
@@ -73,7 +73,7 @@ module.exports = new CommandWrapper(mainId, "Veto a petition", PermissionFlagsBi
 								.catch(console.error);
 							updateListReference(collectedInteraction.guild.channels, "petition");
 						} else {
-							collectedInteraction.reply({ content: "No valid role petitions were selected for veto.", flags: [MessageFlags.Ephemeral] })
+							collectedInteraction.reply({ content: "No valid role petitions were selected for veto.", flags: MessageFlags.Ephemeral })
 								.catch(console.error);
 						}
 						break;

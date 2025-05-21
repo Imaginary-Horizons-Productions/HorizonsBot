@@ -163,7 +163,7 @@ client.on(Events.InteractionCreate, interaction => {
 		const contextMenu = getContextMenu(interaction.commandName);
 		const cooldownTimestamp = contextMenu.getCooldownTimestamp(interaction.user.id, interactionCooldowns);
 		if (cooldownTimestamp) {
-			interaction.reply({ content: `Please wait, the \`/${interaction.commandName}\` context menu option is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, flags: [MessageFlags.Ephemeral] });
+			interaction.reply({ content: `Please wait, the \`/${interaction.commandName}\` context menu option is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -172,7 +172,7 @@ client.on(Events.InteractionCreate, interaction => {
 		const command = getCommand(interaction.commandName);
 		const cooldownTimestamp = command.getCooldownTimestamp(interaction.user.id, interactionCooldowns);
 		if (cooldownTimestamp) {
-			interaction.reply({ content: `Please wait, the \`/${interaction.commandName}\` command is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, flags: [MessageFlags.Ephemeral] });
+			interaction.reply({ content: `Please wait, the \`/${interaction.commandName}\` command is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -189,7 +189,7 @@ client.on(Events.InteractionCreate, interaction => {
 		const cooldownTimestamp = interactionWrapper.getCooldownTimestamp(interaction.user.id, interactionCooldowns);
 
 		if (cooldownTimestamp) {
-			interaction.reply({ content: `Please wait, this interaction is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, flags: [MessageFlags.Ephemeral] });
+			interaction.reply({ content: `Please wait, this interaction is on cooldown. It can be used again <t:${cooldownTimestamp}:R>.`, flags: MessageFlags.Ephemeral });
 			return;
 		}
 

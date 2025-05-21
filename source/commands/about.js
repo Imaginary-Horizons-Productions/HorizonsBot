@@ -30,7 +30,7 @@ module.exports = new CommandWrapper(mainId, "Get the HorizonsBot credits", null,
 						.setFooter(randomEmbedFooter())
 						.setTimestamp(stats.mtime)
 				],
-				flags: [MessageFlags.Ephemeral]
+				flags: MessageFlags.Ephemeral
 			});
 		})
 	}

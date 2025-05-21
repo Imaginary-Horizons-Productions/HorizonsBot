@@ -29,7 +29,7 @@ module.exports = new SelectWrapper(mainId, 3000,
 						.setPlaceholder("Join club(s)…")
 				)
 			],
-			flags: [MessageFlags.Ephemeral]
+			flags: MessageFlags.Ephemeral
 		});
 	}
 );

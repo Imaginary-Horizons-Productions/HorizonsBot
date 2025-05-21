@@ -12,7 +12,7 @@ async function executeSubcommand(interaction, ...[userId]) {
 		interaction.reply({ content: `@silent <@${userId}> can use \`/at-channel\` again.`, flags: MessageFlags.SuppressNotifications });
 		saveModData();
 	} else {
-		interaction.reply({ content: `<@${userId}> is not restricted from using \`/at-channel\`.`, flags: [MessageFlags.Ephemeral] });
+		interaction.reply({ content: `<@${userId}> is not restricted from using \`/at-channel\`.`, flags: MessageFlags.Ephemeral });
 	}
 };
 

@@ -14,7 +14,7 @@ module.exports = new CommandWrapper(mainId, "Set up a Pingable Role without peti
 		const roleName = interaction.options.getString("role-name");
 		const dupeRole = await findPingableRoleWithName(roleName, interaction.guild);
 		if (dupeRole) {
-			interaction.reply({ content: `${dupeRole} already exists.`, flags: [MessageFlags.Ephemeral] });
+			interaction.reply({ content: `${dupeRole} already exists.`, flags: MessageFlags.Ephemeral });
 			return;
 		}
 

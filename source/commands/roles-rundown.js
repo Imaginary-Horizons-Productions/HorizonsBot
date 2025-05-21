@@ -35,7 +35,7 @@ module.exports = new CommandWrapper(mainId, "See what the roles on the server me
 						).setFooter(randomEmbedFooter())
 						.setTimestamp(stats.mtime)
 				],
-				flags: [MessageFlags.Ephemeral]
+				flags: MessageFlags.Ephemeral
 			})
 		})
 	}

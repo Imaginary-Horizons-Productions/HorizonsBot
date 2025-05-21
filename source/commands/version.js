@@ -9,11 +9,11 @@ module.exports = new CommandWrapper(mainId, "Get HorizonsBot's version notes", n
 			interaction.reply({
 				content: "Here are all the changes so far: ",
 				files: [new AttachmentBuilder("./ChangeLog.md")],
-				flags: [MessageFlags.Ephemeral]
+				flags: MessageFlags.Ephemeral
 			});
 		} else {
 			versionEmbedBuilder().then(embed => {
-				interaction.reply({ embeds: [embed], flags: [MessageFlags.Ephemeral] });
+				interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 			}).catch(console.error);
 		}
 	}

@@ -52,7 +52,7 @@ module.exports = new CommandWrapper(mainId, "Post a reference message in this ch
 			ensuredPathSave(referenceMessages, "referenceMessageIds.json");
 		}).catch(console.error);
 
-		interaction.reply({ content: `The ${listType} reference has been posted.`, flags: [MessageFlags.Ephemeral] })
+		interaction.reply({ content: `The ${listType} reference has been posted.`, flags: MessageFlags.Ephemeral })
 			.catch(console.error);
 	}
 ).setOptions(
