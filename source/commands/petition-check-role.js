@@ -7,7 +7,7 @@ module.exports = new CommandWrapper(mainId, "Check how many more signatures a ro
 	(interaction) => {
 		const rolePetition = interaction.options.getString("role-petition").toLowerCase();
 		const { petitionCount: roleSignatures, threshold: roleThreshold } = checkRolePetition(interaction.guild, rolePetition);
-		interaction.reply({ content: `The role petition for ${rolePetition} has ${roleSignatures} signatures (needs ${roleThreshold}).`, flags: [MessageFlags.Ephemeral] });
+		interaction.reply({ content: `The role petition for ${rolePetition} has ${roleSignatures} signatures (needs ${roleThreshold}).`, flags: MessageFlags.Ephemeral });
 	}
 ).setOptions(
 	{

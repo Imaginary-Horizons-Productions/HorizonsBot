@@ -11,7 +11,7 @@ module.exports = new CommandWrapper(mainId, "Send a ping to the current channel"
 			interaction.channel.send({ content: interaction.options.getString("type"), flags: MessageFlags.SuppressNotifications });
 			interaction.reply(interaction.options.getString("message"));
 		} else {
-			interaction.reply({ content: `You are not currently permitted to use \`/${mainId}\`. Please speak to a moderator if you believe this to be in error.`, flags: [MessageFlags.Ephemeral] });
+			interaction.reply({ content: `You are not currently permitted to use \`/${mainId}\`. Please speak to a moderator if you believe this to be in error.`, flags: MessageFlags.Ephemeral });
 		}
 	}
 ).setOptions(

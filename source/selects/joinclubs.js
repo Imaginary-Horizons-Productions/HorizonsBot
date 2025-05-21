@@ -54,7 +54,7 @@ module.exports = new SelectWrapper(mainId, 3000,
 
 		const messageOptions = {
 			content: "You've joined the clubs.",
-			flags: [MessageFlags.Ephemeral]
+			flags: MessageFlags.Ephemeral
 		}
 		if (errors.length > 0) {
 			messageOptions.content = `The following errors were encountered while adding you to the clubs:\n- ${errors.join("\n- ")}`;

@@ -6,6 +6,6 @@ const mainId = "press-kit";
 module.exports = new CommandWrapper(mainId, "Get info on Imaginary Horizons as a brand", null, [InteractionContextType.Guild], 3000,
 	/** Get info on Imaginary Horizons as a brand */
 	(interaction) => {
-		interaction.reply({ embeds: [pressKitEmbedBuilder()], flags: [MessageFlags.Ephemeral] });
+		interaction.reply({ embeds: [pressKitEmbedBuilder()], flags: MessageFlags.Ephemeral });
 	}
 );

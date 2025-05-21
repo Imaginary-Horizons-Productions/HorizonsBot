@@ -7,7 +7,7 @@ const { referenceMessages } = require("../../engines/referenceEngine");
  */
 async function executeSubcommand(interaction, ...args) {
 	if (interaction.channel.parentId !== referenceMessages["proxy-thread-info"].channelId) {
-		interaction.reply({ content: "This doesn't appear to be a proxy thread.", flags: [MessageFlags.Ephemeral] });
+		interaction.reply({ content: "This doesn't appear to be a proxy thread.", flags: MessageFlags.Ephemeral });
 		return;
 	}
 

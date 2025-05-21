@@ -14,7 +14,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 						.setLabel("Disband")
 				)
 			],
-			flags: [MessageFlags.Ephemeral],
+			flags: MessageFlags.Ephemeral,
 			withResponse: true
 		}).then(response => response.resource.message).then(reply => {
 			const collector = reply.createMessageComponentCollector({ max: 1 });

@@ -35,7 +35,7 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 						.setDisabled(true)
 				)
 			],
-			flags: [MessageFlags.Ephemeral],
+			flags: MessageFlags.Ephemeral,
 			withResponse: true
 		}).then(response => response.resource.message).then(reply => {
 			let selectedClubId;
@@ -77,7 +77,7 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 							));
 						}
 						member.send({ embeds: [clubEmbedBuilder(club)], components });
-						collectedInteraction.reply({ content: `Details about and an invite to <#${selectedClubId}> have been sent to ${member}.`, flags: [MessageFlags.Ephemeral] });
+						collectedInteraction.reply({ content: `Details about and an invite to <#${selectedClubId}> have been sent to ${member}.`, flags: MessageFlags.Ephemeral });
 						interaction.deleteReply();
 						break;
 				}

@@ -8,7 +8,7 @@ const { SKIP_INTERACTION_HANDLING } = require("../../constants");
  */
 async function executeSubcommand(interaction, ...args) {
 	if (interaction.channel.parentId !== referenceMessages["proxy-thread-info"].channelId) {
-		interaction.reply({ content: "This doesn't appear to be a proxy thread.", flags: [MessageFlags.Ephemeral] });
+		interaction.reply({ content: "This doesn't appear to be a proxy thread.", flags: MessageFlags.Ephemeral });
 		return;
 	}
 
@@ -21,7 +21,7 @@ async function executeSubcommand(interaction, ...args) {
 					.setLabel("Disband")
 			)
 		],
-		flags: [MessageFlags.Ephemeral],
+		flags: MessageFlags.Ephemeral,
 		withResponse: true
 	}).then(response => response.resource.message).then(reply => {
 		const collector = reply.createMessageComponentCollector({ max: 1 });

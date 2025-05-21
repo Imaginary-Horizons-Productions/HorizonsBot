@@ -9,7 +9,7 @@ const mainId = "club-skip-meeting";
 module.exports = new CommandWrapper(mainId, "Skip the next club meeting, cancelling/resetting reminders", null, [InteractionContextType.Guild], 3000,
 	(interaction) => {
 		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {
-			interaction.reply({ content: `\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.`, flags: [MessageFlags.Ephemeral] });
+			interaction.reply({ content: `\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.`, flags: MessageFlags.Ephemeral });
 			return;
 		}
 

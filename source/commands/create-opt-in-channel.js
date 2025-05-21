@@ -14,7 +14,7 @@ module.exports = new CommandWrapper(mainId, "Set up an opt-in channel without pe
 		const channelName = interaction.options.getString("channel-name");
 		const dupeChannel = await findOptInChannelWithName(channelName, interaction.guild);
 		if (dupeChannel) {
-			interaction.reply({ content: `${dupeChannel} already exists.`, flags: [MessageFlags.Ephemeral] });
+			interaction.reply({ content: `${dupeChannel} already exists.`, flags: MessageFlags.Ephemeral });
 			return;
 		}
 

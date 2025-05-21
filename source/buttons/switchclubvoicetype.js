@@ -23,7 +23,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			club.voiceChannelId = newVoiceChannel.id;
 			updateClub(club);
 			interaction.guild.channels.delete(oldVoiceChannelId, "club voice type switched");
-			interaction.reply({ content: `${newVoiceChannel} has been changed to a ${club.voiceType} channel.`, flags: [MessageFlags.Ephemeral] });
+			interaction.reply({ content: `${newVoiceChannel} has been changed to a ${club.voiceType} channel.`, flags: MessageFlags.Ephemeral });
 		})
 	}
 );

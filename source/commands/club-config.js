@@ -10,7 +10,7 @@ module.exports = new CommandWrapper(mainId, "Change the configuration of the cur
 	/** Send the user an ephemeral message containing club configuration controls */
 	(interaction) => {
 		if (!isClubHostOrModerator(interaction.channel.id, interaction.member)) {
-			interaction.reply({ content: `\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.`, flags: [MessageFlags.Ephemeral] });
+			interaction.reply({ content: `\`/${interaction.commandName}\` can only be used by a moderator or a club host in the club's text channel.`, flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -31,7 +31,7 @@ module.exports = new CommandWrapper(mainId, "Change the configuration of the cur
 					.setLabel(`Switch Voice Channel Type to ${club.voiceType === "private" ? "Stage" : "Private"}`)
 					.setStyle(ButtonStyle.Secondary)
 			)],
-			flags: [MessageFlags.Ephemeral]
+			flags: MessageFlags.Ephemeral
 		});
 	}
 );

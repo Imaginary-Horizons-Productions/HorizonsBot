@@ -28,10 +28,10 @@ module.exports = new CommandWrapper(mainId, "Roll any number of dice with any nu
 			}
 		} catch (error) {
 			if (typeof error === "string") {
-				interaction.reply({ content: error, flags: [MessageFlags.Ephemeral] });
+				interaction.reply({ content: error, flags: MessageFlags.Ephemeral });
 			} else {
 				console.error(error);
-				interaction.reply({ content: `An error was encountered with your roll string of: ${rollInput}`, flags: [MessageFlags.Ephemeral] });
+				interaction.reply({ content: `An error was encountered with your roll string of: ${rollInput}`, flags: MessageFlags.Ephemeral });
 			}
 		}
 	}
