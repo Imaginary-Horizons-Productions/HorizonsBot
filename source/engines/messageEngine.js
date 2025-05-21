@@ -1,8 +1,9 @@
 const fs = require('fs');
 const { EmbedBuilder, Colors } = require("discord.js");
-const { imaginaryHorizonsIconURL, discordIconURL, MAX_EMBED_DESCRIPTION_LENGTH } = require('../constants');
+const { imaginaryHorizonsIconURL, discordIconURL } = require('../constants');
 const { Club } = require('../classes');
 const { commandMention } = require('../util/textUtil');
+const { EmbedLimits } = require('@sapphire/discord.js-utilities');
 
 /** Create a Message Embed with common settings (author, timestamp, color)
  * @param {string} color
@@ -107,7 +108,7 @@ function versionEmbedBuilder() {
 				.setTitle(data.slice(titleStart + 5, changesStartRegEx.lastIndex))
 				.setURL('https://discord.gg/bcE3Syu')
 				.setThumbnail('https://cdn.discordapp.com/attachments/545684759276421120/734099622846398565/newspaper.png')
-				.setDescription(data.slice(changesStartRegEx.lastIndex, sectionEnd).slice(0, MAX_EMBED_DESCRIPTION_LENGTH))
+				.setDescription(data.slice(changesStartRegEx.lastIndex, sectionEnd).slice(0, EmbedLimits.MaximumDescriptionLength))
 				.addFields({ name: "Other Discord Bots", value: "Check out other Imaginary Horizons Productions bots or commission your own on the [IHP GitHub](https://github.com/Imaginary-Horizons-Productions)" }).setFooter(randomEmbedFooter())
 				.setTimestamp(stats.mtime);
 		})
