@@ -1,4 +1,4 @@
-const { CommandInteraction } = require("discord.js");
+const { CommandInteraction, MessageFlags } = require("discord.js");
 const { buildPetitionListPayload } = require("../../engines/referenceEngine");
 
 /**
@@ -6,10 +6,9 @@ const { buildPetitionListPayload } = require("../../engines/referenceEngine");
  * @param {...unknown} args
  */
 async function executeSubcommand(interaction, ...args) {
-	buildPetitionListPayload(interaction.guild.memberCount).then(messageOptions => {
-		messageOptions.ephemeral = true;
-		interaction.reply(messageOptions);
-	}).catch(console.error);
+	const messageOptions = await buildPetitionListPayload(interaction.guild.memberCount);
+	messageOptions.flags |= MessageFlags.Ephemeral;
+	interaction.reply(messageOptions);
 };
 
 module.exports = {
