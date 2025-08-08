@@ -4,7 +4,7 @@ const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 const { InteractionContextType, MessageFlags } = require('discord.js');
 
 const mainId = "club-sunset";
-module.exports = new CommandWrapper(mainId, "Delete a club on a delay", null, [InteractionContextType.Guild], 3000,
+module.exports = new CommandWrapper(mainId, "Remove a club's voice channel and remove it from the club dictionary on a delay", null, [InteractionContextType.Guild], 3000,
 	/** Set a club to be deleted on a delay */
 	(interaction) => {
 		if (!isClubHostOrModerator(interaction.channelId, interaction.member)) {
@@ -12,14 +12,18 @@ module.exports = new CommandWrapper(mainId, "Delete a club on a delay", null, [I
 			return;
 		}
 
-		if (interaction.channelId in getClubDictionary()) {
+		const club = getClubDictionary()[interaction.channelId];
+		if (club) {
 			const delay = parseFloat(interaction.options.getInteger("delay"));
 			if (delay > 0) {
-				interaction.reply(`This club has been scheduled to be deleted in ${delay} hour(s).`)
+				interaction.reply(`This club has been scheduled to be archived in ${delay} hour(s).`)
 					.catch(console.error);
 				setTimeout(() => {
-					interaction.channel.delete(`/${mainId} by ${interaction.user}`)
-						.catch(console.error);
+					const voiceChannel = guild.channels.resolve(club.voiceChannelId);
+					if (voiceChannel) {
+						voiceChannel.delete();
+						removeClub(id, guild.channels);
+					}
 				}, delay * 3600000);
 			} else {
 				interaction.reply({ content: "Please provide a number of hours that is greater than 0 for the delay.", flags: MessageFlags.Ephemeral });
@@ -30,5 +34,5 @@ module.exports = new CommandWrapper(mainId, "Delete a club on a delay", null, [I
 		}
 	}
 ).setOptions(
-	{ type: "Integer", name: "delay", description: "Number of hours to delay deleting the club", required: true, choices: [] }
+	{ type: "Integer", name: "delay", description: "Number of hours to delay archiving the club", required: true, choices: [] }
 );

@@ -237,7 +237,7 @@ client.on(Events.ChannelDelete, ({ id, guild }) => {
 			if (club.voiceChannelId === id) {
 				const textChannel = guild.channels.resolve(club.id);
 				if (textChannel) {
-					textChannel.delete();
+					textChannel.send({ content: "This club has been archived because its voice channel was deleted." });
 					removeClub(club.id, guild.channels);
 				}
 				return;
