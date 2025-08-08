@@ -7,6 +7,7 @@ for (const file of [
 	"changeclubinfo.js",
 	"changeclubmeeting.js",
 	"changeclubseats.js",
+	"clearclubmeeting.js",
 	"delete.js",
 	"join.js",
 	"proxydisband.js",

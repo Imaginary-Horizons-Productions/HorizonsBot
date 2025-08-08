@@ -27,6 +27,9 @@ module.exports = new CommandWrapper(mainId, "Change the configuration of the cur
 				new ButtonBuilder().setCustomId(`changeclubmeeting${SAFE_DELIMITER}${club.id}`)
 					.setLabel("Set Meeting Time")
 					.setStyle(ButtonStyle.Primary),
+				new ButtonBuilder().setCustomId(`clearclubmeeting${SAFE_DELIMITER}${club.id}`)
+					.setStyle(ButtonStyle.Danger)
+					.setLabel("Clear Next Meeting"),
 				new ButtonBuilder().setCustomId("switchclubvoicetype")
 					.setLabel(`Switch Voice Channel Type to ${club.voiceType === "private" ? "Stage" : "Private"}`)
 					.setStyle(ButtonStyle.Secondary)
