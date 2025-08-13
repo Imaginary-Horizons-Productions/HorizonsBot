@@ -1,6 +1,6 @@
 const fs = require('fs');
-const { EmbedBuilder, Colors } = require("discord.js");
-const { imaginaryHorizonsIconURL, discordIconURL } = require('../constants');
+const { EmbedBuilder, Colors, UserSelectMenuBuilder, ActionRowBuilder } = require("discord.js");
+const { imaginaryHorizonsIconURL, discordIconURL, SKIP_INTERACTION_HANDLING } = require('../constants');
 const { Club } = require('../classes');
 const { commandMention } = require('../util/textUtil');
 const { EmbedLimits } = require('@sapphire/discord.js-utilities');
@@ -177,11 +177,21 @@ function pressKitEmbedBuilder() {
 	})
 }
 
+/** @param {string} placeholderText */
+function disabledSelectRow(placeholderText) {
+	return new ActionRowBuilder().addComponents(
+		new UserSelectMenuBuilder().setCustomId(SKIP_INTERACTION_HANDLING)
+			.setPlaceholder(placeholderText)
+			.setDisabled(true)
+	)
+}
+
 module.exports = {
 	embedTemplateBuilder,
 	randomEmbedFooter,
 	clubEmbedBuilder,
 	versionEmbedBuilder,
 	rulesEmbedBuilder,
-	pressKitEmbedBuilder
+	pressKitEmbedBuilder,
+	disabledSelectRow
 };

@@ -63,7 +63,7 @@ async function checkChannelPetition(guild, channelName, author = null) {
 	const returnStats = {
 		name: channelName,
 		petitionCount: petition.petitionerIds.length,
-		threshold: Math.ceil(guild.memberCount * 0.05) + 1,
+		threshold: Math.ceil(guild.memberCount * 0.05),
 		result: "checkOnly"
 	};
 	if (author) {
@@ -173,7 +173,7 @@ function checkRolePetition(guild, roleName, author = null) {
 	const returnStats = {
 		name: roleName,
 		petitionCount: petition.petitionerIds.length,
-		threshold: Math.ceil(guild.memberCount * 0.05) + 1,
+		threshold: Math.ceil(guild.memberCount * 0.05),
 		result: "checkOnly"
 	};
 	if (author) {

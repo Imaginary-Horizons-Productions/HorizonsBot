@@ -1,7 +1,7 @@
-const { GuildChannelManager, ActionRowBuilder, StringSelectMenuBuilder, Message, MessageFlags } = require('discord.js');
+const { GuildChannelManager, ActionRowBuilder, StringSelectMenuBuilder, Message, MessageFlags, ContainerBuilder, TextDisplayBuilder, bold, italic } = require('discord.js');
 const { Club, ClubTimeslot } = require("../classes");
-const { EmbedLimits, MessageLimits } = require('@sapphire/discord.js-utilities');
-const { embedTemplateBuilder } = require("./messageEngine.js");
+const { EmbedLimits, MessageLimits, SelectMenuLimits } = require('@sapphire/discord.js-utilities');
+const { embedTemplateBuilder, disabledSelectRow } = require("./messageEngine.js");
 const { getRolePetitions, getChannelPetitions } = require('./customizationEngine.js');
 const { ensuredPathSave } = require('../util/fileUtil.js');
 const { commandMention } = require('../util/textUtil.js');
@@ -37,97 +37,63 @@ function removeClub(id, channelManager) {
 
 /** @type {{petition: {channelId: string; messageId: string}, club: {channelId: string; messageId: string;}, rules: {channelId: string; messageId: string;}, "press-kit": {channelId: string; messageId: string;}, "proxy-thread-info": {channelId: string; messageId: string;}}} */
 let referenceMessages = require('../../config/referenceMessageIds.json');
+const { channelBrowserMention } = require('../constants.js');
 
 /** Builds the MessageOptions for the petition list message
  * @param {number} memberCount
  * @returns {Promise<import('discord.js').BaseMessageOptions>}
  */
 function buildPetitionListPayload(memberCount) {
-	const messageOptions = { flags: MessageFlags.SuppressNotifications };
-
-	const channelSelect = new StringSelectMenuBuilder().setCustomId("petitionChannel")
-		.setMinValues(1);
-	const roleSelect = new StringSelectMenuBuilder().setCustomId("petitionRole")
-		.setMinValues(1);
-
-	const fields = [{ name: "Channel Petitions", value: "" }, { name: "Role Petitions", value: "" }];
-	for (const petition of getChannelPetitions()) {
-		fields[0].value += `\n${petition.name}: ${petition.petitionerIds.length} petitioner${petition.petitionerIds.length === 1 ? "" : "s"} so far`;
-		channelSelect.addOptions([{
-			label: petition.name,
-			value: petition.name
-		}]);
-	}
-	if (fields[0].value === "") {
-		fields[0].value = "No open channel petitions yet";
-	}
-	for (const petition of getRolePetitions()) {
-		fields[1].value += `\n${petition.name}: ${petition.petitionerIds.length} petitioner${petition.petitionerIds.length === 1 ? "" : "s"} so far`;
-		roleSelect.addOptions([{
-			label: petition.name,
-			value: petition.name
-		}]);
-	}
-	if (fields[1].value === "") {
-		fields[1].value = "No open role petitions yet";
-	}
-
-	if (channelSelect.options.length > 0) {
-		channelSelect.setPlaceholder("Select a channel petition...");
-	} else {
-		channelSelect.setPlaceholder("No open channel petitions");
-	}
-
-	if (roleSelect.options.length > 0) {
-		roleSelect.setPlaceholder("Select a role petition...");
-	} else {
-		roleSelect.setPlaceholder("No open role petitions");
-	}
-
-	[channelSelect, roleSelect].forEach(select => {
-		if (select.options.length > 0) {
-			select.setMaxValues(Math.min(select.options.length, MessageLimits.MaximumEmbeds));
-		} else {
-			select.setDisabled(true)
-				.addOptions([{
-					label: "no entries",
-					value: "no entries"
-				}])
-				.setMaxValues(1);
-		}
-	})
-
-	messageOptions.components = [new ActionRowBuilder().addComponents(channelSelect), new ActionRowBuilder().addComponents(roleSelect)];
-
-	const title = `Open Petition List (${commandMention("list petitions")})`;
-	const description = `Here are the open petitions for channels and pingable roles. They will automatically be added when reaching **${Math.ceil(memberCount * 0.05)} petitions** (5% of the server). You can sign an open petition with the select menus under this message.\n\nChannel petitions will be converted to lowercase because Discord text channels are all lowercase.`;
-	if (title.length + description.length + fields.reduce((total, field) => total + field.name.length + field.value.length, 0) > EmbedLimits.MaximumTotalCharacters || fields.some(field => field.name.length > EmbedLimits.MaximumFieldNameLength || field.value.length > EmbedLimits.MaximumFieldValueLength)) {
-		return new Promise((resolve, reject) => {
-			const fileText = [title, description, ...fields.map(field => `${field.name}\n${field.value}`)].join("\n\n");
-			fs.writeFile("data/listMessage.txt", fileText, "utf8", error => {
-				if (error) {
-					console.error(error);
-				}
+	const container = new ContainerBuilder().addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(`# Petitions (${commandMention("list petitions")})`),
+		new TextDisplayBuilder().setContent(`Petitions allow server members to create text channels and pingable roles on Imaginary Horizons while ensuring enough buy-in exists for sustained use. A channel or role will automatically be created when it reaches ${bold(`${Math.ceil(memberCount * 0.05)} petitions`)} (5% of the sever population).`),
+		new TextDisplayBuilder().setContent(`You can add a new petition or sign-on to an existing petition with the ${commandMention("petition")} command.`),
+		new TextDisplayBuilder().setContent("## Discussion Channels"),
+		new TextDisplayBuilder().setContent(`Discussion Channels are text channels designated for specific topics under the Discussion category. ${italic("Note: Discord channel names are all lowercase, so channel petitions will be converted to match.")}`),
+		new TextDisplayBuilder().setContent("You can sign onto the 25 oldest petitions below:"),
+	)
+	const channelPetitions = getChannelPetitions();
+	if (channelPetitions.length > 0) {
+		const channelSelect = new StringSelectMenuBuilder().setCustomId("petitionChannel")
+			.setPlaceholder("Select a channel petition...")
+			.setMinValues(1)
+			.setMaxValues(channelPetitions.length);
+		const channelOptions = [];
+		for (const petition of channelPetitions) {
+			channelOptions.push({
+				label: petition.name,
+				description: `${petition.petitionerIds.length} petitioner${petition.petitionerIds.length === 1 ? "" : "s"} so far`,
+				value: petition.name
 			});
-			resolve(messageOptions);
-		}).then(messageOptions => {
-			messageOptions.files = [{
-				attachment: "data/listMessage.txt",
-				name: "petitionList.txt"
-			}];
-			return messageOptions;
-		})
+		}
+		container.addActionRowComponents(new ActionRowBuilder().addComponents(channelSelect.addOptions(channelOptions.slice(0, SelectMenuLimits.MaximumOptionsLength))))
 	} else {
-		return new Promise((resolve, reject) => {
-			messageOptions.embeds = [
-				embedTemplateBuilder("#f07581")
-					.setTitle(title)
-					.setDescription(description)
-					.addFields(fields)
-			];
-			resolve(messageOptions);
-		})
+		container.addActionRowComponents(disabledSelectRow("No open channel petitions"))
 	}
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent("## Pingable Roles"),
+		new TextDisplayBuilder().setContent(`Pingable Roles allow server members to sign up for notifications for specific activities by assigning themselves the role in ${channelBrowserMention}.`),
+		new TextDisplayBuilder().setContent("You can sign onto the 25 oldest petitions below:"),
+	)
+	const rolePetitions = getRolePetitions();
+	if (rolePetitions.length > 0) {
+		const roleSelect = new StringSelectMenuBuilder().setCustomId("petitionRole")
+			.setPlaceholder("Select a role petition...")
+			.setMinValues(1)
+			.setMaxValues(rolePetitions.length);
+		const roleOptions = [];
+		for (const petition of rolePetitions) {
+			roleOptions.push({
+				label: petition.name,
+				description: `${petition.petitionerIds.length} petitioner${petition.petitionerIds.length === 1 ? "" : "s"} so far`,
+				value: petition.name
+			});
+		}
+		container.addActionRowComponents(new ActionRowBuilder().addComponents(roleSelect.addOptions(roleOptions.slice(0, SelectMenuLimits.MaximumOptionsLength))));
+	} else {
+		container.addActionRowComponents(disabledSelectRow("No open role petitions"))
+	}
+	return { components: [container], flags: MessageFlags.SuppressNotifications | MessageFlags.IsComponentsV2 };
 }
 
 /** Builds the MessageOptions for the the club list message
