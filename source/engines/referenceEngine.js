@@ -57,7 +57,7 @@ function buildPetitionListPayload(memberCount) {
 		const channelSelect = new StringSelectMenuBuilder().setCustomId("petitionChannel")
 			.setPlaceholder("Select a channel petition...")
 			.setMinValues(1)
-			.setMaxValues(channelSelect.options.length);
+			.setMaxValues(channelPetitions.length);
 		const channelOptions = [];
 		for (const petition of channelPetitions) {
 			channelOptions.push({
@@ -66,7 +66,7 @@ function buildPetitionListPayload(memberCount) {
 				value: petition.name
 			});
 		}
-		container.addActionRowComponents(new ActionRowBuilder().addComponents(channelSelect.slice(0, SelectMenuLimits.MaximumOptionsLength)))
+		container.addActionRowComponents(new ActionRowBuilder().addComponents(channelSelect.addOptions(channelOptions.slice(0, SelectMenuLimits.MaximumOptionsLength))))
 	} else {
 		container.addActionRowComponents(disabledSelectRow("No open channel petitions"))
 	}
