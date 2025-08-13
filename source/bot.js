@@ -18,7 +18,7 @@ const { getCommand, slashData } = require("./commands/_commandDictionary.js");
 const { getContextMenu, contextMenuData } = require("./context_menus/_contextMenuDictionary.js");
 const { getButton } = require("./buttons/_buttonDictionary.js");
 const { getSelect } = require("./selects/_selectDictionary.js");
-const { scheduleClubReminderAndEvent, updateClubDetails } = require("./engines/clubEngine.js");
+const { scheduleClubReminderAndEvent, updateClubDetails, clearClubReminder, cancelClubEvent } = require("./engines/clubEngine.js");
 const { deletePingableRole, updateOnboarding, removeAllPetitionsBy, checkAllPetitions, isOptInChannel, deleteOptInChannel } = require("./engines/customizationEngine.js");
 const { versionEmbedBuilder, rulesEmbedBuilder, pressKitEmbedBuilder } = require("./engines/messageEngine.js");
 const { referenceMessages, getClubDictionary, removeClub, updateListReference } = require("./engines/referenceEngine.js");
@@ -224,6 +224,8 @@ client.on(Events.ChannelDelete, ({ id, guild }) => {
 		const clubDictionary = getClubDictionary();
 		// Check if deleted channel is a club's text channel
 		if (id in clubDictionary) {
+			clearClubReminder(clubDictionary[id]);
+			cancelClubEvent(clubDictionary[id], guild.scheduledEvents);
 			const voiceChannel = guild.channels.resolve(clubDictionary[id].voiceChannelId);
 			if (voiceChannel) {
 				voiceChannel.delete();
@@ -235,6 +237,8 @@ client.on(Events.ChannelDelete, ({ id, guild }) => {
 		// Check if deleted channel is a club's voice channel
 		for (const club of Object.values(clubDictionary)) {
 			if (club.voiceChannelId === id) {
+				clearClubReminder(club);
+				cancelClubEvent(club, guild.scheduledEvents);
 				const textChannel = guild.channels.resolve(club.id);
 				if (textChannel) {
 					textChannel.send({ content: "This club has been archived because its voice channel was deleted." });
