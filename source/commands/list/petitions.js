@@ -6,7 +6,7 @@ const { buildPetitionListPayload } = require("../../engines/referenceEngine");
  * @param {...unknown} args
  */
 async function executeSubcommand(interaction, ...args) {
-	const messageOptions = await buildPetitionListPayload(interaction.guild.memberCount);
+	const messageOptions = buildPetitionListPayload(interaction.guild.memberCount);
 	messageOptions.flags |= MessageFlags.Ephemeral;
 	interaction.reply(messageOptions);
 };

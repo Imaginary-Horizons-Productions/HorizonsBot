@@ -74,7 +74,7 @@ function randomEmbedFooter() {
 function clubEmbedBuilder(club) {
 	const fields = [{ name: "Club Host", value: `<@${club.hostId}>` }];
 	if (club.system) {
-		fields.push({ name: "Game", value: club.system });
+		fields.push({ name: "Activity", value: club.system });
 	}
 	if (club.timeslot.nextMeeting) {
 		fields.push({
