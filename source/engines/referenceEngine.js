@@ -1,7 +1,7 @@
 const { GuildChannelManager, ActionRowBuilder, StringSelectMenuBuilder, Message, MessageFlags, ContainerBuilder, TextDisplayBuilder, bold, italic } = require('discord.js');
 const { Club, ClubTimeslot } = require("../classes");
-const { EmbedLimits, MessageLimits } = require('@sapphire/discord.js-utilities');
-const { embedTemplateBuilder } = require("./messageEngine.js");
+const { EmbedLimits, MessageLimits, SelectMenuLimits } = require('@sapphire/discord.js-utilities');
+const { embedTemplateBuilder, disabledSelectRow } = require("./messageEngine.js");
 const { getRolePetitions, getChannelPetitions } = require('./customizationEngine.js');
 const { ensuredPathSave } = require('../util/fileUtil.js');
 const { commandMention } = require('../util/textUtil.js');
@@ -50,62 +50,49 @@ function buildPetitionListPayload(memberCount) {
 		new TextDisplayBuilder().setContent(`You can add a new petition or sign-on to an existing petition with the ${commandMention("petition")} command.`),
 		new TextDisplayBuilder().setContent("## Discussion Channels"),
 		new TextDisplayBuilder().setContent(`Discussion Channels are text channels designated for specific topics under the Discussion category. ${italic("Note: Discord channel names are all lowercase, so channel petitions will be converted to match.")}`),
-		new TextDisplayBuilder().setContent("You can sign onto an already-open petition below:"),
+		new TextDisplayBuilder().setContent("You can sign onto the 25 oldest petitions below:"),
 	)
-	const channelSelect = new StringSelectMenuBuilder().setCustomId("petitionChannel");
-	for (const petition of getChannelPetitions()) {
-		channelSelect.addOptions([{
-			label: petition.name,
-			description: `${petition.petitionerIds.length} petitioner${petition.petitionerIds.length === 1 ? "" : "s"} so far`,
-			value: petition.name
-		}]);
-	}
-	if (channelSelect.options.length > 0) {
-		channelSelect.setPlaceholder("Select a channel petition...");
+	const channelPetitions = getChannelPetitions();
+	if (channelPetitions.length > 0) {
+		const channelSelect = new StringSelectMenuBuilder().setCustomId("petitionChannel")
+			.setPlaceholder("Select a channel petition...")
+			.setMinValues(1)
+			.setMaxValues(channelSelect.options.length);
+		const channelOptions = [];
+		for (const petition of channelPetitions) {
+			channelOptions.push({
+				label: petition.name,
+				description: `${petition.petitionerIds.length} petitioner${petition.petitionerIds.length === 1 ? "" : "s"} so far`,
+				value: petition.name
+			});
+		}
+		container.addActionRowComponents(new ActionRowBuilder().addComponents(channelSelect.slice(0, SelectMenuLimits.MaximumOptionsLength)))
 	} else {
-		channelSelect.setPlaceholder("No open channel petitions");
+		container.addActionRowComponents(disabledSelectRow("No open channel petitions"))
 	}
-	if (channelSelect.options.length > 0) {
-		channelSelect.setMinValues(1)
-			.setMaxValues(Math.min(channelSelect.options.length, MessageLimits.MaximumEmbeds));
-	} else {
-		channelSelect.setDisabled(true)
-			.addOptions([{
-				label: "no entries",
-				value: "no entries"
-			}]);
-	}
-	container.addActionRowComponents(new ActionRowBuilder().addComponents(channelSelect))
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent("## Pingable Roles"),
 		new TextDisplayBuilder().setContent(`Pingable Roles allow server members to sign up for notifications for specific activities by assigning themselves the role in ${channelBrowserMention}.`),
-		new TextDisplayBuilder().setContent("You can sign onto an already-open petition below:"),
+		new TextDisplayBuilder().setContent("You can sign onto the 25 oldest petitions below:"),
 	)
-	const roleSelect = new StringSelectMenuBuilder().setCustomId("petitionRole");
-	for (const petition of getRolePetitions()) {
-		roleSelect.addOptions([{
-			label: petition.name,
-			description: `${petition.petitionerIds.length} petitioner${petition.petitionerIds.length === 1 ? "" : "s"} so far`,
-			value: petition.name
-		}]);
-	}
-	if (roleSelect.options.length > 0) {
-		roleSelect.setPlaceholder("Select a role petition...");
+	const rolePetitions = getRolePetitions();
+	if (rolePetitions.length > 0) {
+		const roleSelect = new StringSelectMenuBuilder().setCustomId("petitionRole")
+			.setPlaceholder("Select a role petition...")
+			.setMinValues(1)
+			.setMaxValues(rolePetitions.length);
+		const roleOptions = [];
+		for (const petition of rolePetitions) {
+			roleOptions.push({
+				label: petition.name,
+				description: `${petition.petitionerIds.length} petitioner${petition.petitionerIds.length === 1 ? "" : "s"} so far`,
+				value: petition.name
+			});
+		}
+		container.addActionRowComponents(new ActionRowBuilder().addComponents(roleSelect.addOptions(roleOptions.slice(0, SelectMenuLimits.MaximumOptionsLength))));
 	} else {
-		roleSelect.setPlaceholder("No open role petitions");
+		container.addActionRowComponents(disabledSelectRow("No open role petitions"))
 	}
-	if (roleSelect.options.length > 0) {
-		roleSelect.setMinValues(1)
-			.setMaxValues(Math.min(roleSelect.options.length, MessageLimits.MaximumEmbeds));
-	} else {
-		roleSelect.setDisabled(true)
-			.addOptions([{
-				label: "no entries",
-				value: "no entries"
-			}])
-	}
-	container.addActionRowComponents(new ActionRowBuilder().addComponents(roleSelect));
-	//TODONOW overflow protection
 	return { components: [container], flags: MessageFlags.SuppressNotifications | MessageFlags.IsComponentsV2 };
 }
 
