@@ -34,7 +34,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				),
 				new ActionRowBuilder().addComponents(
 					new TextInputBuilder().setCustomId("system")
-						.setLabel("Game")
+						.setLabel("Activity")
 						.setValue(club.system)
 						.setStyle(TextInputStyle.Short)
 						.setMaxLength(1024)

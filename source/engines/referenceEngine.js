@@ -1,7 +1,7 @@
 const { GuildChannelManager, ActionRowBuilder, StringSelectMenuBuilder, Message, MessageFlags, ContainerBuilder, TextDisplayBuilder, bold, italic } = require('discord.js');
 const { Club, ClubTimeslot } = require("../classes");
-const { EmbedLimits, MessageLimits, SelectMenuLimits } = require('@sapphire/discord.js-utilities');
-const { embedTemplateBuilder, disabledSelectRow } = require("./messageEngine.js");
+const { MessageLimits, SelectMenuLimits } = require('@sapphire/discord.js-utilities');
+const { disabledSelectRow } = require("./messageEngine.js");
 const { getRolePetitions, getChannelPetitions } = require('./customizationEngine.js');
 const { ensuredPathSave } = require('../util/fileUtil.js');
 const { commandMention } = require('../util/textUtil.js');
@@ -44,7 +44,7 @@ const { channelBrowserMention } = require('../constants.js');
  * @returns {Promise<import('discord.js').BaseMessageOptions>}
  */
 function buildPetitionListPayload(memberCount) {
-	const container = new ContainerBuilder().addTextDisplayComponents(
+	const container = new ContainerBuilder().setAccentColor([240, 117, 129]).addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(`# Petitions (${commandMention("list petitions")})`),
 		new TextDisplayBuilder().setContent(`Petitions allow server members to create text channels and pingable roles on Imaginary Horizons while ensuring enough buy-in exists for sustained use. A channel or role will automatically be created when it reaches ${bold(`${Math.ceil(memberCount * 0.05)} petitions`)} (5% of the sever population).`),
 		new TextDisplayBuilder().setContent(`You can add a new petition or sign-on to an existing petition with the ${commandMention("petition")} command.`),
@@ -100,79 +100,35 @@ function buildPetitionListPayload(memberCount) {
  * @returns {Promise<import('discord.js').BaseMessageOptions>}
  */
 function buildClubListPayload() {
-	let description = "Here's a list of the clubs on the server. Learn more about one by using `/club-invite (club ID)`.\n";
+	const container = new ContainerBuilder().setAccentColor([240, 117, 129]).addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(`# Club List (${commandMention("list clubs")})`),
+		new TextDisplayBuilder().setContent("Clubs are private subgroups within Imaginary Horizons formed for a specific activity. Clubs come with their own voice channel and tools for scheduling meetings. You can get more details on a recruiting club or join below:")
+	);
 
-	const messageOptions = { flags: MessageFlags.SuppressNotifications };
+	const recruitingClubs = Object.values(getClubDictionary()).filter(club => club.isRecruiting());
+	if (recruitingClubs.length > 0) {
+		const selectMenu = new StringSelectMenuBuilder().setCustomId("clubList")
+			.setPlaceholder("Get club details...")
+			.setMinValues(1)
+			.setMaxValues(Math.min(recruitingClubs.length, MessageLimits.MaximumEmbeds));
 
-	const selectMenu = new StringSelectMenuBuilder().setCustomId("clubList")
-		.setMinValues(1);
-
-	for (const id in clubDictionary) {
-		const club = clubDictionary[id];
-		description += `\n__**${club.title}**__ (${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members)\n**Host**: <@${club.hostId}>\n`;
-		if (club.system) {
-			description += `**Game**: ${club.system}\n`;
+		const clubOptions = [];
+		for (const club of recruitingClubs) {
+			const clubOption = {
+				label: `${club.title} (${`${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members`})`,
+				value: club.id
+			};
+			if (club.system) {
+				clubOption.description = `Activity: ${club.system}`;
+			}
+			clubOptions.push(clubOption);
 		}
-		if (club.timeslot.nextMeeting) {
-			description += `**Next Meeting**: <t:${club.timeslot.nextMeeting}>${club.timeslot.periodCount === 0 ? "" : ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}`}\n`;
-		}
-		if (club.isRecruiting()) {
-			selectMenu.addOptions([
-				{
-					label: club.title,
-					description: `${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members`,
-					value: club.id
-				}
-			])
-		}
-	}
-
-	if (selectMenu.options.length > 0) {
-		selectMenu.setPlaceholder("Get club details...");
+		container.addActionRowComponents(new ActionRowBuilder().addComponents(selectMenu.addOptions(clubOptions.slice(0, SelectMenuLimits.MaximumOptionsLength))))
 	} else {
-		selectMenu.setPlaceholder("No clubs currently recruiting");
+		container.addActionRowComponents(disabledSelectRow("No recruiting clubs"))
 	}
 
-	if (selectMenu.options.length > 0) {
-		selectMenu.setMaxValues(Math.min(selectMenu.options.length, MessageLimits.MaximumEmbeds));
-	} else {
-		selectMenu.setDisabled(true)
-			.addOptions([{
-				label: "no entries",
-				value: "no entries"
-			}])
-			.setMaxValues(1);
-	}
-
-	messageOptions.components = [new ActionRowBuilder().addComponents(selectMenu)];
-
-	if (description.length > EmbedLimits.MaximumDescriptionLength) {
-		return new Promise((resolve, reject) => {
-			let fileText = description;
-			fs.writeFile("data/listMessage.txt", fileText, "utf8", error => {
-				if (error) {
-					console.error(error);
-				}
-			});
-			resolve(messageOptions);
-		}).then(messageOptions => {
-			messageOptions.files = [{
-				attachment: "data/listMessage.txt",
-				name: "clubList.txt"
-			}];
-			messageOptions.embeds = [];
-			return messageOptions;
-		})
-	} else {
-		return new Promise((resolve, reject) => {
-			messageOptions.embeds = [
-				embedTemplateBuilder("#f07581")
-					.setTitle(`Club List (${commandMention("list clubs")})`)
-					.setDescription(description)
-			];
-			resolve(messageOptions);
-		})
-	}
+	return { components: [container], flags: MessageFlags.SuppressNotifications | MessageFlags.IsComponentsV2 };
 }
 
 /** Update the club or petition list message
@@ -199,7 +155,7 @@ async function updateListReference(channelManager, listType) {
 			}
 			console.error(error);
 		});
-		const messageOptions = listType === "club" ? await buildClubListPayload() : await buildPetitionListPayload(channelManager.guild.memberCount);
+		const messageOptions = listType === "club" ? buildClubListPayload() : buildPetitionListPayload(channelManager.guild.memberCount);
 		message?.edit(messageOptions);
 		return message;
 	}

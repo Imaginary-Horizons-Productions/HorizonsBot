@@ -20,10 +20,10 @@ module.exports = new CommandWrapper(mainId, "Post a reference message in this ch
 		let messageOptions;
 		switch (listType) {
 			case "petition":
-				messageOptions = await buildPetitionListPayload(interaction.guild.memberCount);
+				messageOptions = buildPetitionListPayload(interaction.guild.memberCount);
 				break;
 			case "club":
-				messageOptions = await buildClubListPayload();
+				messageOptions = buildClubListPayload();
 				break;
 			case "rules":
 				messageOptions = { embeds: [rulesEmbedBuilder()], flags: MessageFlags.SuppressNotifications };
