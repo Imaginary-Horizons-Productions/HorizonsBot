@@ -18,6 +18,8 @@ module.exports = new CommandWrapper(mainId, "Remove a club's voice channel and r
 			if (delay > 0) {
 				interaction.reply(`This club has been scheduled to be archived in ${delay} hour(s).`)
 					.catch(console.error);
+				cancelClubEvent(club, interaction.guild.scheduledEvents);
+				clearClubReminder(club.id);
 				setTimeout(() => {
 					const voiceChannel = guild.channels.resolve(club.voiceChannelId);
 					if (voiceChannel) {

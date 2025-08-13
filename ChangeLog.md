@@ -3,6 +3,7 @@
 - Fixed `/roll` mistaking proper input for invalid input
 - Added "Clear Next Meeting Info" button to `/club-config`
 - Fixed petitions requiring 1 more signature than stated to be fulfilled
+- Clubs can now be archived without deleting thier text channel
 
 #### HorizonsBot Version 2.8.0:
 - `/club-invite` now sends a message with a channel select menu and a user select menu instead of making users copy/paste the club's text channel id
