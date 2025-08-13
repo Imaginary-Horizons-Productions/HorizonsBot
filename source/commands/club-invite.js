@@ -1,7 +1,7 @@
 const { ButtonBuilder, ActionRowBuilder, ButtonStyle, StringSelectMenuBuilder, PermissionFlagsBits, UserSelectMenuBuilder, InteractionContextType, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { SAFE_DELIMITER, SKIP_INTERACTION_HANDLING } = require('../constants.js');
-const { clubEmbedBuilder } = require('../engines/messageEngine.js');
+const { clubEmbedBuilder, disabledSelectRow } = require('../engines/messageEngine.js');
 const { getClubDictionary } = require('../engines/referenceEngine.js');
 
 const mainId = "club-invite";
@@ -29,11 +29,7 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 			content: "HorizonsBot will send a DM with the selected club's details embed to the selected user. The message will contain a join button if the user isn't already a part of the club.",
 			components: [
 				new ActionRowBuilder().addComponents(clubSelect),
-				new ActionRowBuilder().addComponents(
-					new UserSelectMenuBuilder().setCustomId(userSelectId)
-						.setPlaceholder("Select user...")
-						.setDisabled(true)
-				)
+				disabledSelectRow("Select user...")
 			],
 			flags: MessageFlags.Ephemeral,
 			withResponse: true
@@ -46,12 +42,7 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 						[selectedClubId] = collectedInteraction.values;
 						collectedInteraction.update({
 							components: [
-								new ActionRowBuilder().addComponents(
-									new StringSelectMenuBuilder().setCustomId(clubSelectId)
-										.setPlaceholder(getClubDictionary()[selectedClubId].title)
-										.setDisabled(true)
-										.setOptions({ label: "placeholder", value: "placeholder" })
-								),
+								disabledSelectRow(getClubDictionary()[selectedClubId].title),
 								new ActionRowBuilder().addComponents(
 									new UserSelectMenuBuilder().setCustomId(userSelectId)
 										.setPlaceholder("Select user...")
