@@ -5,6 +5,9 @@
 - Fixed petitions requiring 1 more signature than stated to be fulfilled
 - Clubs can now be archived without deleting thier text channel
 
+## Hotfix v2.9.1
+- Fixed some crashes in `/club sunset`
+
 #### HorizonsBot Version 2.8.0:
 - `/club-invite` now sends a message with a channel select menu and a user select menu instead of making users copy/paste the club's text channel id
 - Fixed `/at-channel` not creating notifications
