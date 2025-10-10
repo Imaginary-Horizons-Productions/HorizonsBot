@@ -2,7 +2,7 @@ const { ButtonBuilder, ActionRowBuilder, ButtonStyle, StringSelectMenuBuilder, P
 const { CommandWrapper } = require('../classes');
 const { SAFE_DELIMITER, SKIP_INTERACTION_HANDLING } = require('../constants.js');
 const { clubEmbedBuilder, disabledSelectRow } = require('../engines/messageEngine.js');
-const { getClubDictionary } = require('../engines/referenceEngine.js');
+const { getClubDictionary, getClub } = require('../engines/referenceEngine.js');
 
 const mainId = "club-invite";
 module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", PermissionFlagsBits.SendMessages, [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel], 3000,
@@ -42,7 +42,7 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 						[selectedClubId] = collectedInteraction.values;
 						collectedInteraction.update({
 							components: [
-								disabledSelectRow(getClubDictionary()[selectedClubId].title),
+								disabledSelectRow(getClub(selectedClubId).title),
 								new ActionRowBuilder().addComponents(
 									new UserSelectMenuBuilder().setCustomId(userSelectId)
 										.setPlaceholder("Select user...")
@@ -51,7 +51,7 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 						});
 						break;
 					case userSelectId:
-						const club = getClubDictionary()[selectedClubId];
+						const club = getClub(selectedClubId);
 						const member = collectedInteraction.users.first();
 						const components = [];
 						if (member.id !== club.hostId && !club.userIds.includes(member.id)) {

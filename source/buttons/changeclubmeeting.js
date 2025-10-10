@@ -1,6 +1,6 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
-const { getClubDictionary, updateClub, updateListReference } = require('../engines/referenceEngine.js');
+const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { updateClubDetails, cancelClubEvent, createClubEvent, scheduleClubReminderAndEvent, clearClubReminder } = require('../engines/clubEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { timeConversion } = require('../util/mathUtil.js');
@@ -12,7 +12,7 @@ const mainId = "changeclubmeeting";
 module.exports = new ButtonWrapper(mainId, 3000,
 	/** Set the meeting time/repetition properties for the club with provided id */
 	(interaction, [clubId]) => {
-		const club = getClubDictionary()[clubId];
+		const club = getClub(clubId);
 		const modalCustomId = `${SKIP_INTERACTION_HANDLING}${SAFE_DELIMITER}${interaction.id}`;
 		const modal = new ModalBuilder().setCustomId(modalCustomId)
 			.setTitle("Club Meeting Time Settings")

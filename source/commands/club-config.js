@@ -2,7 +2,7 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle, InteractionContextType, Me
 const { CommandWrapper } = require('../classes');
 const { SAFE_DELIMITER } = require('../constants.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
-const { getClubDictionary } = require('../engines/referenceEngine.js');
+const { getClub } = require('../engines/referenceEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 
 const mainId = "club-config";
@@ -14,7 +14,7 @@ module.exports = new CommandWrapper(mainId, "Change the configuration of the cur
 			return;
 		}
 
-		const club = getClubDictionary()[interaction.channelId];
+		const club = getClub(interaction.channelId);
 		interaction.reply({
 			embeds: [clubEmbedBuilder(club)],
 			components: [new ActionRowBuilder().addComponents(

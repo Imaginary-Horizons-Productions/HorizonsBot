@@ -1,5 +1,5 @@
 const { CommandWrapper } = require('../classes/InteractionWrapper.js');
-const { getClubDictionary, removeClub } = require('../engines/referenceEngine.js');
+const { removeClub, getClub } = require('../engines/referenceEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 const { InteractionContextType, MessageFlags } = require('discord.js');
 const { cancelClubEvent, clearClubReminder } = require('../engines/clubEngine.js');
@@ -13,7 +13,7 @@ module.exports = new CommandWrapper(mainId, "Remove a club's voice channel and r
 			return;
 		}
 
-		const club = getClubDictionary()[interaction.channelId];
+		const club = getClub(interaction.channelId);
 		if (club) {
 			const delay = parseFloat(interaction.options.getInteger("delay"));
 			if (delay > 0) {

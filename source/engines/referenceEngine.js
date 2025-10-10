@@ -17,6 +17,11 @@ function getClubDictionary() {
 	return clubDictionary;
 }
 
+/** @param {string} clubId  */
+function getClub(clubId) {
+	return clubDictionary[clubId];
+}
+
 /** Update a club's details in the internal dictionary and in the club list embed
  * @param {Club} club
  */
@@ -163,6 +168,7 @@ async function updateListReference(channelManager, listType) {
 
 module.exports = {
 	getClubDictionary,
+	getClub,
 	updateClub,
 	removeClub,
 	referenceMessages,

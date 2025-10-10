@@ -1,6 +1,6 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
-const { getClubDictionary, updateClub, updateListReference } = require('../engines/referenceEngine.js');
+const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { timeConversion } = require('../util/mathUtil.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
@@ -10,7 +10,7 @@ const mainId = "changeclubinfo";
 module.exports = new ButtonWrapper(mainId, 3000,
 	/** Set the name, description, game, image and/or color for the club with provided id */
 	(interaction, [clubId]) => {
-		const club = getClubDictionary()[clubId];
+		const club = getClub(clubId);
 		const modalCustomId = `${SKIP_INTERACTION_HANDLING}${SAFE_DELIMITER}${interaction.id}`;
 		const modal = new ModalBuilder().setCustomId(modalCustomId)
 			.setTitle("Set Club Info")

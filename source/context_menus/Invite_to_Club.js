@@ -1,6 +1,6 @@
 const { PermissionFlagsBits, InteractionContextType, ActionRowBuilder, StringSelectMenuBuilder, userMention, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
 const { UserContextMenuWrapper } = require('../classes');
-const { getClubDictionary } = require('../engines/referenceEngine');
+const { getClubDictionary, getClub } = require('../engines/referenceEngine');
 const { SKIP_INTERACTION_HANDLING, SAFE_DELIMITER } = require('../constants');
 const { clubEmbedBuilder } = require('../engines/messageEngine');
 
@@ -34,7 +34,7 @@ module.exports = new UserContextMenuWrapper(mainId, PermissionFlagsBits.SendMess
 		}).then(response => response.resource.message).then(reply => {
 			const collector = reply.createMessageComponentCollector({ max: 1 });
 			collector.on("collect", collectedInteraction => {
-				const club = getClubDictionary()[collectedInteraction.values[0]];
+				const club = getClub(collectedInteraction.values[0]);
 				if (club.hostId === interaction.targetId || club.userIds.includes(interaction.targetId)) {
 					collectedInteraction.reply({ content: `${userMention(interaction.targetId)} is already a member of ${club.title}.`, flags: MessageFlags.Ephemeral });
 					return;

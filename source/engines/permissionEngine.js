@@ -1,6 +1,6 @@
 const { GuildMember } = require("discord.js");
 const { ensuredPathSave } = require("../util/fileUtil");
-const { getClubDictionary } = require("./referenceEngine");
+const { getClub } = require("./referenceEngine");
 
 let { modIds, noAts, modRoleId } = require("../../config/modData.json");
 
@@ -39,7 +39,7 @@ function isModerator(member) {
  * @param {GuildMember} member
  */
 function isClubHostOrModerator(channelId, member) {
-	const club = getClubDictionary()[channelId];
+	const club = getClub(channelId);
 	return club && (club.hostId === member.id || isModerator(member));
 }
 

@@ -2,7 +2,7 @@ const { PermissionsBitField, MessageFlags } = require('discord.js');
 const { SelectWrapper } = require('../classes');
 const { guildId } = require('../constants.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
-const { updateListReference, getClubDictionary } = require('../engines/referenceEngine.js');
+const { updateListReference, getClub } = require('../engines/referenceEngine.js');
 
 const mainId = "joinclubs";
 module.exports = new SelectWrapper(mainId, 3000,
@@ -11,7 +11,7 @@ module.exports = new SelectWrapper(mainId, 3000,
 		const errors = [];
 		interaction.client.guilds.fetch(guildId).then(guild => {
 			for (const channelId of interaction.values) {
-				const club = getClubDictionary()[channelId];
+				const club = getClub(channelId);
 				if (!club) {
 					errors.push(`There doesn't seem to exist a club with id ${channelId}.`);
 					continue;

@@ -2,7 +2,7 @@ const { InteractionContextType, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { sendClubReminder } = require('../engines/clubEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
-const { getClubDictionary } = require('../engines/referenceEngine.js');
+const { getClub } = require('../engines/referenceEngine.js');
 
 const mainId = "club-send-reminder";
 module.exports = new CommandWrapper(mainId, "Re-post the reminder message for the club's next meeting", null, [InteractionContextType.Guild], 3000,
@@ -13,7 +13,7 @@ module.exports = new CommandWrapper(mainId, "Re-post the reminder message for th
 			return;
 		}
 
-		const club = getClubDictionary()[interaction.channelId];
+		const club = getClub(interaction.channelId);
 		if (!club.timeslot.nextMeeting) {
 			return interaction.reply({ content: 'This club does not have a time set for its next meeting.', flags: MessageFlags.Ephemeral });
 		}

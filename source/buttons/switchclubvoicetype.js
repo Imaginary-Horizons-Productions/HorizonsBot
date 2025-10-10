@@ -2,13 +2,13 @@ const { MessageFlags } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
 const { voiceChannelOptions } = require('../constants.js');
 const { modRoleId } = require('../engines/permissionEngine.js');
-const { getClubDictionary, updateClub } = require('../engines/referenceEngine.js');
+const { updateClub, getClub } = require('../engines/referenceEngine.js');
 
 const mainId = "switchclubvoicetype";
 module.exports = new ButtonWrapper(mainId, 3000,
 	/** Toggle between stage and private voice channels for a club */
 	(interaction, args) => {
-		const club = getClubDictionary()[interaction.channel.id];
+		const club = getClub(interaction.channel.id);
 		const categoryId = interaction.channel.parentId;
 		club.voiceType = club.voiceType === "private" ? "stage" : "private";
 

@@ -1,13 +1,13 @@
 const { GuildScheduledEventStatus, ButtonBuilder, ButtonStyle, ActionRowBuilder, MessageFlags } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
-const { getClubDictionary } = require('../engines/referenceEngine.js');
+const { getClub } = require('../engines/referenceEngine.js');
 const { isModerator } = require("../engines/permissionEngine.js");
 
 const mainId = "startevent";
 module.exports = new ButtonWrapper(mainId, 3000,
 	/** Start a club's event */
 	(interaction, [eventId]) => {
-		const { hostId } = getClubDictionary()[interaction.message.channel.id];
+		const { hostId } = getClub(interaction.channel.id);
 		if (!isModerator(interaction.member) && interaction.user.id !== hostId) {
 			return interaction.reply({ content: "Only the club's host or a moderator can start the event.", flags: MessageFlags.Ephemeral });
 		}

@@ -1,7 +1,7 @@
 const { Guild, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildScheduledEventEntityType, TextChannel } = require("discord.js");
 const { Club } = require("../classes");
 const { timeConversion } = require("../util/mathUtil.js");
-const { getClubDictionary, updateClub, updateListReference } = require("./referenceEngine.js");
+const { updateClub, updateListReference, getClub } = require("./referenceEngine.js");
 const { clubEmbedBuilder } = require("./messageEngine.js");
 const { MAX_SET_TIMEOUT, SAFE_DELIMITER } = require("../constants.js");
 const { commandMention } = require("../util/textUtil.js");
@@ -85,7 +85,7 @@ async function scheduleClubReminderAndEvent(clubId, nextMeetingTimestamp, channe
 	if (msToTimestamp <= MAX_SET_TIMEOUT) {
 		timeout = setTimeout(
 			async (clubId, channelManager) => {
-				const club = getClubDictionary()[clubId];
+				const club = getClub(clubId);
 				if (club?.timeslot.nextMeeting) {
 					await sendClubReminder(clubId, channelManager);
 					if (club.timeslot.periodCount && club.timeslot.periodUnits) {
@@ -120,7 +120,7 @@ async function scheduleClubReminderAndEvent(clubId, nextMeetingTimestamp, channe
  * @param {ChannelManager} channelManager
  */
 async function sendClubReminder(clubId, channelManager) {
-	const club = getClubDictionary()[clubId];
+	const club = getClub(clubId);
 	const textChannel = await channelManager.fetch(clubId);
 	// NOTE: defaultReminder.length (without interpolated length) must be less than or equal to 55 characters so it fits in the config modal placeholder with its wrapper (100 characters)
 	const defaultReminder = `Reminder: This club will meet at <t:${club.timeslot.nextMeeting}> in <#${club.voiceChannelId}>!`;

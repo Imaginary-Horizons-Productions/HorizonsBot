@@ -1,7 +1,7 @@
 const { PermissionFlagsBits, InteractionContextType, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes/InteractionWrapper.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
-const { getClubDictionary, updateClub, updateListReference } = require('../engines/referenceEngine.js');
+const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 
 const mainId = "club-update-host";
@@ -13,7 +13,7 @@ module.exports = new CommandWrapper(mainId, "Promote another user to club host",
 			return;
 		}
 
-		const club = getClubDictionary()[interaction.channelId];
+		const club = getClub(interaction.channelId);
 		const newHost = interaction.options.getUser("user");
 		club.hostId = newHost.id;
 		interaction.channel.permissionOverwrites.edit(interaction.user, { [PermissionFlagsBits.ViewChannel]: true, [PermissionFlagsBits.ManageMessages]: null }, { type: 1 })

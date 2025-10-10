@@ -2,9 +2,8 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags, ComponentTyp
 const { ButtonWrapper, ClubTimeslot } = require('../classes');
 const { SKIP_INTERACTION_HANDLING } = require('../constants');
 const { timeConversion } = require('../util/mathUtil');
-const { getClubDictionary, updateClub, updateListReference } = require('../engines/referenceEngine');
+const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine');
 const { cancelClubEvent, clearClubReminder, updateClubDetails } = require('../engines/clubEngine');
-const { clubEmbedBuilder } = require('../engines/messageEngine');
 
 const mainId = "clearclubmeeting";
 module.exports = new ButtonWrapper(mainId, 3000,
@@ -22,7 +21,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			flags: MessageFlags.Ephemeral,
 			withResponse: true
 		}).then(response => response.resource.message.awaitMessageComponent({ time: timeConversion(2, "m", "ms"), componentType: ComponentType.Button })).then(collectedInteraction => {
-			const club = getClubDictionary()[clubId];
+			const club = getClub(clubId);
 			cancelClubEvent(club, collectedInteraction.guild.scheduledEvents);
 			clearClubReminder(club.id);
 			updateClubDetails(club, collectedInteraction.channel);

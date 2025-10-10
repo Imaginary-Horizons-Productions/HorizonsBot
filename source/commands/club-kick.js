@@ -1,6 +1,6 @@
 const { PermissionsBitField, MessageFlags, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
-const { getClubDictionary, updateClub, updateListReference } = require('../engines/referenceEngine.js');
+const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 
 const mainId = "club-kick";
@@ -12,7 +12,7 @@ module.exports = new CommandWrapper(mainId, "Remove a user from a club", null, [
 			return;
 		}
 
-		const club = getClubDictionary()[interaction.channelId];
+		const club = getClub(interaction.channelId);
 		const user = interaction.options.getUser("target");
 		club.userIds = club.userIds.filter(memberId => memberId != user.id);
 		updateListReference(interaction.guild.channels, "club");

@@ -2,14 +2,14 @@ const { PermissionsBitField, Message } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
 const { guildId } = require('../constants.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
-const { updateListReference, getClubDictionary } = require('../engines/referenceEngine.js');
+const { updateListReference, getClub } = require('../engines/referenceEngine.js');
 
 const mainId = "join";
 module.exports = new ButtonWrapper(mainId, 3000,
 	/** Join the club specified in args */
 	(interaction, [channelId]) => {
 		clearComponents(interaction.message);
-		const club = getClubDictionary()[channelId];
+		const club = getClub(channelId);
 		if (!club) {
 			interaction.reply("This club doesn't seem to exist.");
 			return;
