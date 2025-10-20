@@ -40,7 +40,7 @@ module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice cha
 				},
 				{
 					id: host,
-					allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageMessages]
+					allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageMessages, PermissionFlagsBits.PinMessages]
 				},
 				{
 					id: "536330483852771348",
