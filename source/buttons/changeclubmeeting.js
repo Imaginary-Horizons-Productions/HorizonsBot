@@ -1,4 +1,4 @@
-const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const { ModalBuilder, TextInputBuilder, TextInputStyle, LabelBuilder, StringSelectMenuBuilder } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
 const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { updateClubDetails, cancelClubEvent, createClubEvent, scheduleClubReminderAndEvent, clearClubReminder } = require('../engines/clubEngine.js');
@@ -16,42 +16,40 @@ module.exports = new ButtonWrapper(mainId, 3000,
 		const modalCustomId = `${SKIP_INTERACTION_HANDLING}${SAFE_DELIMITER}${interaction.id}`;
 		const modal = new ModalBuilder().setCustomId(modalCustomId)
 			.setTitle("Club Meeting Time Settings")
-			.addComponents(
-				new ActionRowBuilder().addComponents(
-					new TextInputBuilder().setCustomId("nextMeeting")
-						.setLabel("Schedule Next Meeting")
-						.setValue(club.timeslot.nextMeeting?.toString() ?? "")
-						.setStyle(TextInputStyle.Short)
-						.setMaxLength(10) // number of digits in 2^32
-						.setRequired(false)
-						.setPlaceholder("The Unix Timestamp (seconds since Jan 1st 1970)")
-				),
-				new ActionRowBuilder().addComponents(
-					new TextInputBuilder().setCustomId("message")
-						.setLabel("Reminder Message")
-						.setValue(club.timeslot.message ?? "")
-						.setStyle(TextInputStyle.Paragraph)
-						.setMaxLength(1990)
-						.setRequired(false)
-						.setPlaceholder("Default: 'Reminder: This club will meet at <timezone converted time> tomorrow! <Link to voice>'")
-				),
-				new ActionRowBuilder().addComponents(
-					new TextInputBuilder().setCustomId("periodCount")
-						.setLabel("Repeating Meetings Count")
-						.setValue((club.timeslot.periodCount ?? "").toString())
-						.setStyle(TextInputStyle.Short)
-						.setMaxLength(1024)
-						.setRequired(false)
-						.setPlaceholder('The number part of "every X days/weeks"')
-				),
-				new ActionRowBuilder().addComponents(
-					new TextInputBuilder().setCustomId("periodUnit")
-						.setLabel("Repeating Meetings Unit")
-						.setValue(club.timeslot.periodUnits ?? "")
-						.setStyle(TextInputStyle.Short)
-						.setRequired(false)
-						.setPlaceholder('"days" or "weeks"')
-				)
+			.addLabelComponents(
+				new LabelBuilder().setLabel("Schedule Next Meeting")
+					.setDescription("Formatted as a Unix Timestamp (the seconds since Jan 1st 1970)")
+					.setTextInputComponent(
+						new TextInputBuilder().setCustomId("nextMeeting")
+							.setValue(club.timeslot.nextMeeting?.toString() ?? "")
+							.setStyle(TextInputStyle.Short)
+							.setMaxLength(10) // number of digits in 2^32
+							.setRequired(false)
+					),
+				new LabelBuilder().setLabel("Reminder Message")
+					.setTextInputComponent(
+						new TextInputBuilder().setCustomId("message")
+							.setValue(club.timeslot.message ?? "")
+							.setStyle(TextInputStyle.Paragraph)
+							.setMaxLength(1990)
+							.setRequired(false)
+							.setPlaceholder("Default: 'Reminder: This club will meet at <timezone converted time> tomorrow! <Link to voice>'")
+					),
+				new LabelBuilder().setLabel("Repeating Meetings Count")
+					.setDescription("The X in 'Every X Week(s)'. Set to '0' to turn off.")
+					.setTextInputComponent(
+						new TextInputBuilder().setCustomId("periodCount")
+							.setValue((club.timeslot.periodCount ?? "").toString())
+							.setStyle(TextInputStyle.Short)
+							.setMaxLength(1024)
+							.setRequired(false)
+					),
+				new LabelBuilder().setLabel("Repeating Meetings Unit")
+					.setStringSelectMenuComponent(
+						new StringSelectMenuBuilder().setCustomId("periodUnit")
+							.setOptions({ label: "Every X Week(s)", value: "weeks" }, { label: "Every X Day(s)", value: "days" })
+							.setRequired(false)
+					)
 			);
 		interaction.showModal(modal);
 		interaction.awaitModalSubmit({ filter: submission => submission.customId === modalCustomId, time: timeConversion(5, "m", "ms") }).then(modalSubmission => {
@@ -97,12 +95,8 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				}
 			}
 			if (fields.fields.has("periodUnit")) {
-				const periodUnitsInput = fields.getTextInputValue("periodUnit");
-				if (["days", "weeks"].includes(periodUnitsInput.toLowerCase())) {
-					club.timeslot.periodUnits = periodUnitsInput;
-				} else {
-					errors.periodUnits = `Input ${periodUnitsInput} did not match "days" or "weeks"`;
-				}
+				const [periodUnitsInput] = fields.getStringSelectValues("periodUnit");
+				club.timeslot.periodUnits = periodUnitsInput;
 			}
 
 			cancelClubEvent(club, modalSubmission.guild.scheduledEvents);
