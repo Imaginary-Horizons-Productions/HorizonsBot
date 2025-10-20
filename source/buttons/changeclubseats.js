@@ -1,4 +1,4 @@
-const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const { ModalBuilder, TextInputBuilder, TextInputStyle, LabelBuilder } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
 const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
@@ -14,15 +14,16 @@ module.exports = new ButtonWrapper(mainId, 3000,
 		const modalCustomId = `${SKIP_INTERACTION_HANDLING}${SAFE_DELIMITER}${interaction.id}`;
 		const modal = new ModalBuilder().setCustomId(modalCustomId)
 			.setTitle("Club Membership Settings")
-			.addComponents(
-				new ActionRowBuilder().addComponents(
-					new TextInputBuilder().setCustomId("seats")
-						.setLabel("Max Members")
-						.setValue(club.seats.toString())
-						.setStyle(TextInputStyle.Short)
-						.setRequired(false)
-						.setPlaceholder("Set to -1 to turn off")
-				),
+			.addLabelComponents(
+				new LabelBuilder()
+					.setLabel("Max Members")
+					.setDescription("Set to '-1' to turn off")
+					.setTextInputComponent(
+						new TextInputBuilder().setCustomId("seats")
+							.setValue(club.seats.toString())
+							.setStyle(TextInputStyle.Short)
+							.setRequired(false)
+					)
 			);
 		interaction.showModal(modal);
 		interaction.awaitModalSubmit({ filter: submission => submission.customId === modalCustomId, time: timeConversion(5, "m", "ms") }).then(modalSubmission => {
