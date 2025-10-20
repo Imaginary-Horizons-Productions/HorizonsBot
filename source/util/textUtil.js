@@ -45,8 +45,21 @@ function isAnyDiscordEmoji(text) {
 		|| new RegExp(/^<?(a)?:?(\w{2,32}):(\d{17,19})>?$/).test(text);
 }
 
+/**
+ * @param {string} originalText
+ * @param {number} lengthLimit
+ */
+function collapseTextToLength(originalText, lengthLimit) {
+	if (originalText.length > lengthLimit) {
+		return `${originalText.slice(0, lengthLimit - 1)}…`;
+	} else {
+		return originalText;
+	}
+}
+
 module.exports = {
 	commandMention,
 	listifyEN,
-	isAnyDiscordEmoji
+	isAnyDiscordEmoji,
+	collapseTextToLength
 };

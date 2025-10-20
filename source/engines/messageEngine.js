@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { EmbedBuilder, Colors, UserSelectMenuBuilder, ActionRowBuilder } = require("discord.js");
+const { EmbedBuilder, Colors, UserSelectMenuBuilder, ActionRowBuilder, bold, underline, userMention } = require("discord.js");
 const { imaginaryHorizonsIconURL, discordIconURL, SKIP_INTERACTION_HANDLING } = require('../constants');
 const { Club } = require('../classes');
 const { commandMention } = require('../util/textUtil');
@@ -72,7 +72,7 @@ function randomEmbedFooter() {
  * @param {Club} club
  */
 function clubEmbedBuilder(club) {
-	const fields = [{ name: "Club Host", value: `<@${club.hostId}>` }];
+	const fields = [{ name: "Club Host", value: userMention(club.hostId) }];
 	if (club.system) {
 		fields.push({ name: "Activity", value: club.system });
 	}
@@ -84,7 +84,7 @@ function clubEmbedBuilder(club) {
 	}
 
 	return embedTemplateBuilder()
-		.setTitle(`__**${club.title}**__ (${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members)`)
+		.setTitle(`${bold(underline(club.title))} (${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members)`)
 		.setDescription(club.description)
 		.addFields(fields)
 		.setImage(club.imageURL || null)

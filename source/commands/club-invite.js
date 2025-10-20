@@ -3,6 +3,8 @@ const { CommandWrapper } = require('../classes');
 const { SAFE_DELIMITER, SKIP_INTERACTION_HANDLING } = require('../constants.js');
 const { clubEmbedBuilder, disabledSelectRow } = require('../engines/messageEngine.js');
 const { getClubDictionary, getClub } = require('../engines/referenceEngine.js');
+const { collapseTextToLength } = require('../util/textUtil.js');
+const { ButtonLimits } = require('@sapphire/discord.js-utilities');
 
 const mainId = "club-invite";
 module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", PermissionFlagsBits.SendMessages, [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel], 3000,
@@ -60,7 +62,7 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 									components: [
 										new ButtonBuilder({
 											custom_id: `join${SAFE_DELIMITER}${club.id}`,
-											label: `Join ${club.title}`,
+											label: collapseTextToLength(`Join ${club.title}`, ButtonLimits.MaximumLabelCharacters),
 											style: ButtonStyle.Success
 										})
 									]

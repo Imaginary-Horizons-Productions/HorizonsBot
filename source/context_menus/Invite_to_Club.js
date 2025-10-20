@@ -3,6 +3,8 @@ const { UserContextMenuWrapper } = require('../classes');
 const { getClubDictionary, getClub } = require('../engines/referenceEngine');
 const { SKIP_INTERACTION_HANDLING, SAFE_DELIMITER } = require('../constants');
 const { clubEmbedBuilder } = require('../engines/messageEngine');
+const { collapseTextToLength } = require('../util/textUtil');
+const { ButtonLimits } = require('@sapphire/discord.js-utilities');
 
 const mainId = "Invite to Club";
 module.exports = new UserContextMenuWrapper(mainId, PermissionFlagsBits.SendMessages, [InteractionContextType.Guild], 3000,
@@ -50,7 +52,7 @@ module.exports = new UserContextMenuWrapper(mainId, PermissionFlagsBits.SendMess
 					components: [
 						new ActionRowBuilder().addComponents(
 							new ButtonBuilder().setCustomId(`join${SAFE_DELIMITER}${club.id}`)
-								.setLabel(`Join ${club.title}`)
+								.setLabel(collapseTextToLength(`Join ${club.title}`, ButtonLimits.MaximumLabelCharacters))
 								.setStyle(ButtonStyle.Success)
 						)
 					]

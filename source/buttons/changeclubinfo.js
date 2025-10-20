@@ -1,10 +1,11 @@
-const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const { ModalBuilder, TextInputBuilder, TextInputStyle, LabelBuilder } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
 const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { timeConversion } = require('../util/mathUtil.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { SAFE_DELIMITER, SKIP_INTERACTION_HANDLING } = require('../constants.js');
+const { ChannelLimits, ButtonLimits } = require('@sapphire/discord.js-utilities');
 
 const mainId = "changeclubinfo";
 module.exports = new ButtonWrapper(mainId, 3000,
@@ -12,52 +13,54 @@ module.exports = new ButtonWrapper(mainId, 3000,
 	(interaction, [clubId]) => {
 		const club = getClub(clubId);
 		const modalCustomId = `${SKIP_INTERACTION_HANDLING}${SAFE_DELIMITER}${interaction.id}`;
+		const nameMaxLength = ButtonLimits.MaximumLabelCharacters - "Join ".length;
+		const activityMaxLength = 1024; // The text input limit got raised to 4k, but that's probably unnecessary
 		const modal = new ModalBuilder().setCustomId(modalCustomId)
 			.setTitle("Set Club Info")
-			.addComponents(
-				new ActionRowBuilder().addComponents(
-					new TextInputBuilder().setCustomId("title")
-						.setLabel("Club Name")
-						.setValue(club.title)
-						.setStyle(TextInputStyle.Short)
-						.setMinLength(1)
-						.setMaxLength(94)
-				),
-				new ActionRowBuilder().addComponents(
-					new TextInputBuilder().setCustomId("description")
-						.setLabel("Description/Topic")
-						.setValue(club.description)
-						.setStyle(TextInputStyle.Paragraph)
-						.setMaxLength(1024)
-						.setRequired(false)
-						.setPlaceholder("This is also set as the text channel's topic (top text channel ui)")
-				),
-				new ActionRowBuilder().addComponents(
-					new TextInputBuilder().setCustomId("system")
-						.setLabel("Activity")
-						.setValue(club.system)
-						.setStyle(TextInputStyle.Short)
-						.setMaxLength(1024)
-						.setRequired(false)
-				),
-				new ActionRowBuilder().addComponents(
-					new TextInputBuilder().setCustomId("imageURL")
-						.setLabel("Image")
-						.setValue(club.imageURL)
-						.setStyle(TextInputStyle.Paragraph)
-						.setRequired(false)
-						.setPlaceholder("Send an image as an attachment (DM HorizonsBot?) then right-click -> 'Copy Link' to get a url")
-				),
-				new ActionRowBuilder().addComponents(
-					new TextInputBuilder().setCustomId("color")
-						.setLabel("Color")
-						.setValue(club.color || "#6b81eb")
-						.setStyle(TextInputStyle.Short)
-						.setMinLength(6)
-						.setMaxLength(7)
-						.setRequired(false)
-						.setPlaceholder("Hexcode format (eg #6b81eb)")
-				)
+			.addLabelComponents(
+				new LabelBuilder().setLabel("Club Name")
+					.setTextInputComponent(
+						new TextInputBuilder().setCustomId("title")
+							.setValue(club.title)
+							.setStyle(TextInputStyle.Short)
+							.setMinLength(1)
+							.setMaxLength(nameMaxLength)
+					),
+				new LabelBuilder().setLabel("Description/Topic")
+					.setDescription("This also sets the text channel's topic (top text channel ui)")
+					.setTextInputComponent(
+						new TextInputBuilder().setCustomId("description")
+							.setValue(club.description)
+							.setStyle(TextInputStyle.Paragraph)
+							.setMaxLength(ChannelLimits.MaximumDescriptionLength)
+							.setRequired(false)
+					),
+				new LabelBuilder().setLabel("Activity")
+					.setTextInputComponent(
+						new TextInputBuilder().setCustomId("system")
+							.setValue(club.system)
+							.setStyle(TextInputStyle.Short)
+							.setMaxLength(activityMaxLength)
+							.setRequired(false)
+					),
+				new LabelBuilder().setLabel("Image")
+					.setDescription("Send an image as an attachment (DM HorizonsBot?) then right-click -> 'Copy Link' to get a url")
+					.setTextInputComponent(
+						new TextInputBuilder().setCustomId("imageURL")
+							.setValue(club.imageURL)
+							.setStyle(TextInputStyle.Paragraph)
+							.setRequired(false)
+					),
+				new LabelBuilder().setLabel("Color")
+					.setDescription("Hexcode format (eg #6b81eb)")
+					.setTextInputComponent(
+						new TextInputBuilder().setCustomId("color")
+							.setValue(club.color || "#6b81eb")
+							.setStyle(TextInputStyle.Short)
+							.setMinLength(6)
+							.setMaxLength(7)
+							.setRequired(false)
+					)
 			);
 		interaction.showModal(modal);
 		interaction.awaitModalSubmit({ filter: submission => submission.customId === modalCustomId, time: timeConversion(5, "m", "ms") }).then(async modalSubmission => {
