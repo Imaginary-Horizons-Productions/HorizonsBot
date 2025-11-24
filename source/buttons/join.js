@@ -1,8 +1,9 @@
-const { PermissionsBitField, Message } = require('discord.js');
+const { PermissionsBitField } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
 const { guildId } = require('../constants.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 const { updateListReference, getClub } = require('../engines/referenceEngine.js');
+const { clearComponents } = require('../util/discordAPIRequests.js');
 
 const mainId = "join";
 module.exports = new ButtonWrapper(mainId, 3000,
@@ -52,16 +53,3 @@ module.exports = new ButtonWrapper(mainId, 3000,
 		})
 	}
 );
-
-/** @param {Message} message */
-function clearComponents(message) {
-	message.edit({ components: [] }).catch(error => {
-		if (error.code === "ChannelNotCached") {
-			message.client.channels.fetch(message.interaction.channelId).then(channel => {
-				message.edit({ components: [] });
-			});
-		} else {
-			console.error(error);
-		}
-	});
-}
