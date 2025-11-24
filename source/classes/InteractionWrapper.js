@@ -1,4 +1,4 @@
-const { Interaction, ButtonInteraction, SlashCommandBuilder, PermissionFlagsBits, CommandInteraction, AnySelectMenuInteraction, InteractionContextType, UserContextMenuCommandInteraction, ContextMenuCommandInteraction, MessageContextMenuCommandInteraction, ContextMenuCommandBuilder, ApplicationCommandType } = require("discord.js");
+const { Interaction, ButtonInteraction, SlashCommandBuilder, PermissionFlagsBits, ChatInputCommandInteraction, AnySelectMenuInteraction, InteractionContextType, UserContextMenuCommandInteraction, ContextMenuCommandInteraction, MessageContextMenuCommandInteraction, ContextMenuCommandBuilder, ApplicationCommandType } = require("discord.js");
 const { MAX_SET_TIMEOUT } = require("../constants");
 const { BuildError } = require("./BuildError.js");
 
@@ -63,7 +63,7 @@ class CommandWrapper extends InteractionWrapper {
 	 * @param {PermissionFlagsBits | null} defaultMemberPermission
 	 * @param {InteractionContextType} contextEnums
 	 * @param {number} cooldownInMS
-	 * @param {(interaction: CommandInteraction) => void} executeFunction
+	 * @param {(interaction: ChatInputCommandInteraction) => void} executeFunction
 	 */
 	constructor(mainIdInput, descriptionInput, defaultMemberPermission, contextEnums, cooldownInMS, executeFunction) {
 		super(mainIdInput, cooldownInMS, executeFunction);
