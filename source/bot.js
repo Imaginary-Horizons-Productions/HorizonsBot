@@ -21,8 +21,7 @@ const { getSelect } = require("./selects/_selectDictionary.js");
 const { scheduleClubReminderAndEvent, updateClubDetails, clearClubReminder, cancelClubEvent } = require("./engines/clubEngine.js");
 const { deletePingableRole, updateOnboarding, removeAllPetitionsBy, checkAllPetitions, isOptInChannel, deleteOptInChannel } = require("./engines/customizationEngine.js");
 const { versionEmbedBuilder, rulesEmbedBuilder, pressKitEmbedBuilder } = require("./engines/messageEngine.js");
-const { referenceMessages, getClubDictionary, removeClub, updateListReference } = require("./engines/referenceEngine.js");
-const { ensuredPathSave } = require("./util/fileUtil.js");
+const { referenceMessages, getClubDictionary, removeClub, updateListReference, handleMissingListReferenceMesssage } = require("./engines/referenceEngine.js");
 const { SAFE_DELIMITER, guildId, commandIds, testGuildId, SKIP_INTERACTION_HANDLING } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
 //#endregion
@@ -128,22 +127,8 @@ client.on(Events.ClientReady, () => {
 				channelManager.fetch(referenceMessages[referenceType].channelId).then(channel => {
 					channel.messages.fetch(referenceMessages[referenceType].messageId).then(async message => {
 						message.edit({ embeds: [await embed] });
-					}).catch(error => {
-						if (error.code === 10008) { // Unknown Message
-							referenceMessages[referenceType].channelId = "";
-							referenceMessages[referenceType].messageId = "";
-							ensuredPathSave(referenceMessages, "referenceMessageIds.json");
-						}
-						console.error(error);
-					})
-				}).catch(error => {
-					if (error.code === 10003) { // Unknown Channel
-						referenceMessages[referenceType].channelId = "";
-						referenceMessages[referenceType].messageId = "";
-						ensuredPathSave(referenceMessages, "referenceMessageIds.json");
-					}
-					console.error(error);
-				})
+					}).catch(handleMissingListReferenceMesssage);
+				}).catch(handleMissingListReferenceMesssage);
 			}
 		})
 	})
