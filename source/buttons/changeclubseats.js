@@ -5,6 +5,7 @@ const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 const { timeConversion } = require('../util/mathUtil.js');
 const { SKIP_INTERACTION_HANDLING, SAFE_DELIMITER } = require('../constants.js');
+const { butIgnoreDiscordInteractionCollectorErrors } = require('../util/dAPIResponses.js');
 
 const mainId = "changeclubseats";
 module.exports = new ButtonWrapper(mainId, 3000,
@@ -54,6 +55,6 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				payload.content = "";
 			}
 			modalSubmission.update(payload);
-		}).catch(console.error);
+		}).catch(butIgnoreDiscordInteractionCollectorErrors);
 	}
 );

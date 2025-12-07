@@ -5,6 +5,7 @@ const { clubEmbedBuilder, disabledSelectRow } = require('../engines/messageEngin
 const { getClubDictionary, getClub } = require('../engines/referenceEngine.js');
 const { collapseTextToLength } = require('../util/textUtil.js');
 const { ButtonLimits } = require('@sapphire/discord.js-utilities');
+const { isCantDirectMessageThisUserError } = require('../util/dAPIResponses.js');
 
 const mainId = "club-invite";
 module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", PermissionFlagsBits.SendMessages, [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel], 3000,
@@ -69,9 +70,20 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 								}
 							));
 						}
-						member.send({ embeds: [clubEmbedBuilder(club)], components });
-						collectedInteraction.reply({ content: `Details about and an invite to <#${selectedClubId}> have been sent to ${member}.`, flags: MessageFlags.Ephemeral });
-						interaction.deleteReply();
+						member.send({ embeds: [clubEmbedBuilder(club)], components }).then(() => {
+							collectedInteraction.reply({ content: `Details about and an invite to <#${selectedClubId}> have been sent to ${member}.`, flags: MessageFlags.Ephemeral });
+						}).catch(error => {
+							if (isCantDirectMessageThisUserError(error)) {
+								collectedInteraction.reply({ content: `Club details could not be sent to ${member} because HorizonsBot cannot send messages to that user (have they blocked HorizonsBot?).`, flags: MessageFlags.Ephemeral });
+							} else {
+								if (!collectedInteraction.replied) {
+									collectedInteraction.reply({ content: `Club details could not be sent to ${interaction.targetUser} because HorizonsBot encountered an uncommon error.`, flags: MessageFlags.Ephemeral });
+								}
+								console.error(error);
+							}
+						}).finally(() => {
+							interaction.deleteReply();
+						});
 						break;
 				}
 			})
