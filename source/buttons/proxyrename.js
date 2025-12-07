@@ -2,6 +2,7 @@ const { ButtonWrapper } = require('../classes');
 const { TextInputStyle, ModalBuilder, TextInputBuilder, LabelBuilder, bold } = require('discord.js');
 const { timeConversion } = require('../util/mathUtil');
 const { SKIP_INTERACTION_HANDLING, SAFE_DELIMITER } = require('../constants');
+const { butIgnoreDiscordInteractionCollectorErrors } = require('../util/dAPIResponses');
 
 const mainId = "proxyrename";
 module.exports = new ButtonWrapper(mainId, 3000,
@@ -23,6 +24,6 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			const newName = modalSubmission.fields.fields.get("title").value;
 			interaction.channel.setName(newName);
 			modalSubmission.reply(`${interaction.member} renamed this thread to ${bold(newName)}.`);
-		})
+		}).catch(butIgnoreDiscordInteractionCollectorErrors)
 	}
 );

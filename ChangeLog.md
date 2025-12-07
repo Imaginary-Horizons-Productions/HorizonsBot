@@ -1,4 +1,7 @@
 # HorizonsBot Change Log
+#### HorizonsBot Version 2.10.0:
+- Fixed several crashes related to the bot trying to send DMs to users who've blocked it
+
 #### HorizonsBot Version 2.9.0:
 - Fixed `/roll` mistaking proper input for invalid input
 - Added "Clear Next Meeting Info" button to `/club-config`
