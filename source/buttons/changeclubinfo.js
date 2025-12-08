@@ -6,7 +6,7 @@ const { updateClubDetails } = require('../engines/clubEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { SAFE_DELIMITER, SKIP_INTERACTION_HANDLING } = require('../constants.js');
 const { ChannelLimits, ButtonLimits } = require('@sapphire/discord.js-utilities');
-const { butIgnoreDiscordInteractionCollectorErrors } = require('../util/dAPIResponses.js');
+const { butIgnoreInteractionCollectorErrors } = require('../util/dAPIResponses.js');
 
 const mainId = "changeclubinfo";
 module.exports = new ButtonWrapper(mainId, 3000,
@@ -113,6 +113,6 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				payload.content = "";
 			}
 			modalSubmission.update(payload);
-		}).catch(butIgnoreDiscordInteractionCollectorErrors);
+		}).catch(butIgnoreInteractionCollectorErrors);
 	}
 );

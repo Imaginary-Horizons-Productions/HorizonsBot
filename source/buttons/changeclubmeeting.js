@@ -5,7 +5,7 @@ const { updateClubDetails, cancelClubEvent, createClubEvent, scheduleClubReminde
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { timeConversion } = require('../util/mathUtil.js');
 const { SKIP_INTERACTION_HANDLING, SAFE_DELIMITER } = require('../constants.js');
-const { butIgnoreDiscordInteractionCollectorErrors } = require('../util/dAPIResponses.js');
+const { butIgnoreInteractionCollectorErrors } = require('../util/dAPIResponses.js');
 
 const YEAR_IN_MS = 31556926000;
 
@@ -118,6 +118,6 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				payload.content = "";
 			}
 			modalSubmission.update(payload);
-		}).catch(butIgnoreDiscordInteractionCollectorErrors);
+		}).catch(butIgnoreInteractionCollectorErrors);
 	}
 );

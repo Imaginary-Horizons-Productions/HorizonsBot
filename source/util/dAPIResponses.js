@@ -2,8 +2,10 @@ const { DiscordjsErrorCodes } = require("discord.js");
 
 // Discord API Opcodes and Status Codes: https://discord.com/developers/docs/topics/opcodes-and-status-codes
 
-/** @param {((error) => boolean)[]} ignoreThese */
-function butIgnoreCertainErrors(...ignoreThese) {
+/** Creates a function to pass to a `Promise`'s `.catch` from an array of error kind check functions, often needed to avoid crashes when receiving errors back from external APIs like dAPI
+ * @param {((error) => boolean)[]} ignoreThese
+ */
+function butIgnoreErrorIf(...ignoreThese) {
 	return (error) => {
 		for (const ignoreThis of ignoreThese) {
 			if (ignoreThis(error)) {
@@ -14,13 +16,14 @@ function butIgnoreCertainErrors(...ignoreThese) {
 	}
 }
 
-/** Interaction collectors throw an error on timeout (which is a crash if uncaught) */
-const butIgnoreDiscordInteractionCollectorErrors = butIgnoreCertainErrors(error => error.code === DiscordjsErrorCodes.InteractionCollectorError);
-
+const isInteractionCollectorError = error => error.code === DiscordjsErrorCodes.InteractionCollectorError;
 const isCantDirectMessageThisUserError = error => error.code === 50007;
 
+/** Interaction collectors throw an error on timeout (which is a crash if uncaught) */
+const butIgnoreInteractionCollectorErrors = butIgnoreErrorIf(isInteractionCollectorError);
+
 module.exports = {
-	butIgnoreCertainErrors,
-	butIgnoreDiscordInteractionCollectorErrors,
+	butIgnoreErrorIf,
+	butIgnoreInteractionCollectorErrors,
 	isCantDirectMessageThisUserError
 }
