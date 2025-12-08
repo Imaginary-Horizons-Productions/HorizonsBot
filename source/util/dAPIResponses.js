@@ -24,6 +24,7 @@ const butIgnoreInteractionCollectorErrors = butIgnoreErrorIf(isInteractionCollec
 
 module.exports = {
 	butIgnoreErrorIf,
-	butIgnoreInteractionCollectorErrors,
-	isCantDirectMessageThisUserError
+	isInteractionCollectorError,
+	isCantDirectMessageThisUserError,
+	butIgnoreInteractionCollectorErrors
 }
