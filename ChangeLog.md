@@ -1,6 +1,7 @@
 # HorizonsBot Change Log
 #### HorizonsBot Version 2.10.0:
 - Fixed several crashes related to the bot trying to send DMs to users who've blocked it
+- Removed the `/timestamp` slash command, you can use the native Discord feature @time instead
 
 #### HorizonsBot Version 2.9.0:
 - Fixed `/roll` mistaking proper input for invalid input
