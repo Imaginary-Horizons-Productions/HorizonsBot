@@ -31,6 +31,7 @@ const commandFiles = [
 	"roll.js",
 	"server-rules.js",
 	"set-pingable-role-emoji.js",
+	"upload-emote.js",
 	"version.js"
 ];
 /** @type {Record<string, CommandWrapper>} */

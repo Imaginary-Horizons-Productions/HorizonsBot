@@ -1,5 +1,5 @@
 const { ChannelType, PermissionFlagsBits } = require('discord.js');
-const { guildId, topicCategoryId, testGuildId } = require('../config/auth.json');
+const { guildId, topicCategoryId, testGuildId, mainTextChannelId, emoteLogThreadId } = require('../config/auth.json');
 
 module.exports = {
 	// JS Constants
@@ -14,6 +14,8 @@ module.exports = {
 	guildId,
 	testGuildId,
 	topicCategoryId,
+	mainTextChannelId,
+	emoteLogThreadId,
 	pluralKitId: "466378653216014359",
 	commandIds: {},
 
