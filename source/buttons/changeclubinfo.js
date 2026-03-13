@@ -50,7 +50,6 @@ module.exports = new ButtonWrapper(mainId, 3000,
 							.setRequired(false)
 					),
 				new LabelBuilder().setLabel("Image")
-					.setDescription("Send an image as an attachment (DM HorizonsBot?) then right-click -> 'Copy Link' to get a url")
 					.setFileUploadComponent(
 						new FileUploadBuilder().setCustomId(labelIdImage)
 							.setRequired(false)
