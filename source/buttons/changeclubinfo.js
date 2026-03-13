@@ -1,4 +1,4 @@
-const { ModalBuilder, TextInputBuilder, TextInputStyle, LabelBuilder } = require('discord.js');
+const { ModalBuilder, TextInputBuilder, TextInputStyle, LabelBuilder, FileUploadBuilder } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
 const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { timeConversion } = require('../util/mathUtil.js');
@@ -51,10 +51,8 @@ module.exports = new ButtonWrapper(mainId, 3000,
 					),
 				new LabelBuilder().setLabel("Image")
 					.setDescription("Send an image as an attachment (DM HorizonsBot?) then right-click -> 'Copy Link' to get a url")
-					.setTextInputComponent(
-						new TextInputBuilder().setCustomId(labelIdImage)
-							.setValue(club.imageURL)
-							.setStyle(TextInputStyle.Paragraph)
+					.setFileUploadComponent(
+						new FileUploadBuilder().setCustomId(labelIdImage)
 							.setRequired(false)
 					),
 				new LabelBuilder().setLabel("Color")
@@ -89,13 +87,11 @@ module.exports = new ButtonWrapper(mainId, 3000,
 					textChannel.setTopic(descriptionInput);
 				}
 			}
-			if (fields.fields.has(labelIdImage)) {
-				const unvalidatedURL = fields.getTextInputValue(labelIdImage);
-				try {
-					new URL(unvalidatedURL);
-					club.imageURL = unvalidatedURL;
-				} catch (error) {
-					errors.imageURL = error.message;
+			const imageFileCollection = modalSubmission.fields.getUploadedFiles(labelIdImage);
+			if (imageFileCollection) {
+				const firstAttachment = imageFileCollection.first();
+				if (firstAttachment) {
+					club.imageURL = firstAttachment.url;
 				}
 			}
 
