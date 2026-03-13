@@ -13,6 +13,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 	(interaction, [clubId]) => {
 		const club = getClub(clubId);
 		const modalCustomId = `${SKIP_INTERACTION_HANDLING}${SAFE_DELIMITER}${interaction.id}`;
+		const labelIdMaxMembers = "max-members";
 		const modal = new ModalBuilder().setCustomId(modalCustomId)
 			.setTitle("Club Membership Settings")
 			.addLabelComponents(
@@ -20,8 +21,8 @@ module.exports = new ButtonWrapper(mainId, 3000,
 					.setLabel("Max Members")
 					.setDescription("Set to '-1' to turn off")
 					.setTextInputComponent(
-						new TextInputBuilder().setCustomId("seats")
-							.setValue(club.seats.toString())
+						new TextInputBuilder().setCustomId(labelIdMaxMembers)
+							.setValue(club.maxMembers.toString())
 							.setStyle(TextInputStyle.Short)
 							.setRequired(false)
 					)
@@ -31,7 +32,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			const { fields } = modalSubmission;
 			const errors = {};
 
-			["seats"].forEach(simpleIntegerKey => {
+			[labelIdMaxMembers].forEach(simpleIntegerKey => {
 				if (fields.fields.has(simpleIntegerKey)) {
 					const unparsedValue = fields.getTextInputValue(simpleIntegerKey);
 					const value = parseInt(unparsedValue);

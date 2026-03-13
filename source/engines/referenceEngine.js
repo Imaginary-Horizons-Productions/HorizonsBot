@@ -120,11 +120,11 @@ function buildClubListPayload() {
 		const clubOptions = [];
 		for (const club of recruitingClubs) {
 			const clubOption = {
-				label: `${club.title} (${`${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members`})`,
+				label: `${club.name} (${`${club.userIds.length}${club.maxMembers !== -1 ? `/${club.maxMembers}` : ""} Members`})`,
 				value: club.id
 			};
-			if (club.system) {
-				clubOption.description = `Activity: ${club.system}`;
+			if (club.activity) {
+				clubOption.description = `Activity: ${club.activity}`;
 			}
 			clubOptions.push(clubOption);
 		}

@@ -18,12 +18,12 @@ module.exports = new SelectWrapper(mainId, 3000,
 				}
 
 				if (club.hostId === interaction.user.id || club.userIds.includes(interaction.user.id)) {
-					errors.push(`You are already in ${club.title}.`);
+					errors.push(`You are already in ${club.name}.`);
 					continue;
 				}
 
-				if (club.seats !== -1 && !club.isRecruiting()) {
-					errors.push(`${club.title} is already full.`);
+				if (club.maxMembers !== -1 && !club.isRecruiting()) {
+					errors.push(`${club.name} is already full.`);
 					continue;
 				}
 

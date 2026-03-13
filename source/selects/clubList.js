@@ -14,7 +14,7 @@ module.exports = new SelectWrapper(mainId, 3000,
 			const club = clubs[channelId];
 			embeds.push(clubEmbedBuilder(club));
 			options.push({
-				label: club.title,
+				label: club.name,
 				value: club.id
 			})
 		});

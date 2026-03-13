@@ -11,11 +11,11 @@ module.exports.Club = class {
 		this.voiceType = voiceTypeInput;
 		this.hostId = hostIdInput;
 	}
-	title = "new club";
+	name = "new club";
 	description = "The host can change this text with `/club-config`.";
 	userIds = []; // An array containing the allowed user snowflakes (excluding the host)
-	seats = -1; // Maximum number of players in the club, 0 = unlimited
-	system = ""; // string for club game
+	maxMembers = -1; // Maximum number of players in the club, 0 = unlimited
+	activity = ""; // string for club game
 	timeslot = new module.exports.ClubTimeslot();
 	imageURL = ""; // URL for club image
 	detailSummaryId = "";
@@ -25,7 +25,7 @@ module.exports.Club = class {
 	 * @returns {boolean}
 	 */
 	isRecruiting() {
-		return this.userIds.length < this.seats || this.voiceType === "stage";
+		return this.userIds.length < this.maxMembers || this.voiceType === "stage";
 	}
 }
 

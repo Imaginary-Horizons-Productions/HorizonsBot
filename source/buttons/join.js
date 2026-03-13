@@ -17,12 +17,12 @@ module.exports = new ButtonWrapper(mainId, 3000,
 		}
 
 		if (club.hostId === interaction.user.id || club.userIds.includes(interaction.user.id)) {
-			interaction.reply(`You are already in ${club.title}.`);
+			interaction.reply(`You are already in ${club.name}.`);
 			return;
 		}
 
-		if (club.seats !== -1 && !club.isRecruiting()) {
-			interaction.reply(`${club.title} is already full.`);
+		if (club.maxMembers !== -1 && !club.isRecruiting()) {
+			interaction.reply(`${club.name} is already full.`);
 			return;
 		}
 

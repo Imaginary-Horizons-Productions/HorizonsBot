@@ -73,8 +73,8 @@ function randomEmbedFooter() {
  */
 function clubEmbedBuilder(club) {
 	const fields = [{ name: "Club Host", value: userMention(club.hostId) }];
-	if (club.system) {
-		fields.push({ name: "Activity", value: club.system });
+	if (club.activity) {
+		fields.push({ name: "Activity", value: club.activity });
 	}
 	if (club.timeslot.nextMeeting) {
 		fields.push({
@@ -84,7 +84,7 @@ function clubEmbedBuilder(club) {
 	}
 
 	return embedTemplateBuilder()
-		.setTitle(`${bold(underline(club.title))} (${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members)`)
+		.setTitle(`${bold(underline(club.name))} (${club.userIds.length}${club.maxMembers !== -1 ? `/${club.maxMembers}` : ""} Members)`)
 		.setDescription(club.description)
 		.addFields(fields)
 		.setImage(club.imageURL || null)

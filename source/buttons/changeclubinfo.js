@@ -16,13 +16,18 @@ module.exports = new ButtonWrapper(mainId, 3000,
 		const modalCustomId = `${SKIP_INTERACTION_HANDLING}${SAFE_DELIMITER}${interaction.id}`;
 		const nameMaxLength = ButtonLimits.MaximumLabelCharacters - "Join ".length;
 		const activityMaxLength = 1024; // The text input limit got raised to 4k, but that's probably unnecessary
+		const labelIdName = "name";
+		const labelIdDescription = "description";
+		const labelIdActivity = "activity";
+		const labelIdImage = "image";
+		const labelIdColor = "color";
 		const modal = new ModalBuilder().setCustomId(modalCustomId)
 			.setTitle("Set Club Info")
 			.addLabelComponents(
 				new LabelBuilder().setLabel("Club Name")
 					.setTextInputComponent(
-						new TextInputBuilder().setCustomId("title")
-							.setValue(club.title)
+						new TextInputBuilder().setCustomId(labelIdName)
+							.setValue(club.name)
 							.setStyle(TextInputStyle.Short)
 							.setMinLength(1)
 							.setMaxLength(nameMaxLength)
@@ -30,7 +35,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				new LabelBuilder().setLabel("Description/Topic")
 					.setDescription("This also sets the text channel's topic (top text channel ui)")
 					.setTextInputComponent(
-						new TextInputBuilder().setCustomId("description")
+						new TextInputBuilder().setCustomId(labelIdDescription)
 							.setValue(club.description)
 							.setStyle(TextInputStyle.Paragraph)
 							.setMaxLength(ChannelLimits.MaximumDescriptionLength)
@@ -38,8 +43,8 @@ module.exports = new ButtonWrapper(mainId, 3000,
 					),
 				new LabelBuilder().setLabel("Activity")
 					.setTextInputComponent(
-						new TextInputBuilder().setCustomId("system")
-							.setValue(club.system)
+						new TextInputBuilder().setCustomId(labelIdActivity)
+							.setValue(club.activity)
 							.setStyle(TextInputStyle.Short)
 							.setMaxLength(activityMaxLength)
 							.setRequired(false)
@@ -47,7 +52,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				new LabelBuilder().setLabel("Image")
 					.setDescription("Send an image as an attachment (DM HorizonsBot?) then right-click -> 'Copy Link' to get a url")
 					.setTextInputComponent(
-						new TextInputBuilder().setCustomId("imageURL")
+						new TextInputBuilder().setCustomId(labelIdImage)
 							.setValue(club.imageURL)
 							.setStyle(TextInputStyle.Paragraph)
 							.setRequired(false)
@@ -55,7 +60,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				new LabelBuilder().setLabel("Color")
 					.setDescription("Hexcode format (eg #6b81eb)")
 					.setTextInputComponent(
-						new TextInputBuilder().setCustomId("color")
+						new TextInputBuilder().setCustomId(labelIdColor)
 							.setValue(club.color || "#6b81eb")
 							.setStyle(TextInputStyle.Short)
 							.setMinLength(6)
@@ -68,24 +73,24 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			const { fields } = modalSubmission;
 			const errors = {};
 
-			if (fields.fields.has("title") || fields.fields.has("description")) {
+			if (fields.fields.has(labelIdName) || fields.fields.has(labelIdDescription)) {
 				const textChannel = await modalSubmission.guild.channels.fetch(club.id);
 
-				const titleInput = fields.getTextInputValue("title");
-				if (club.title !== titleInput) {
-					club.title = titleInput;
-					textChannel.setName(titleInput);
+				const nameInput = fields.getTextInputValue(labelIdName);
+				if (club.name !== nameInput) {
+					club.name = nameInput;
+					textChannel.setName(nameInput);
 					const voiceChannel = await modalSubmission.guild.channels.fetch(club.voiceChannelId);
-					voiceChannel.setName(`${titleInput} ${club.voiceType === "private" ? "Voice" : "Stage"}`);
+					voiceChannel.setName(`${nameInput} ${club.voiceType === "private" ? "Voice" : "Stage"}`);
 				}
-				const descriptionInput = fields.getTextInputValue("description");
+				const descriptionInput = fields.getTextInputValue(labelIdDescription);
 				if (club.description !== descriptionInput) {
 					club.description = descriptionInput;
 					textChannel.setTopic(descriptionInput);
 				}
 			}
-			if (fields.fields.has("imageURL")) {
-				const unvalidatedURL = fields.getTextInputValue("imageURL");
+			if (fields.fields.has(labelIdImage)) {
+				const unvalidatedURL = fields.getTextInputValue(labelIdImage);
 				try {
 					new URL(unvalidatedURL);
 					club.imageURL = unvalidatedURL;
@@ -94,7 +99,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				}
 			}
 
-			["system", "color"].forEach(simpleStringKey => {
+			[labelIdActivity, labelIdColor].forEach(simpleStringKey => {
 				if (fields.fields.has(simpleStringKey)) {
 					const value = fields.getTextInputValue(simpleStringKey);
 					club[simpleStringKey] = value;

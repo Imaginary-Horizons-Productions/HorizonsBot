@@ -44,7 +44,7 @@ function createClubEvent(club, guild) {
 	if (club.isRecruiting() && club.timeslot.nextMeeting) {
 		return guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
 			const eventPayload = {
-				name: club.title,
+				name: club.name,
 				scheduledStartTime: club.timeslot.nextMeeting * 1000,
 				privacyLevel: 2,
 				entityType: GuildScheduledEventEntityType.Voice,

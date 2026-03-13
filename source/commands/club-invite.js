@@ -20,8 +20,8 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 			if (club.isRecruiting()) {
 				clubSelect.addOptions(
 					{
-						label: club.title,
-						description: `${club.userIds.length}${club.seats !== -1 ? `/${club.seats}` : ""} Members`,
+						label: club.name,
+						description: `${club.userIds.length}${club.maxMembers !== -1 ? `/${club.maxMembers}` : ""} Members`,
 						value: club.id
 					}
 				)
@@ -45,7 +45,7 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 						[selectedClubId] = collectedInteraction.values;
 						collectedInteraction.update({
 							components: [
-								disabledSelectRow(getClub(selectedClubId).title),
+								disabledSelectRow(getClub(selectedClubId).name),
 								new ActionRowBuilder().addComponents(
 									new UserSelectMenuBuilder().setCustomId(userSelectId)
 										.setPlaceholder("Select user...")
@@ -63,7 +63,7 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 									components: [
 										new ButtonBuilder({
 											custom_id: `join${SAFE_DELIMITER}${club.id}`,
-											label: collapseTextToLength(`Join ${club.title}`, ButtonLimits.MaximumLabelCharacters),
+											label: collapseTextToLength(`Join ${club.name}`, ButtonLimits.MaximumLabelCharacters),
 											style: ButtonStyle.Success
 										})
 									]

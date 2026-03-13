@@ -14,7 +14,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 
 		interaction.guild.members.fetch(club.hostId).then(host => {
 			return interaction.guild.channels.create({
-				name: `${club.title} ${club.voiceType === "private" ? "Voice" : "Stage"}`,
+				name: `${club.name} ${club.voiceType === "private" ? "Voice" : "Stage"}`,
 				parent: categoryId,
 				...voiceChannelOptions[club.voiceType](interaction.guild, modRoleId, host)
 			});

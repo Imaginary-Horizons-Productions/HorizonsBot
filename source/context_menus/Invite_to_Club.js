@@ -16,7 +16,7 @@ module.exports = new UserContextMenuWrapper(mainId, PermissionFlagsBits.SendMess
 		}
 
 		const recruitingClubsWithUser = Object.values(getClubDictionary()).filter(club => (club.hostId === interaction.user.id || club.userIds.includes(interaction.user.id)) && club.isRecruiting());
-		const clubOptions = recruitingClubsWithUser.map(club => ({ label: club.title, description: club.description.slice(0, 100), value: club.id }));
+		const clubOptions = recruitingClubsWithUser.map(club => ({ label: club.name, description: club.description.slice(0, 100), value: club.id }));
 		if (clubOptions.length < 1) {
 			interaction.reply({ content: "You can invite server members to clubs you are a member of that are still recruiting. There don't appear to be any clubs in that list.", flags: MessageFlags.Ephemeral });
 			return;
@@ -39,12 +39,12 @@ module.exports = new UserContextMenuWrapper(mainId, PermissionFlagsBits.SendMess
 			collector.on("collect", collectedInteraction => {
 				const club = getClub(collectedInteraction.values[0]);
 				if (club.hostId === interaction.targetId || club.userIds.includes(interaction.targetId)) {
-					collectedInteraction.reply({ content: `${userMention(interaction.targetId)} is already a member of ${club.title}.`, flags: MessageFlags.Ephemeral });
+					collectedInteraction.reply({ content: `${userMention(interaction.targetId)} is already a member of ${club.name}.`, flags: MessageFlags.Ephemeral });
 					return;
 				}
 
 				if (!club.isRecruiting()) {
-					collectedInteraction.reply({ content: `Your invite to ${club.title} was not sent. The club is full!`, flags: MessageFlags.Ephemeral });
+					collectedInteraction.reply({ content: `Your invite to ${club.name} was not sent. The club is full!`, flags: MessageFlags.Ephemeral });
 					return;
 				}
 
@@ -53,12 +53,12 @@ module.exports = new UserContextMenuWrapper(mainId, PermissionFlagsBits.SendMess
 					components: [
 						new ActionRowBuilder().addComponents(
 							new ButtonBuilder().setCustomId(`join${SAFE_DELIMITER}${club.id}`)
-								.setLabel(collapseTextToLength(`Join ${club.title}`, ButtonLimits.MaximumLabelCharacters))
+								.setLabel(collapseTextToLength(`Join ${club.name}`, ButtonLimits.MaximumLabelCharacters))
 								.setStyle(ButtonStyle.Success)
 						)
 					]
 				}).then(() => {
-					collectedInteraction.reply({ content: `Details about and an invite to ${club.title} have been sent to ${userMention(interaction.targetId)}.`, flags: MessageFlags.Ephemeral });
+					collectedInteraction.reply({ content: `Details about and an invite to ${club.name} have been sent to ${userMention(interaction.targetId)}.`, flags: MessageFlags.Ephemeral });
 				}).catch(error => {
 					if (isCantDirectMessageThisUserError(error)) {
 						collectedInteraction.reply({ content: `Club details could not be sent to ${interaction.targetUser} because HorizonsBot cannot send messages to that user (have they blocked HorizonsBot?).`, flags: MessageFlags.Ephemeral });
