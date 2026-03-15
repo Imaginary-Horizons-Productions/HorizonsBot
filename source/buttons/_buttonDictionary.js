@@ -8,7 +8,6 @@ for (const file of [
 	"changeclubmeeting.js",
 	"changeclubmembership.js",
 	"clearclubmeeting.js",
-	"delete.js",
 	"join.js",
 	"proxydisband.js",
 	"proxyrename.js",
