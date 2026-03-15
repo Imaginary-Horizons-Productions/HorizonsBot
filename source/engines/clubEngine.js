@@ -41,7 +41,7 @@ function updateClubDetails(club, channel) {
  * @param {Guild} guild
  */
 function createClubEvent(club, guild) {
-	if (club.isRecruiting() && club.timeslot.nextMeeting) {
+	if (club.getMembershipStatus() === "recruiting" && club.timeslot.nextMeeting) {
 		return guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
 			const eventPayload = {
 				name: club.name,

@@ -110,7 +110,7 @@ function buildClubListPayload() {
 		new TextDisplayBuilder().setContent("Clubs are private subgroups within Imaginary Horizons formed for a specific activity. Clubs come with their own voice channel and tools for scheduling meetings. You can get more details on a recruiting club or join below:")
 	);
 
-	const recruitingClubs = Object.values(getClubDictionary()).filter(club => club.isRecruiting());
+	const recruitingClubs = Object.values(getClubDictionary()).filter(club => club.getMembershipStatus() === "recruiting");
 	if (recruitingClubs.length > 0) {
 		const selectMenu = new StringSelectMenuBuilder().setCustomId("clubList")
 			.setPlaceholder("Get club details...")

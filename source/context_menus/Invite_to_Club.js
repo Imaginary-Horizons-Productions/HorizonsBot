@@ -15,7 +15,7 @@ module.exports = new UserContextMenuWrapper(mainId, PermissionFlagsBits.SendMess
 			return;
 		}
 
-		const recruitingClubsWithUser = Object.values(getClubDictionary()).filter(club => (club.hostId === interaction.user.id || club.userIds.includes(interaction.user.id)) && club.isRecruiting());
+		const recruitingClubsWithUser = Object.values(getClubDictionary()).filter(club => (club.hostId === interaction.user.id || club.userIds.includes(interaction.user.id)) && club.getMembershipStatus() === "recruiting");
 		const clubOptions = recruitingClubsWithUser.map(club => ({ label: club.name, description: club.description.slice(0, 100), value: club.id }));
 		if (clubOptions.length < 1) {
 			interaction.reply({ content: "You can invite server members to clubs you are a member of that are still recruiting. There don't appear to be any clubs in that list.", flags: MessageFlags.Ephemeral });
@@ -43,7 +43,7 @@ module.exports = new UserContextMenuWrapper(mainId, PermissionFlagsBits.SendMess
 					return;
 				}
 
-				if (!club.isRecruiting()) {
+				if (club.getMembershipStatus() === "full") {
 					collectedInteraction.reply({ content: `Your invite to ${club.name} was not sent. The club is full!`, flags: MessageFlags.Ephemeral });
 					return;
 				}
