@@ -18,12 +18,10 @@ module.exports = new CommandWrapper(mainId, "Promote another user to club host",
 		club.hostId = newHost.id;
 		interaction.channel.permissionOverwrites.edit(interaction.user, { [PermissionFlagsBits.ViewChannel]: true, [PermissionFlagsBits.ManageMessages]: null, [PermissionFlagsBits.PinMessages]: null }, { type: 1 })
 		interaction.channel.permissionOverwrites.edit(newHost, { [PermissionFlagsBits.ViewChannel]: true, [PermissionFlagsBits.ManageMessages]: true, [PermissionFlagsBits.PinMessages]: true }, { type: 1 })
-		if (club.voiceType === "private") {
-			interaction.guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
-				voiceChannel.permissionOverwrites.edit(interaction.user, { [PermissionFlagsBits.ViewChannel]: true, [PermissionFlagsBits.ManageChannels]: null, [PermissionFlagsBits.ManageEvents]: null }, { type: 1 });
-				voiceChannel.permissionOverwrites.edit(newHost, { [PermissionFlagsBits.ViewChannel]: true, [PermissionFlagsBits.ManageChannels]: true, [PermissionFlagsBits.ManageEvents]: true }, { type: 1 });
-			})
-		}
+		interaction.guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
+			voiceChannel.permissionOverwrites.edit(interaction.user, { [PermissionFlagsBits.ViewChannel]: true, [PermissionFlagsBits.ManageChannels]: null, [PermissionFlagsBits.ManageEvents]: null }, { type: 1 });
+			voiceChannel.permissionOverwrites.edit(newHost, { [PermissionFlagsBits.ViewChannel]: true, [PermissionFlagsBits.ManageChannels]: true, [PermissionFlagsBits.ManageEvents]: true }, { type: 1 });
+		})
 		interaction.reply(`This club is now hosted by ${newHost}.`)
 			.catch(console.error);
 		updateClubDetails(club, interaction.channel);

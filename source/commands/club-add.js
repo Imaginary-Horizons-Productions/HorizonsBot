@@ -3,7 +3,6 @@ const { Club, CommandWrapper } = require('../classes');
 const { updateClub, updateListReference } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { modRoleId, isModerator } = require('../engines/permissionEngine.js');
-const { voiceChannelOptions } = require('../constants.js');
 const { commandMention } = require('../util/textUtil.js');
 
 const mainId = "club-add";
@@ -16,7 +15,6 @@ module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice cha
 		}
 
 		const host = interaction.options.getUser("club-host");
-		const voiceType = interaction.options.getString("voice-channel-type");
 		const channelManager = interaction.guild.channels;
 		const categoryId = interaction.channel.parentId;
 
@@ -51,11 +49,31 @@ module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice cha
 			type: ChannelType.GuildText
 		}).then(textChannel => {
 			channelManager.create({
-				name: `New Club ${voiceType === "private" ? "Voice" : "Stage"}`,
+				name: `New Club Voice`,
 				parent: categoryId,
-				...voiceChannelOptions[voiceType](interaction.guild, modRoleId, host)
+				type: ChannelType.GuildVoice,
+				permissionOverwrites: [
+					{
+						id: interaction.guild.client.user,
+						allow: [PermissionFlagsBits.ViewChannel]
+					},
+					{
+						id: modRoleId,
+						allow: [PermissionFlagsBits.ViewChannel],
+						type: 0
+					},
+					{
+						id: interaction.guild.id,
+						deny: [PermissionFlagsBits.ViewChannel],
+						type: 0
+					},
+					{
+						id: host,
+						allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.ManageEvents]
+					}
+				]
 			}).then(voiceChannel => {
-				const club = new Club(textChannel.id, host.id, voiceChannel.id, voiceType);
+				const club = new Club(textChannel.id, host.id, voiceChannel.id);
 				textChannel.send({ content: `Welcome to your new club's text channel ${host}! As club host, you can pin and delete messages in this channel and configure various settings with ${commandMention("club-config")}.` });
 				textChannel.send({ content: `When invites are sent with ${commandMention("club-invite")}, the invitee will be shown the following embed:`, embeds: [clubEmbedBuilder(club)], flags: MessageFlags.SuppressNotifications }).then(invitePreviewMessage => {
 					invitePreviewMessage.pin();
@@ -68,6 +86,5 @@ module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice cha
 		})
 	}
 ).setOptions(
-	{ type: "User", name: "club-host", description: "The user's mention", required: true, choices: [] },
-	{ type: "String", name: "voice-channel-type", description: "Stage channels are visible to everyone", required: true, choices: [{ name: "stage", value: "stage" }, { name: "private", value: "private" }] }
+	{ type: "User", name: "club-host", description: "The user's mention", required: true }
 );

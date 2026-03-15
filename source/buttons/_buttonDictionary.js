@@ -12,8 +12,7 @@ for (const file of [
 	"join.js",
 	"proxydisband.js",
 	"proxyrename.js",
-	"startevent.js",
-	"switchclubvoicetype.js"
+	"startevent.js"
 ]) {
 	/** @type {ButtonWrapper} */
 	const button = require(`./${file}`);

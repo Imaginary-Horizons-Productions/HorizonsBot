@@ -36,11 +36,9 @@ module.exports = new SelectWrapper(mainId, 3000,
 						permissionOverwrites.create(interaction.user, {
 							[PermissionsBitField.Flags.ViewChannel]: true
 						}).then(() => {
-							if (club.voiceType === "private") {
-								guild.channels.resolve(club.voiceChannelId).permissionOverwrites.create(interaction.user, {
-									[PermissionsBitField.Flags.ViewChannel]: true
-								})
-							}
+							guild.channels.resolve(club.voiceChannelId).permissionOverwrites.create(interaction.user, {
+								[PermissionsBitField.Flags.ViewChannel]: true
+							})
 							clubChannel.send(`Welcome to ${channelName}, ${interaction.user}!`);
 						})
 						updateClubDetails(club, clubChannel);
