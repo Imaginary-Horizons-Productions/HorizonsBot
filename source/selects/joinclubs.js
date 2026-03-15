@@ -22,7 +22,7 @@ module.exports = new SelectWrapper(mainId, 3000,
 					continue;
 				}
 
-				if (club.maxMembers !== -1 && !club.isRecruiting()) {
+				if (club.getMembershipStatus() === "full") {
 					errors.push(`${club.name} is already full.`);
 					continue;
 				}

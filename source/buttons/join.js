@@ -21,7 +21,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			return;
 		}
 
-		if (club.maxMembers !== -1 && !club.isRecruiting()) {
+		if (club.getMembershipStatus() === "full") {
 			interaction.reply(`${club.name} is already full.`);
 			return;
 		}

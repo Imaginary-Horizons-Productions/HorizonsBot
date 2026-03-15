@@ -17,14 +17,12 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 			.setPlaceholder("Select club...");
 		for (const id in clubDictionary) {
 			const club = clubDictionary[id];
-			if (club.isRecruiting()) {
-				clubSelect.addOptions(
-					{
-						label: club.name,
-						description: `${club.userIds.length}${club.maxMembers !== -1 ? `/${club.maxMembers}` : ""} Members`,
-						value: club.id
-					}
-				)
+			if (club.getMembershipStatus() !== "full") {
+				clubSelect.addOptions({
+					label: club.name,
+					description: club.membershipCountString(),
+					value: club.id
+				});
 			}
 		}
 

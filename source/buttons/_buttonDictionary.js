@@ -6,7 +6,7 @@ const buttonDictionary = {};
 for (const file of [
 	"changeclubinfo.js",
 	"changeclubmeeting.js",
-	"changeclubseats.js",
+	"changeclubmembership.js",
 	"clearclubmeeting.js",
 	"delete.js",
 	"join.js",

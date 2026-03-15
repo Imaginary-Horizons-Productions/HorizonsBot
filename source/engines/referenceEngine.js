@@ -120,7 +120,7 @@ function buildClubListPayload() {
 		const clubOptions = [];
 		for (const club of recruitingClubs) {
 			const clubOption = {
-				label: `${club.name} (${`${club.userIds.length}${club.maxMembers !== -1 ? `/${club.maxMembers}` : ""} Members`})`,
+				label: `${club.name} (${club.membershipCountString()})`,
 				value: club.id
 			};
 			if (club.activity) {

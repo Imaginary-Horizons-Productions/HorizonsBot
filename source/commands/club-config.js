@@ -21,7 +21,7 @@ module.exports = new CommandWrapper(mainId, "Change the configuration of the cur
 				new ButtonBuilder().setCustomId(`changeclubinfo${SAFE_DELIMITER}${club.id}`)
 					.setLabel("Set Name/Description")
 					.setStyle(ButtonStyle.Primary),
-				new ButtonBuilder().setCustomId(`changeclubseats${SAFE_DELIMITER}${club.id}`)
+				new ButtonBuilder().setCustomId(`changeclubmembership${SAFE_DELIMITER}${club.id}`)
 					.setLabel("Set Members")
 					.setStyle(ButtonStyle.Primary),
 				new ButtonBuilder().setCustomId(`changeclubmeeting${SAFE_DELIMITER}${club.id}`)

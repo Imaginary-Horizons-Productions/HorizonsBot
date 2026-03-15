@@ -14,7 +14,11 @@ for (const id in clubDictionary) {
 		delete updatedClub.system;
 	}
 	if ("seats" in club) {
-		updatedClub.maxMembers = club.seats;
+		if (club.seats < 1 || parseInt(club.seats) === NaN) {
+			updatedClub.idealMemberCount = null;
+		} else {
+			updatedClub.idealMemberCount = club.seats;
+		}
 		delete updatedClub.seats;
 	}
 	migratedClubDictionary[id] = updatedClub;

@@ -84,7 +84,7 @@ function clubEmbedBuilder(club) {
 	}
 
 	return embedTemplateBuilder()
-		.setTitle(`${bold(underline(club.name))} (${club.userIds.length}${club.maxMembers !== -1 ? `/${club.maxMembers}` : ""} Members)`)
+		.setTitle(`${bold(underline(club.name))} (${club.membershipCountString()})`)
 		.setDescription(club.description)
 		.addFields(fields)
 		.setImage(club.imageURL || null)

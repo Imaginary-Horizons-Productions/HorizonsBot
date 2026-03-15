@@ -14,18 +14,41 @@ module.exports.Club = class {
 	name = "new club";
 	description = "The host can change this text with `/club-config`.";
 	userIds = []; // An array containing the allowed user snowflakes (excluding the host)
-	maxMembers = -1; // Maximum number of players in the club, 0 = unlimited
-	activity = ""; // string for club game
+	/** @type {number | null} */
+	idealMemberCount = null;
+	activity = "";
 	timeslot = new module.exports.ClubTimeslot();
-	imageURL = ""; // URL for club image
+	imageURL = "";
 	detailSummaryId = "";
 	color = "";
 
-	/** Only clubs that are looking for a finite number of new members have events created for their meetings
-	 * @returns {boolean}
-	 */
-	isRecruiting() {
-		return this.userIds.length < this.maxMembers || this.voiceType === "stage";
+	getMembershipStatus() {
+		if (this.idealMemberCount === null) {
+			return "unlimited";
+		}
+
+		if (this.userIds.length + 1 < this.idealMemberCount) {
+			return "recruiting";
+		} else {
+			return "full";
+		}
+	}
+
+	membershipCountString() {
+		const memberCount = this.userIds.length + 1;
+		let countString = memberCount.toString();
+		if (this.idealMemberCount) {
+			countString += `/${this.idealMemberCount} Member`
+			if (this.idealMemberCount !== 1) {
+				countString += "s";
+			}
+		} else {
+			countString += " Member";
+			if (memberCount !== 1) {
+				countString += "s";
+			}
+		}
+		return countString;
 	}
 }
 
