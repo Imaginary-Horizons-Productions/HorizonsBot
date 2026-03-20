@@ -146,8 +146,8 @@ async function updateListReference(channelManager, listType) {
 	if (channelId && messageId) {
 		const channel = await channelManager.fetch(channelId).catch(handleMissingListReferenceChannel);
 		const message = await channel?.messages.fetch(messageId).catch(handleMissingListReferenceMesssage);
-		const messageOptions = listType === "club" ? buildClubListPayload() : buildPetitionListPayload(channelManager.guild.memberCount);
-		message?.edit(messageOptions);
+		const promisedMessageOptions = listType === "club" ? buildClubListPayload() : buildPetitionListPayload(channelManager.guild.memberCount);
+		message?.edit(await promisedMessageOptions);
 		return message;
 	}
 }
