@@ -73,7 +73,7 @@ function buildPetitionListPayload(memberCount) {
 		}
 		container.addActionRowComponents(new ActionRowBuilder().addComponents(channelSelect.addOptions(channelOptions.slice(0, SelectMenuLimits.MaximumOptionsLength))))
 	} else {
-		container.addActionRowComponents(disabledSelectRow("No open channel petitions"))
+		container.addActionRowComponents(disabledSelectRow("No open channel petitions", "channels"))
 	}
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent("## Pingable Roles"),
@@ -96,7 +96,7 @@ function buildPetitionListPayload(memberCount) {
 		}
 		container.addActionRowComponents(new ActionRowBuilder().addComponents(roleSelect.addOptions(roleOptions.slice(0, SelectMenuLimits.MaximumOptionsLength))));
 	} else {
-		container.addActionRowComponents(disabledSelectRow("No open role petitions"))
+		container.addActionRowComponents(disabledSelectRow("No open role petitions", "roles"))
 	}
 	return { components: [container], flags: MessageFlags.SuppressNotifications | MessageFlags.IsComponentsV2 };
 }

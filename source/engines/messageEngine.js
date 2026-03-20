@@ -177,10 +177,13 @@ function pressKitEmbedBuilder() {
 	})
 }
 
-/** @param {string} placeholderText */
-function disabledSelectRow(placeholderText) {
+/**
+ * @param {string} placeholderText
+ * @param {string} key for ensuring component customIds are unique
+ */
+function disabledSelectRow(placeholderText, key = "") {
 	return new ActionRowBuilder().addComponents(
-		new UserSelectMenuBuilder().setCustomId(SKIP_INTERACTION_HANDLING)
+		new UserSelectMenuBuilder().setCustomId(`${SKIP_INTERACTION_HANDLING}${key}`)
 			.setPlaceholder(placeholderText)
 			.setDisabled(true)
 	)
