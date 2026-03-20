@@ -2,7 +2,7 @@ const { PermissionFlagsBits, ActionRowBuilder, StringSelectMenuBuilder, Interact
 const { CommandWrapper } = require('../classes');
 const { updateListReference } = require('../engines/referenceEngine.js');
 const { isModerator } = require('../engines/permissionEngine.js');
-const { getRolePetitions, getChannelPetitions, deleteChannelPetition } = require('../engines/customizationEngine.js');
+const { getRolePetitions, getChannelPetitions, deleteChannelPetition, deleteRolePetition } = require('../engines/customizationEngine.js');
 const { SKIP_INTERACTION_HANDLING, SAFE_DELIMITER } = require('../constants.js');
 const { listifyEN } = require('../util/textUtil.js');
 
@@ -64,7 +64,7 @@ module.exports = new CommandWrapper(mainId, "Veto a petition", PermissionFlagsBi
 						const vetoedRolePetitions = [];
 						for (const vetoedPetition of collectedInteraction.values) {
 							if (rolePetitions.some(petition => petition.name === vetoedPetition)) {
-								deleteChannelPetition(vetoedPetition);
+								deleteRolePetition(vetoedPetition);
 								vetoedRolePetitions.push(vetoedPetition);
 							}
 						}
