@@ -91,7 +91,13 @@ function getChannelPetitions() {
 
 /** @param {string} channelName */
 function deleteChannelPetition(channelName) {
-	saveOptInChannelData(channelPetitions.filter(petition => petition.name.toLowerCase() !== channelName.toLowerCase()), optInChannelIds);
+	for (let i = 0; i < channelPetitions.length; i++) {
+		if (channelPetitions[i].name.toLowerCase() === channelName.toLowerCase()) {
+			channelPetitions.splice(i, 1);
+			break;
+		}
+	}
+	saveOptInChannelData(channelPetitions, optInChannelIds);
 }
 
 /**
@@ -144,7 +150,13 @@ async function findOptInChannelWithName(name, guild) {
  * @param {Guild} guild
  */
 function deleteOptInChannel(id, guild) {
-	saveOptInChannelData(channelPetitions, optInChannelIds.filter(channelId => channelId !== id));
+	for (let i = 0; i < optInChannelIds.length; i++) {
+		if (optInChannelIds[i] === id) {
+			optInChannelIds.splice(i, 1);
+			break;
+		}
+	}
+	saveOptInChannelData(channelPetitions, optInChannelIds);
 	updateOnboarding(guild);
 }
 
@@ -202,7 +214,13 @@ function getRolePetitions() {
 
 /** @param {string} roleName */
 function deleteRolePetition(roleName) {
-	savePingableRoleData(rolePetitions.filter(petition => petition.name.toLowerCase() !== roleName.toLowerCase()), pingableRoles);
+	for (let i = 0; i < rolePetitions.length; i++) {
+		if (rolePetitions[i].name.toLowerCase() === roleName.toLowerCase()) {
+			rolePetitions.splice(i, 1);
+			break;
+		}
+	}
+	savePingableRoleData(rolePetitions, pingableRoles);
 }
 
 /**
@@ -280,12 +298,24 @@ function removeAllPetitionsBy(userId) {
 	for (const petition of channelPetitions) {
 		petition.petitionerIds = petition.petitionerIds.filter(id => id != userId);
 	}
-	saveOptInChannelData(channelPetitions.filter(petition => petition.petitionerIds.length > 0), optInChannelIds);
+	for (let i = 0; i < channelPetitions.length; i++) {
+		if (channelPetitions[i].petitionerIds.length < 1) {
+			channelPetitions.splice(i, 1);
+			i--;
+		}
+	}
+	saveOptInChannelData(channelPetitions, optInChannelIds);
 
 	for (const petition of rolePetitions) {
 		petition.petitionerIds = petition.petitionerIds.filter(id => id != userId);
 	}
-	savePingableRoleData(rolePetitions.filter(petition => petition.petitionerIds.length > 0), pingableRoles);
+	for (let i = 0; i < rolePetitions.length; i++) {
+		if (rolePetitions[i].petitionerIds.length < 1) {
+			rolePetitions.splice(i, 1);
+			i--;
+		}
+	}
+	savePingableRoleData(rolePetitions, pingableRoles);
 }
 
 module.exports = {
