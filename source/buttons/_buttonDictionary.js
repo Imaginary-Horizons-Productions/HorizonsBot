@@ -4,10 +4,10 @@ const { ButtonWrapper } = require("../classes");
 const buttonDictionary = {};
 
 for (const file of [
-	"changeclubinfo.js",
-	"changeclubmeeting.js",
+	"changeclubdescriptors.js",
+	"changeclubimages.js",
+	"changeclubschedule.js",
 	"changeclubmembership.js",
-	"clearclubmeeting.js",
 	"join.js",
 	"proxydisband.js",
 	"proxyrename.js",

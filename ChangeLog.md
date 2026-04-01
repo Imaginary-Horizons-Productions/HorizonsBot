@@ -2,6 +2,10 @@
 #### HorizonsBot Version 2.10.0:
 - Fixed several crashes related to the bot trying to send DMs to users who've blocked it
 - Removed the `/timestamp` slash command, you can use the native Discord feature @time instead
+- Club recruitment events are now more clearly labeled and use Discord's recurrence system
+- Added instructions for clearing the a club's next meeting, in Change Club Schedule button; removed Clear Club Meeting button
+- Separated club image input to separate button, added checkbox for clearing image
+- Dropped support for clubs customizing reminder messages (adding ways to include time/channel link were more complicated than it was worth)
 - Dropped support for `/club-send-reminder`; it didn't save work of sending a message manually
 
 #### HorizonsBot Version 2.9.0:

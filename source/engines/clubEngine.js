@@ -1,10 +1,10 @@
-const { Guild, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildScheduledEventEntityType, TextChannel } = require("discord.js");
+const { Guild, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildScheduledEventEntityType, TextChannel, channelMention, time, GuildScheduledEventPrivacyLevel, GuildScheduledEventRecurrenceRuleFrequency } = require("discord.js");
 const { Club } = require("../classes");
 const { timeConversion } = require("../util/mathUtil.js");
 const { updateClub, updateListReference, getClub } = require("./referenceEngine.js");
 const { clubEmbedBuilder } = require("./messageEngine.js");
 const { MAX_SET_TIMEOUT, SAFE_DELIMITER } = require("../constants.js");
-const { commandMention } = require("../util/textUtil.js");
+const { commandMention, collapseTextToLength } = require("../util/textUtil.js");
 
 /** @type {{[clubId: string]: NodeJS.Timeout}} */
 const reminderTimeouts = {};
@@ -15,19 +15,13 @@ const reminderTimeouts = {};
  */
 function updateClubDetails(club, channel) {
 	channel.messages.fetch(club.detailSummaryId).then(message => {
-		message.edit({ content: `You can send out invites with ${commandMention("club-invite")}. Prospective members will be shown the following embed:`, embeds: [clubEmbedBuilder(club)] }).then(detailSummaryMessage => {
-			detailSummaryMessage.pin();
-			club.detailSummaryId = detailSummaryMessage.id;
-			updateListReference(channel.guild.channels, "club");
-			updateClub(club);
-		});
+		message.edit({ content: `You can send out invites with ${commandMention("club-invite")}. Prospective members will be shown the following embed:`, embeds: [clubEmbedBuilder(club)] });
 	}).catch(error => {
 		if (error.message === "Unknown Message") {
 			// message not found
 			channel.send({ content: `You can send out invites with ${commandMention("club-invite")}. Prospective members will be shown the following embed:`, embeds: [clubEmbedBuilder(club)] }).then(detailSummaryMessage => {
 				detailSummaryMessage.pin();
 				club.detailSummaryId = detailSummaryMessage.id;
-				updateListReference(channel.guild.channels, "club");
 				updateClub(club);
 			});
 		} else {
@@ -40,13 +34,14 @@ function updateClubDetails(club, channel) {
  * @param {Club} club
  * @param {Guild} guild
  */
-function createClubEvent(club, guild) {
+function createClubRecruitmentEvent(club, guild) {
 	if (club.getMembershipStatus() === "recruiting" && club.timeslot.nextMeeting) {
 		return guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
+			const startTime = club.timeslot.nextMeeting * 1000;
 			const eventPayload = {
-				name: club.name,
-				scheduledStartTime: club.timeslot.nextMeeting * 1000,
-				privacyLevel: 2,
+				name: collapseTextToLength(`Looking for Members! ${club.name}`, 100),
+				scheduledStartTime: startTime,
+				privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
 				entityType: GuildScheduledEventEntityType.Voice,
 				description: club.description,
 				channel: voiceChannel
@@ -54,10 +49,20 @@ function createClubEvent(club, guild) {
 			if (club.imageURL) {
 				eventPayload.image = club.imageURL;
 			}
+			if (club.timeslot.repeatType === "weekly") {
+				const nextMeetingDate = new Date(startTime);
+				const discordDayOfWeek = (nextMeetingDate.getDay() + 6) % 7;
+				eventPayload.recurrenceRule = {
+					startAt: startTime,
+					frequency: GuildScheduledEventRecurrenceRuleFrequency.Weekly,
+					interval: 1,
+					by_weekday: [discordDayOfWeek]
+				};
+			}
+
 			return guild.scheduledEvents.create(eventPayload);
 		}).then(event => {
-			club.timeslot.setEventId(event.id);
-			updateListReference(guild.channels, "club");
+			club.timeslot.eventId = event.id;
 			updateClub(club);
 		});
 	}
@@ -67,10 +72,11 @@ function createClubEvent(club, guild) {
  * @param {Club} club
  * @param {GuildScheduledEventManager} eventManager
  */
-function cancelClubEvent(club, eventManager) {
+function cancelClubRecruitmentEvent(club, eventManager) {
 	if (club.timeslot.eventId) {
 		eventManager.delete(club.timeslot.eventId).catch(console.error);
-		club.timeslot.setEventId(null);
+		club.timeslot.eventId = null;
+		updateClub(club);
 	}
 }
 
@@ -79,28 +85,32 @@ function cancelClubEvent(club, eventManager) {
  * @param {number | null} nextMeetingTimestamp
  * @param {ChannelManager} channelManager
  */
-async function scheduleClubReminderAndEvent(clubId, nextMeetingTimestamp, channelManager) {
-	let timeout;
+async function scheduleClubReminder(clubId, nextMeetingTimestamp, channelManager) {
+	if (!nextMeetingTimestamp) {
+		return;
+	}
 	const msToTimestamp = (nextMeetingTimestamp - timeConversion(1, "d", "s")) * 1000 - Date.now();
+	if (msToTimestamp < 1) {
+		return;
+	}
 	if (msToTimestamp <= MAX_SET_TIMEOUT) {
-		timeout = setTimeout(
+		reminderTimeouts[clubId] = setTimeout(
 			async (clubId, channelManager) => {
 				const club = getClub(clubId);
 				if (club?.timeslot.nextMeeting) {
 					await sendClubReminder(clubId, channelManager);
-					if (club.timeslot.periodCount && club.timeslot.periodUnits) {
-						const nextTimestamp = club.timeslot.nextMeeting + timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits === "weeks" ? "w" : "d", "s");
-						club.timeslot.setNextMeeting(nextTimestamp);
-						await createClubEvent(club, channelManager.guild);
-						const clubTextChannel = await channelManager.fetch(club.id);
-						updateClubDetails(club, clubTextChannel);
-						scheduleClubReminderAndEvent(clubId, nextTimestamp, channelManager);
-					} else {
-						delete reminderTimeouts[clubId];
-						club.timeslot.setNextMeeting(null);
-						cancelClubEvent(club, channelManager.guild.scheduledEvents);
-						updateClub(club);
+					switch (club.timeslot.repeatType) {
+						case "weekly":
+							const nextTimestamp = club.timeslot.nextMeeting + timeConversion(1, "w", "s");
+							club.timeslot.nextMeeting = nextTimestamp;
+							scheduleClubReminder(clubId, nextTimestamp, channelManager);
+							break;
+						default:
+							delete reminderTimeouts[clubId];
+							club.timeslot.nextMeeting = null;
 					}
+					updateClub(club);
+					updateClubDetails(club, await channelManager.fetch(club.id));
 					updateListReference(channelManager, "club");
 				}
 			},
@@ -108,11 +118,10 @@ async function scheduleClubReminderAndEvent(clubId, nextMeetingTimestamp, channe
 			clubId,
 			channelManager);
 	} else {
-		timeout = setTimeout(() => {
-			scheduleClubReminderAndEvent(clubId, nextMeetingTimestamp, channelManager);
+		reminderTimeouts[clubId] = setTimeout(() => {
+			scheduleClubReminder(clubId, nextMeetingTimestamp, channelManager);
 		}, MAX_SET_TIMEOUT);
 	}
-	reminderTimeouts[clubId] = timeout;
 }
 
 /** Send a club reminder message
@@ -122,11 +131,7 @@ async function scheduleClubReminderAndEvent(clubId, nextMeetingTimestamp, channe
 async function sendClubReminder(clubId, channelManager) {
 	const club = getClub(clubId);
 	const textChannel = await channelManager.fetch(clubId);
-	// NOTE: defaultReminder.length (without interpolated length) must be less than or equal to 55 characters so it fits in the config modal placeholder with its wrapper (100 characters)
-	const defaultReminder = `Reminder: This club will meet at <t:${club.timeslot.nextMeeting}> in <#${club.voiceChannelId}>!`;
-	const reminderPayload = {
-		content: `@everyone ${club.timeslot.message ? club.timeslot.message : defaultReminder}`,
-	};
+	const reminderPayload = { content: `@everyone Reminder: This club will meet at ${time(club.timeslot.nextMeeting)} tomorrow! ${channelMention(club.voiceChannelId)}` };
 	if (club.timeslot.eventId) {
 		const event = await channelManager.guild.scheduledEvents.fetch(club.timeslot.eventId).catch(console.error);
 		if (event) {
@@ -157,9 +162,9 @@ async function clearClubReminder(channelId) {
 
 module.exports = {
 	updateClubDetails,
-	createClubEvent,
-	cancelClubEvent,
-	scheduleClubReminderAndEvent,
+	createClubRecruitmentEvent,
+	cancelClubRecruitmentEvent,
+	scheduleClubReminder,
 	sendClubReminder,
 	clearClubReminder
 };

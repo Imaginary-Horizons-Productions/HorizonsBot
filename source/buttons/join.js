@@ -1,7 +1,7 @@
 const { PermissionsBitField } = require('discord.js');
 const { ButtonWrapper } = require('../classes');
 const { guildId } = require('../constants.js');
-const { updateClubDetails } = require('../engines/clubEngine.js');
+const { updateClubDetails, cancelClubRecruitmentEvent, createClubRecruitmentEvent } = require('../engines/clubEngine.js');
 const { updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { clearComponents } = require('../util/discordAPIRequests.js');
 
@@ -41,11 +41,13 @@ module.exports = new ButtonWrapper(mainId, 3000,
 						})
 						clubChannel.send(`Welcome to ${channelName}, ${interaction.user}!`);
 					})
+					interaction.reply(`You have joined ${clubChannel}!`);
 					updateClubDetails(club, clubChannel);
 					updateListReference(guild.channels, "club");
-					interaction.reply(`You have joined ${clubChannel}!`);
+					cancelClubRecruitmentEvent(club, interaction.guild.scheduledEvents);
+					createClubRecruitmentEvent(club, interaction.guild);
 				} else {
-					interaction.reply(`You are currently banned from ${channelName}. Speak to a Moderator if you believe this is in error.`);
+					interaction.reply(`You are currently banned from ${channelName}. Speak to the club's host if you believe this is in error.`);
 				}
 			});
 		})

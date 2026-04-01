@@ -2,6 +2,7 @@ const { PermissionsBitField, MessageFlags, InteractionContextType } = require('d
 const { CommandWrapper } = require('../classes');
 const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
+const { createClubRecruitmentEvent } = require('../engines/clubEngine.js');
 
 const mainId = "club-kick";
 module.exports = new CommandWrapper(mainId, "Remove a user from a club", null, [InteractionContextType.Guild], 3000,
@@ -15,7 +16,6 @@ module.exports = new CommandWrapper(mainId, "Remove a user from a club", null, [
 		const club = getClub(interaction.channelId);
 		const user = interaction.options.getUser("target");
 		club.userIds = club.userIds.filter(memberId => memberId != user.id);
-		updateListReference(interaction.guild.channels, "club");
 		updateClub(club);
 		if (interaction.options.getBoolean("ban")) {
 			interaction.channel.permissionOverwrites.create(user.id, { [PermissionsBitField.Flags.ViewChannel]: false }, `Banned by ${interaction.user}`);
@@ -26,6 +26,8 @@ module.exports = new CommandWrapper(mainId, "Remove a user from a club", null, [
 			interaction.reply({ content: `${user} has been kicked from this club.`, flags: MessageFlags.SuppressNotifications })
 				.catch(console.error);
 		}
+		updateListReference(interaction.guild.channels, "club");
+		createClubRecruitmentEvent(club, interaction.guild);
 	}
 ).setOptions(
 	{ type: "User", name: "target", description: "The user's mention", required: true, choices: [] },

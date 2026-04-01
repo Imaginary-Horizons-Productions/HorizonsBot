@@ -11,14 +11,17 @@ module.exports.Club = class {
 	}
 	name = "new club";
 	description = "The host can change this text with `/club-config`.";
-	userIds = []; // An array containing the allowed user snowflakes (excluding the host)
 	/** @type {number | null} */
 	idealMemberCount = null;
-	activity = "";
-	timeslot = new module.exports.ClubTimeslot();
-	imageURL = "";
+	/** @type {string | null} */
+	activity = null;
+	/** @type {string | null} */
+	imageURL = null;
+	/** @type {string | null} */
+	color = null;
+	userIds = []; // An array containing the allowed user snowflakes (excluding the host)
 	detailSummaryId = "";
-	color = "";
+	timeslot = new module.exports.ClubTimeslot();
 
 	getMembershipStatus() {
 		if (this.idealMemberCount === null) {
@@ -51,39 +54,10 @@ module.exports.Club = class {
 }
 
 module.exports.ClubTimeslot = class {
+	/** @type {number | null} Format: Unix Timestamp */
 	nextMeeting = null;
-	message = null;
-	periodCount = 0; // Number of units between repeating meetings (eg 1 week), 0 for off
-	periodUnits = "weeks";
+	/** @type {"weekly" | null} */
+	repeatType = null;
+	/** @type {string | null} */
 	eventId = null;
-
-	/** Stores the unix timestamp of the club's next meeting
-	 * @param {number} timestamp
-	 */
-	setNextMeeting(timestamp) {
-		this.nextMeeting = timestamp;
-	}
-
-	/** Stores the message to send during a club's reminder
-	 * @param {string} messageInput
-	 */
-	setMessage(messageInput) {
-		this.message = messageInput;
-	}
-
-	/** Stores the components of the club's repeat period
-	 * @param {number} count
-	 * @param {"days" | "weeks"} unit
-	 */
-	setMeetingRepeatPeriod(count, unit) {
-		this.periodCount = count;
-		this.periodUnits = unit;
-	}
-
-	/** Stores the id of the event associated with the club's next meeting
-	 * @param {string} eventIdInput
-	 */
-	setEventId(eventIdInput) {
-		this.eventId = eventIdInput;
-	}
 }

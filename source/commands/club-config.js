@@ -18,18 +18,18 @@ module.exports = new CommandWrapper(mainId, "Change the configuration of the cur
 		interaction.reply({
 			embeds: [clubEmbedBuilder(club)],
 			components: [new ActionRowBuilder().addComponents(
-				new ButtonBuilder().setCustomId(`changeclubinfo${SAFE_DELIMITER}${club.id}`)
-					.setLabel("Set Name/Description")
+				new ButtonBuilder().setCustomId(`changeclubdescriptors${SAFE_DELIMITER}${club.id}`)
+					.setLabel("Set Descriptors")
+					.setStyle(ButtonStyle.Primary),
+				new ButtonBuilder().setCustomId(`changeclubimages${SAFE_DELIMITER}${club.id}`)
+					.setLabel("Set Images")
 					.setStyle(ButtonStyle.Primary),
 				new ButtonBuilder().setCustomId(`changeclubmembership${SAFE_DELIMITER}${club.id}`)
-					.setLabel("Set Members")
+					.setLabel("Set Membership")
 					.setStyle(ButtonStyle.Primary),
-				new ButtonBuilder().setCustomId(`changeclubmeeting${SAFE_DELIMITER}${club.id}`)
-					.setLabel("Set Meeting Time")
-					.setStyle(ButtonStyle.Primary),
-				new ButtonBuilder().setCustomId(`clearclubmeeting${SAFE_DELIMITER}${club.id}`)
-					.setStyle(ButtonStyle.Danger)
-					.setLabel("Clear Next Meeting")
+				new ButtonBuilder().setCustomId(`changeclubschedule${SAFE_DELIMITER}${club.id}`)
+					.setLabel("Set Schedule")
+					.setStyle(ButtonStyle.Primary)
 			)],
 			flags: MessageFlags.Ephemeral
 		});

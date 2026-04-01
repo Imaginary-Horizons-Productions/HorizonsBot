@@ -18,7 +18,7 @@ const { getCommand, slashData } = require("./commands/_commandDictionary.js");
 const { getContextMenu, contextMenuData } = require("./context_menus/_contextMenuDictionary.js");
 const { getButton } = require("./buttons/_buttonDictionary.js");
 const { getSelect } = require("./selects/_selectDictionary.js");
-const { scheduleClubReminderAndEvent, updateClubDetails, clearClubReminder, cancelClubEvent } = require("./engines/clubEngine.js");
+const { scheduleClubReminder, updateClubDetails, clearClubReminder, cancelClubRecruitmentEvent } = require("./engines/clubEngine.js");
 const { deletePingableRole, updateOnboarding, removeAllPetitionsBy, checkAllPetitions, isOptInChannel, deleteOptInChannel } = require("./engines/customizationEngine.js");
 const { versionEmbedBuilder, rulesEmbedBuilder, pressKitEmbedBuilder } = require("./engines/messageEngine.js");
 const { referenceMessages, getClubDictionary, removeClub, updateListReference, handleMissingListReferenceMesssage } = require("./engines/referenceEngine.js");
@@ -105,10 +105,10 @@ client.on(Events.ClientReady, () => {
 		for (const club of Object.values(getClubDictionary())) {
 			const isNextMeetingInFuture = Date.now() < club.timeslot.nextMeeting * 1000;
 			if (isNextMeetingInFuture) {
-				scheduleClubReminderAndEvent(club.id, club.timeslot.nextMeeting, channelManager);
+				scheduleClubReminder(club.id, club.timeslot.nextMeeting, channelManager);
 			} else {
-				club.timeslot.setNextMeeting(null);
-				club.timeslot.setEventId(null);
+				club.timeslot.nextMeeting = null;
+				club.timeslot.eventId = null;
 			}
 		}
 
@@ -195,6 +195,7 @@ client.on(Events.GuildMemberRemove, ({ id: memberId, guild }) => {
 			}
 		})
 	}
+	updateListReference(channel.guild.channels, "club");
 
 	removeAllPetitionsBy(memberId);
 	checkAllPetitions(guild); // because guild member count has decreased, petitions may now be completed
@@ -210,7 +211,7 @@ client.on(Events.ChannelDelete, ({ id, guild }) => {
 		// Check if deleted channel is a club's text channel
 		if (id in clubDictionary) {
 			clearClubReminder(clubDictionary[id]);
-			cancelClubEvent(clubDictionary[id], guild.scheduledEvents);
+			cancelClubRecruitmentEvent(clubDictionary[id], guild.scheduledEvents);
 			const voiceChannel = guild.channels.resolve(clubDictionary[id].voiceChannelId);
 			if (voiceChannel) {
 				voiceChannel.delete();
@@ -223,7 +224,7 @@ client.on(Events.ChannelDelete, ({ id, guild }) => {
 		for (const club of Object.values(clubDictionary)) {
 			if (club.voiceChannelId === id) {
 				clearClubReminder(club);
-				cancelClubEvent(club, guild.scheduledEvents);
+				cancelClubRecruitmentEvent(club, guild.scheduledEvents);
 				const textChannel = guild.channels.resolve(club.id);
 				if (textChannel) {
 					textChannel.send({ content: "This club has been archived because its voice channel was deleted." });

@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { EmbedBuilder, Colors, UserSelectMenuBuilder, ActionRowBuilder, bold, underline, userMention } = require("discord.js");
+const { EmbedBuilder, Colors, UserSelectMenuBuilder, ActionRowBuilder, bold, underline, userMention, time, TimestampStyles } = require("discord.js");
 const { imaginaryHorizonsIconURL, discordIconURL, SKIP_INTERACTION_HANDLING } = require('../constants');
 const { Club } = require('../classes');
 const { commandMention } = require('../util/textUtil');
@@ -79,7 +79,7 @@ function clubEmbedBuilder(club) {
 	if (club.timeslot.nextMeeting) {
 		fields.push({
 			name: "Next Meeting",
-			value: `<t:${club.timeslot.nextMeeting}:F>${club.timeslot.periodCount && club.timeslot.periodUnits ? ` repeats every ${club.timeslot.periodCount} ${club.timeslot.periodUnits === "weeks" ? "week(s)" : "day(s)"}` : ""}`
+			value: `${time(club.timeslot.nextMeeting, TimestampStyles.FullDateShortTime)}${club.timeslot.repeatType ? ` repeats every week` : ""}`
 		});
 	}
 
@@ -87,8 +87,8 @@ function clubEmbedBuilder(club) {
 		.setTitle(`${bold(underline(club.name))} (${club.membershipCountString()})`)
 		.setDescription(club.description)
 		.addFields(fields)
-		.setImage(club.imageURL || null)
-		.setColor(club.color || null);
+		.setImage(club.imageURL)
+		.setColor(club.color);
 }
 
 /** The version embed should contain the last version's changes, known issues, and project links

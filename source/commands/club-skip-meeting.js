@@ -1,6 +1,6 @@
-const { InteractionContextType, MessageFlags } = require('discord.js');
+const { InteractionContextType, MessageFlags, time } = require('discord.js');
 const { CommandWrapper } = require('../classes/index.js');
-const { cancelClubEvent, createClubEvent, clearClubReminder, scheduleClubReminderAndEvent, updateClubDetails } = require('../engines/clubEngine.js');
+const { cancelClubRecruitmentEvent, createClubRecruitmentEvent, clearClubReminder, scheduleClubReminder, updateClubDetails } = require('../engines/clubEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { timeConversion } = require('../util/mathUtil.js');
@@ -14,19 +14,23 @@ module.exports = new CommandWrapper(mainId, "Skip the next club meeting, cancell
 		}
 
 		const club = getClub(interaction.channelId);
-		cancelClubEvent(club, interaction.guild.scheduledEvents);
+		cancelClubRecruitmentEvent(club, interaction.guild.scheduledEvents);
 		clearClubReminder(club.id);
 
-		if (club.timeslot.periodCount && club.timeslot.periodUnits) {
-			club.timeslot.nextMeeting += timeConversion(club.timeslot.periodCount, club.timeslot.periodUnits[0], "s");
-			createClubEvent(club, interaction.guild);
-			scheduleClubReminderAndEvent(club.id, club.timeslot.nextMeeting, interaction.guild.channels);
-		} else {
-			club.timeslot.nextMeeting = null;
+		let content = "This club's next meeting will be skipped.";
+		switch (club.timeslot.repeatType) {
+			case "weekly":
+				club.timeslot.nextMeeting += timeConversion(1, "w", "s");
+				createClubRecruitmentEvent(club, interaction.guild);
+				scheduleClubReminder(club.id, club.timeslot.nextMeeting, interaction.guild.channels);
+				content += `The next meeting will instead be ${time(club.timeslot.nextMeeting)}.`;
+				break;
+			default:
+				club.timeslot.nextMeeting = null;
 		}
 		updateClubDetails(club, interaction.channel);
 		updateListReference(interaction.guild.channels, "club");
 		updateClub(club);
-		interaction.reply({ content: `This club's next meeting will be skipped.${club.timeslot.periodCount && club.timeslot.periodUnits ? `The next meeting will instead be <t:${club.timeslot.nextMeeting}>.` : ""}` });
+		interaction.reply({ content });
 	}
 );

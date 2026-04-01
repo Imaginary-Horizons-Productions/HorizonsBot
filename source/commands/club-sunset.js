@@ -2,7 +2,7 @@ const { CommandWrapper } = require('../classes/InteractionWrapper.js');
 const { removeClub, getClub } = require('../engines/referenceEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
 const { InteractionContextType, MessageFlags } = require('discord.js');
-const { cancelClubEvent, clearClubReminder } = require('../engines/clubEngine.js');
+const { cancelClubRecruitmentEvent, clearClubReminder } = require('../engines/clubEngine.js');
 
 const mainId = "club-sunset";
 module.exports = new CommandWrapper(mainId, "Remove a club's voice channel and remove it from the club dictionary on a delay", null, [InteractionContextType.Guild], 3000,
@@ -19,7 +19,7 @@ module.exports = new CommandWrapper(mainId, "Remove a club's voice channel and r
 			if (delay > 0) {
 				interaction.reply(`This club has been scheduled to be archived in ${delay} hour(s).`)
 					.catch(console.error);
-				cancelClubEvent(club, interaction.guild.scheduledEvents);
+				cancelClubRecruitmentEvent(club, interaction.guild.scheduledEvents);
 				clearClubReminder(club.id);
 				setTimeout(() => {
 					const voiceChannel = interaction.guild.channels.resolve(club.voiceChannelId);

@@ -2,7 +2,7 @@ const { ModalBuilder, TextInputBuilder, TextInputStyle, LabelBuilder, TextDispla
 const { ButtonWrapper } = require('../classes/index.js');
 const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { clubEmbedBuilder } = require('../engines/messageEngine.js');
-const { updateClubDetails } = require('../engines/clubEngine.js');
+const { updateClubDetails, cancelClubRecruitmentEvent, createClubRecruitmentEvent } = require('../engines/clubEngine.js');
 const { timeConversion } = require('../util/mathUtil.js');
 const { SKIP_INTERACTION_HANDLING, SAFE_DELIMITER } = require('../constants.js');
 const { butIgnoreInteractionCollectorErrors } = require('../util/dAPIResponses.js');
@@ -15,7 +15,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 		const labelIdealMemberCount = "Ideal Member Count";
 		const inputIdIdIdealMemberCount = "max-members";
 		const modal = new ModalBuilder().setCustomId(`${SKIP_INTERACTION_HANDLING}${SAFE_DELIMITER}${interaction.id}`)
-			.setTitle("Club Membership Settings")
+			.setTitle("Change Club Membership")
 			.addTextDisplayComponents(
 				new TextDisplayBuilder().setContent("Ideal Member Count has the following effects:\n- HorizonsBot automatically creates Discord Events for club meetings for clubs below their ideal member count\n- A club is considered full when at or above its ideal member count")
 			)
@@ -42,11 +42,13 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			if (isNaN(idealMemberCountInput) || idealMemberCountInput !== null && idealMemberCountInput < 1) {
 				errors[labelIdealMemberCount] = `Could not interpret "${unparsedIdealMemberCount}" as a positive integer.`;
 			} else {
-				didValuesChange |= idealMemberCountInput !== club.idealMemberCount;
+				didValuesChange ||= idealMemberCountInput !== club.idealMemberCount;
 				club.idealMemberCount = idealMemberCountInput;
 			}
 
 			if (didValuesChange) {
+				cancelClubRecruitmentEvent(club, modalSubmission.guild.scheduledEvents);
+				createClubRecruitmentEvent(club, modalSubmission.guild);
 				updateClubDetails(club, modalSubmission.channel);
 				updateListReference(modalSubmission.guild.channels, "club");
 				updateClub(club);
