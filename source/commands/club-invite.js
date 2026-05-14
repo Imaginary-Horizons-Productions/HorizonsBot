@@ -1,10 +1,8 @@
-const { ButtonBuilder, ActionRowBuilder, ButtonStyle, StringSelectMenuBuilder, PermissionFlagsBits, UserSelectMenuBuilder, InteractionContextType, MessageFlags } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder, PermissionFlagsBits, UserSelectMenuBuilder, InteractionContextType, MessageFlags } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { SAFE_DELIMITER, SKIP_INTERACTION_HANDLING } = require('../constants.js');
-const { clubEmbedBuilder, disabledSelectRow } = require('../engines/messageEngine.js');
+const { disabledSelectRow } = require('../engines/messageEngine.js');
 const { getClubDictionary, getClub } = require('../engines/referenceEngine.js');
-const { collapseTextToLength } = require('../util/textUtil.js');
-const { ButtonLimits } = require('@sapphire/discord.js-utilities');
 const { isCantDirectMessageThisUserError } = require('../util/dAPIResponses.js');
 
 const mainId = "club-invite";
@@ -54,21 +52,7 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 					case userSelectId:
 						const club = getClub(selectedClubId);
 						const member = collectedInteraction.users.first();
-						const components = [];
-						if (member.id !== club.hostId && !club.userIds.includes(member.id)) {
-							components.push(new ActionRowBuilder(
-								{
-									components: [
-										new ButtonBuilder({
-											custom_id: `join${SAFE_DELIMITER}${club.id}`,
-											label: collapseTextToLength(`Join ${club.name}`, ButtonLimits.MaximumLabelCharacters),
-											style: ButtonStyle.Success
-										})
-									]
-								}
-							));
-						}
-						member.send({ embeds: [clubEmbedBuilder(club)], components }).then(() => {
+						member.send({ components: [club.asContainer(club.hasGuildMember(member.id) ? "info" : "invite")], flags: MessageFlags.IsComponentsV2 }).then(() => {
 							collectedInteraction.reply({ content: `Details about and an invite to <#${selectedClubId}> have been sent to ${member}.`, flags: MessageFlags.Ephemeral });
 						}).catch(error => {
 							if (isCantDirectMessageThisUserError(error)) {

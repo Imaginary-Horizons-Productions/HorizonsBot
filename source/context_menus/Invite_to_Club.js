@@ -1,10 +1,7 @@
-const { PermissionFlagsBits, InteractionContextType, ActionRowBuilder, StringSelectMenuBuilder, userMention, ButtonBuilder, ButtonStyle, MessageFlags } = require('discord.js');
+const { PermissionFlagsBits, InteractionContextType, ActionRowBuilder, StringSelectMenuBuilder, userMention, MessageFlags } = require('discord.js');
 const { UserContextMenuWrapper } = require('../classes');
 const { getClubDictionary, getClub } = require('../engines/referenceEngine');
-const { SKIP_INTERACTION_HANDLING, SAFE_DELIMITER } = require('../constants');
-const { clubEmbedBuilder } = require('../engines/messageEngine');
-const { collapseTextToLength } = require('../util/textUtil');
-const { ButtonLimits } = require('@sapphire/discord.js-utilities');
+const { SKIP_INTERACTION_HANDLING } = require('../constants');
 const { isCantDirectMessageThisUserError } = require('../util/dAPIResponses');
 
 const mainId = "Invite to Club";
@@ -48,16 +45,7 @@ module.exports = new UserContextMenuWrapper(mainId, PermissionFlagsBits.SendMess
 					return;
 				}
 
-				interaction.targetUser.send({
-					embeds: [clubEmbedBuilder(club)],
-					components: [
-						new ActionRowBuilder().addComponents(
-							new ButtonBuilder().setCustomId(`join${SAFE_DELIMITER}${club.id}`)
-								.setLabel(collapseTextToLength(`Join ${club.name}`, ButtonLimits.MaximumLabelCharacters))
-								.setStyle(ButtonStyle.Success)
-						)
-					]
-				}).then(() => {
+				interaction.targetUser.send({ components: [club.asContainer("invite")], flags: MessageFlags.IsComponentsV2 }).then(() => {
 					collectedInteraction.reply({ content: `Details about and an invite to ${club.name} have been sent to ${userMention(interaction.targetId)}.`, flags: MessageFlags.Ephemeral });
 				}).catch(error => {
 					if (isCantDirectMessageThisUserError(error)) {

@@ -18,6 +18,7 @@ function butIgnoreErrorIf(...ignoreThese) {
 
 const isInteractionCollectorError = error => error.code === DiscordjsErrorCodes.InteractionCollectorError;
 const isCantDirectMessageThisUserError = error => error.code === 50007;
+const isUnknownMessageError = error => error.code === 10008;
 
 /** Interaction collectors throw an error on timeout (which is a crash if uncaught) */
 const butIgnoreInteractionCollectorErrors = butIgnoreErrorIf(isInteractionCollectorError);
@@ -26,5 +27,6 @@ module.exports = {
 	butIgnoreErrorIf,
 	isInteractionCollectorError,
 	isCantDirectMessageThisUserError,
+	isUnknownMessageError,
 	butIgnoreInteractionCollectorErrors
 }

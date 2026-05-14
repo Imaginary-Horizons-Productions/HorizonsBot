@@ -1,10 +1,10 @@
-const { Guild, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildScheduledEventEntityType, TextChannel, channelMention, time, GuildScheduledEventPrivacyLevel, GuildScheduledEventRecurrenceRuleFrequency } = require("discord.js");
+const { Guild, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildScheduledEventEntityType, TextChannel, channelMention, time, GuildScheduledEventPrivacyLevel, GuildScheduledEventRecurrenceRuleFrequency, MessageFlags } = require("discord.js");
 const { Club } = require("../classes");
 const { timeConversion } = require("../util/mathUtil.js");
 const { updateClub, updateListReference, getClub } = require("./referenceEngine.js");
-const { clubEmbedBuilder } = require("./messageEngine.js");
 const { MAX_SET_TIMEOUT, SAFE_DELIMITER } = require("../constants.js");
-const { commandMention, collapseTextToLength } = require("../util/textUtil.js");
+const { collapseTextToLength } = require("../util/textUtil.js");
+const { isUnknownMessageError } = require("../util/dAPIResponses.js");
 
 /** @type {{[clubId: string]: NodeJS.Timeout}} */
 const reminderTimeouts = {};
@@ -15,11 +15,11 @@ const reminderTimeouts = {};
  */
 function updateClubDetails(club, channel) {
 	channel.messages.fetch(club.detailSummaryId).then(message => {
-		message.edit({ content: `You can send out invites with ${commandMention("club-invite")}. Prospective members will be shown the following embed:`, embeds: [clubEmbedBuilder(club)] });
+		message.edit({ components: [club.asContainer("info")], flags: MessageFlags.IsComponentsV2 });
 	}).catch(error => {
-		if (error.message === "Unknown Message") {
+		if (isUnknownMessageError(error)) {
 			// message not found
-			channel.send({ content: `You can send out invites with ${commandMention("club-invite")}. Prospective members will be shown the following embed:`, embeds: [clubEmbedBuilder(club)] }).then(detailSummaryMessage => {
+			channel.send({ components: [club.asContainer("info")], flags: MessageFlags.IsComponentsV2 }).then(detailSummaryMessage => {
 				detailSummaryMessage.pin();
 				club.detailSummaryId = detailSummaryMessage.id;
 				updateClub(club);

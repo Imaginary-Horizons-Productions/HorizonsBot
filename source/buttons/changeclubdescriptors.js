@@ -1,9 +1,8 @@
-const { ModalBuilder, TextInputBuilder, TextInputStyle, LabelBuilder } = require('discord.js');
+const { ModalBuilder, TextInputBuilder, TextInputStyle, LabelBuilder, MessageFlags } = require('discord.js');
 const { ButtonWrapper } = require('../classes/index.js');
 const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { timeConversion } = require('../util/mathUtil.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
-const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { SAFE_DELIMITER, SKIP_INTERACTION_HANDLING } = require('../constants.js');
 const { ChannelLimits, ButtonLimits } = require('@sapphire/discord.js-utilities');
 const { butIgnoreInteractionCollectorErrors } = require('../util/dAPIResponses.js');
@@ -117,15 +116,17 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				updateClub(club);
 			}
 
-			const payload = { embeds: [clubEmbedBuilder(club)] };
-			if (Object.keys(errors).length > 0) {
-				payload.content = Object.keys(errors).reduce((errorMessage, field) => {
-					return errorMessage + `${field} - ${errors[field]}`
-				}, "The following settings were not set because they encountered errors:\n")
-			} else {
-				payload.content = "";
-			}
-			modalSubmission.update(payload);
+			modalSubmission.update({ components: [club.asContainer("config")] }).then(() => {
+				const errorKeys = Object.keys(errors);
+				if (errorKeys.length > 0) {
+					modalSubmission.followUp({
+						content: Object.keys(errors).reduce((errorMessage, field) => {
+							return errorMessage + `${field} - ${errors[field]}`
+						}, "The following settings were not set because they encountered errors:\n"),
+						flags: MessageFlags.Ephemeral
+					})
+				}
+			});
 		}).catch(butIgnoreInteractionCollectorErrors);
 	}
 );

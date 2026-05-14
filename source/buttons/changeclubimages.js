@@ -3,7 +3,6 @@ const { ButtonWrapper } = require('../classes/index.js');
 const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { timeConversion } = require('../util/mathUtil.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
-const { clubEmbedBuilder } = require('../engines/messageEngine.js');
 const { SAFE_DELIMITER, SKIP_INTERACTION_HANDLING } = require('../constants.js');
 const { butIgnoreInteractionCollectorErrors } = require('../util/dAPIResponses.js');
 
@@ -53,7 +52,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				updateClub(club);
 			}
 
-			modalSubmission.update({ embeds: [clubEmbedBuilder(club)] });
+			modalSubmission.update({ components: [club.asContainer("config")] });
 		}).catch(butIgnoreInteractionCollectorErrors);
 	}
 );

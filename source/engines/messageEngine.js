@@ -1,7 +1,6 @@
 const fs = require('fs');
-const { EmbedBuilder, Colors, UserSelectMenuBuilder, ActionRowBuilder, bold, underline, userMention, time, TimestampStyles } = require("discord.js");
+const { EmbedBuilder, Colors, UserSelectMenuBuilder, ActionRowBuilder } = require("discord.js");
 const { imaginaryHorizonsIconURL, discordIconURL, SKIP_INTERACTION_HANDLING } = require('../constants');
-const { Club } = require('../classes');
 const { commandMention } = require('../util/textUtil');
 const { EmbedLimits } = require('@sapphire/discord.js-utilities');
 
@@ -66,29 +65,6 @@ const potlTips = [
 const tipPool = horizonsBotTips.concat(bountyBotTips, potlTips, discordTips);
 function randomEmbedFooter() {
 	return tipPool[Math.floor(Math.random() * tipPool.length)];
-}
-
-/** Generate the club's summary embed
- * @param {Club} club
- */
-function clubEmbedBuilder(club) {
-	const fields = [{ name: "Club Host", value: userMention(club.hostId) }];
-	if (club.activity) {
-		fields.push({ name: "Activity", value: club.activity });
-	}
-	if (club.timeslot.nextMeeting) {
-		fields.push({
-			name: "Next Meeting",
-			value: `${time(club.timeslot.nextMeeting, TimestampStyles.FullDateShortTime)}${club.timeslot.repeatType ? ` repeats every week` : ""}`
-		});
-	}
-
-	return embedTemplateBuilder()
-		.setTitle(`${bold(underline(club.name))} (${club.membershipCountString()})`)
-		.setDescription(club.description)
-		.addFields(fields)
-		.setImage(club.imageURL)
-		.setColor(club.color);
 }
 
 /** The version embed should contain the last version's changes, known issues, and project links
@@ -192,7 +168,6 @@ function disabledSelectRow(placeholderText, key = "") {
 module.exports = {
 	embedTemplateBuilder,
 	randomEmbedFooter,
-	clubEmbedBuilder,
 	versionEmbedBuilder,
 	rulesEmbedBuilder,
 	pressKitEmbedBuilder,
