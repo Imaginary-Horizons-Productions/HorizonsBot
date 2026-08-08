@@ -1,4 +1,4 @@
-const { GuildChannelManager, ActionRowBuilder, StringSelectMenuBuilder, Message, MessageFlags, ContainerBuilder, TextDisplayBuilder, bold, italic } = require('discord.js');
+const { GuildChannelManager, ActionRowBuilder, StringSelectMenuBuilder, Message, MessageFlags, ContainerBuilder, TextDisplayBuilder, bold, italic, heading, RoleManager } = require('discord.js');
 const { Club, ClubTimeslot } = require("../classes");
 const { MessageLimits, SelectMenuLimits } = require('@sapphire/discord.js-utilities');
 const { disabledSelectRow } = require("./messageEngine.js");
@@ -102,15 +102,24 @@ function buildPetitionListPayload(memberCount) {
 }
 
 /** Builds the MessageOptions for the the club list message
+ * @param {RoleManager} roleManager
  * @returns {Promise<import('discord.js').BaseMessageOptions>}
  */
-function buildClubListPayload() {
+function buildClubListPayload(roleManager) {
 	const container = new ContainerBuilder().setAccentColor([240, 117, 129]).addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(`# Club List (${commandMention("list clubs")})`),
+		new TextDisplayBuilder().setContent(heading(`Club List (${commandMention("list clubs")})`)),
 		new TextDisplayBuilder().setContent("Clubs are private subgroups within Imaginary Horizons formed for a specific activity. Clubs come with their own voice channel and tools for scheduling meetings. You can get more details on a recruiting club or join below:")
 	);
 
-	const recruitingClubs = Object.values(getClubDictionary()).filter(club => club.getMembershipStatus() === "recruiting");
+	const clubSizeMap = {};
+	const recruitingClubs = Object.values(getClubDictionary()).filter(async club => {
+		const clubSize = (await roleManager.fetch(club.roleId)).members.size;
+		if (club.getMembershipStatus(clubSize) === "recruiting") {
+			clubSizeMap[club.id] = clubSize;
+			return true;
+		}
+		return false;
+	});
 	if (recruitingClubs.length > 0) {
 		const selectMenu = new StringSelectMenuBuilder().setCustomId("clubList")
 			.setPlaceholder("Get club details...")
@@ -120,7 +129,7 @@ function buildClubListPayload() {
 		const clubOptions = [];
 		for (const club of recruitingClubs) {
 			const clubOption = {
-				label: `${club.name} (${club.membershipCountString()})`,
+				label: `${club.name} (${club.membershipCountString(clubSizeMap[club.id])})`,
 				value: club.id
 			};
 			if (club.activity) {

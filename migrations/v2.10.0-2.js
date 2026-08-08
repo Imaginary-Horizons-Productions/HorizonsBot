@@ -28,7 +28,7 @@ client.on(Events.ClientReady, async () => {
 		if (summaryMessage.content) {
 			await summaryMessage.delete();
 			await clubChannel.send({ content: `Club Summaries have been updated to a new format! When invites are sent with ${commandMention("club-invite")}, the invitee will be shown the following summary:` });
-			clubChannel.send({ components: [club.asContainer("info")], flags: MessageFlags.IsComponentsV2 }).then(newDetailSummaryMessage => {
+			clubChannel.send({ components: [club.asContainer("info", (await guild.roles.fetch(club.roleId)).members.size)], flags: MessageFlags.IsComponentsV2 }).then(newDetailSummaryMessage => {
 				newDetailSummaryMessage.pin();
 				club.detailSummaryId = newDetailSummaryMessage.id;
 				updateClub(club);

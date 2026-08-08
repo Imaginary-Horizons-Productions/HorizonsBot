@@ -13,6 +13,6 @@ module.exports = new CommandWrapper(mainId, "Change the configuration of the cur
 		}
 
 		const club = getClub(interaction.channelId);
-		interaction.reply({ components: [club.asContainer("config")], flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2 });
+		interaction.reply({ components: [club.asContainer("config", interaction.channel.members.filter(member => member.roles.cache.has(club.roleId)).size)], flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2 });
 	}
 );

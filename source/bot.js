@@ -74,6 +74,9 @@ client.on(Events.ClientReady, () => {
 	}
 
 	client.guilds.fetch(guildId).then(guild => {
+		// Since HorizonsBot is only intended to serve 1 guild, we can cache members on start-up to simplify other fetches
+		guild.members.fetch();
+
 		// Post version notes
 		if (versionData.patchNotesChannelId) {
 			fsa.readFile('./ChangeLog.md', { encoding: 'utf8' }).then(data => {
@@ -182,24 +185,25 @@ client.on(Events.InteractionCreate, interaction => {
 	}
 })
 
-client.on(Events.GuildMemberRemove, ({ id: memberId, guild }) => {
+client.on(Events.GuildMemberRemove, (guildMember) => {
 	// Remove member's clubs
 	for (const club of Object.values(getClubDictionary())) {
-		guild.channels.fetch(club.id).then(clubTextChannel => {
-			if (memberId == club.hostId) {
-				clubTextChannel.delete("Club host left server");
-				removeClub(club.id, guild.channels);
-			} else if (club.userIds.includes(memberId)) {
-				club.userIds = club.userIds.filter(id => id != memberId);
-				updateClubDetails(club, clubTextChannel);
-			}
-		})
+		if (guildMember.roles.cache.has(club.roleId)) {
+			guildMember.guild.channels.fetch(club.id).then(clubTextChannel => {
+				if (guildMember.id == club.hostId) {
+					clubTextChannel.delete("Club host left server");
+					removeClub(club.id, guildMember.guild.channels);
+				} else {
+					updateClubDetails(club, clubTextChannel);
+				}
+			})
+		}
 	}
-	updateListReference(channel.guild.channels, "club");
+	updateListReference(guildMember.guild.channels, "club");
 
-	removeAllPetitionsBy(memberId);
-	checkAllPetitions(guild); // because guild member count has decreased, petitions may now be completed
-	updateListReference(guild.channels, "petition");
+	removeAllPetitionsBy(guildMember.id);
+	checkAllPetitions(guildMember.guild); // because guild member count has decreased, petitions may now be completed
+	updateListReference(guildMember.guild.channels, "petition");
 })
 
 client.on(Events.ChannelDelete, ({ id, guild }) => {
@@ -208,28 +212,27 @@ client.on(Events.ChannelDelete, ({ id, guild }) => {
 		deleteOptInChannel(id, guild);
 	} else {
 		const clubDictionary = getClubDictionary();
-		// Check if deleted channel is a club's text channel
-		if (id in clubDictionary) {
-			clearClubReminder(clubDictionary[id]);
-			cancelClubRecruitmentEvent(clubDictionary[id], guild.scheduledEvents);
-			const voiceChannel = guild.channels.resolve(clubDictionary[id].voiceChannelId);
-			if (voiceChannel) {
-				voiceChannel.delete();
-				removeClub(id, guild.channels);
-			}
-			return;
-		}
-
-		// Check if deleted channel is a club's voice channel
-		for (const club of Object.values(clubDictionary)) {
-			if (club.voiceChannelId === id) {
+		for (const clubId in clubDictionary) {
+			const club = clubDictionary[clubId];
+			if ([clubId, club.voiceChannelId].includes(id)) {
 				clearClubReminder(club);
 				cancelClubRecruitmentEvent(club, guild.scheduledEvents);
-				const textChannel = guild.channels.resolve(club.id);
-				if (textChannel) {
-					textChannel.send({ content: "This club has been archived because its voice channel was deleted." });
-					removeClub(club.id, guild.channels);
+				guild.roles.delete(club.roleId);
+
+				// Check if deleted channel is a club's voice channel
+				if (club.voiceChannelId === id) {
+					const textChannel = guild.channels.resolve(club.id);
+					if (textChannel) {
+						textChannel.send({ content: "This club has been archived because its voice channel was deleted." });
+					}
+				} else {
+					// Deleted channel is a club's text channel
+					const voiceChannel = guild.channels.resolve(club.voiceChannelId);
+					if (voiceChannel) {
+						voiceChannel.delete();
+					}
 				}
+				removeClub(clubId, guild.channels);
 				return;
 			}
 		}

@@ -32,7 +32,7 @@ module.exports = new CommandWrapper(mainId, "Remove a club's voice channel and r
 				interaction.reply({ content: "Please provide a number of hours that is greater than 0 for the delay.", flags: MessageFlags.Ephemeral });
 			}
 		} else {
-			interaction.reply({ content: `Please use the \`/${mainId}\` command can only be used on clubs.`, flags: MessageFlags.Ephemeral })
+			interaction.reply({ content: `Please use the \`/${mainId}\` command from the club's text channel.`, flags: MessageFlags.Ephemeral })
 				.catch(console.error);
 		}
 	}

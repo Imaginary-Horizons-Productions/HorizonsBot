@@ -116,7 +116,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				updateClub(club);
 			}
 
-			modalSubmission.update({ components: [club.asContainer("config")] }).then(() => {
+			modalSubmission.update({ components: [club.asContainer("config", (await modalSubmission.guild.roles.fetch(club.roleId)).members.size)] }).then(() => {
 				const errorKeys = Object.keys(errors);
 				if (errorKeys.length > 0) {
 					modalSubmission.followUp({

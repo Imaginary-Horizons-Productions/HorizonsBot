@@ -1,4 +1,4 @@
-const { ChannelType, MessageFlags, PermissionFlagsBits, InteractionContextType } = require('discord.js');
+const { ChannelType, MessageFlags, PermissionFlagsBits, InteractionContextType, OverwriteType } = require('discord.js');
 const { Club, CommandWrapper } = require('../classes');
 const { updateClub, updateListReference } = require('../engines/referenceEngine.js');
 const { modRoleId, isModerator } = require('../engines/permissionEngine.js');
@@ -7,84 +7,88 @@ const { commandMention } = require('../util/textUtil.js');
 const mainId = "club-add";
 module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice channel)", PermissionFlagsBits.ManageChannels, [InteractionContextType.Guild], 3000,
 	/** Create a new club including a text and voice channel in the receiving channel's category and set the mentioned user as host */
-	(interaction) => {
+	async (interaction) => {
 		if (!isModerator(interaction.member)) {
 			interaction.reply(`\`/${interaction.commandName}\` is a moderator-only command.`);
 			return;
 		}
 
-		const host = interaction.options.getUser("club-host");
-		const channelManager = interaction.guild.channels;
-		const categoryId = interaction.channel.parentId;
+		const auditLogReason = `new club created by moderator (id: ${interaction.user.id})`;
+		const host = interaction.options.getMember("club-host");
+		const clubName = interaction.options.getString("club-name") ?? "New Club";
 
-		channelManager.create({
-			name: "new-club",
+		const memberRole = await interaction.guild.roles.create({ name: `${clubName} Member`, reason: auditLogReason });
+
+		const categoryId = interaction.channel.parentId;
+		const textChannel = await interaction.guild.channels.create({
+			name: clubName.toLocaleLowerCase().replaceAll(/ /g, "-"),
 			parent: categoryId,
 			permissionOverwrites: [
 				{
-					id: channelManager.client.user,
+					id: interaction.client.user,
 					allow: [PermissionFlagsBits.ViewChannel]
 				},
 				{
 					id: modRoleId,
-					allow: [PermissionFlagsBits.ViewChannel],
-					type: 0
+					type: OverwriteType.Role,
+					allow: [PermissionFlagsBits.ViewChannel]
 				},
 				{
 					id: interaction.guildId,
-					deny: [PermissionFlagsBits.ViewChannel],
-					type: 0
+					type: OverwriteType.Role,
+					deny: [PermissionFlagsBits.ViewChannel]
+				},
+				{
+					id: "536330483852771348", // BountyBot
+					type: OverwriteType.Member,
+					allow: [PermissionFlagsBits.ViewChannel]
 				},
 				{
 					id: host,
-					allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.PinMessages]
+					allow: [PermissionFlagsBits.PinMessages]
 				},
 				{
-					id: "536330483852771348",
-					allow: [PermissionFlagsBits.ViewChannel],
-					type: 1
+					id: memberRole,
+					type: OverwriteType.Role,
+					allow: [PermissionFlagsBits.ViewChannel]
 				}
 			],
-			type: ChannelType.GuildText
-		}).then(textChannel => {
-			channelManager.create({
-				name: `New Club Voice`,
-				parent: categoryId,
-				type: ChannelType.GuildVoice,
-				permissionOverwrites: [
-					{
-						id: interaction.guild.client.user,
-						allow: [PermissionFlagsBits.ViewChannel]
-					},
-					{
-						id: modRoleId,
-						allow: [PermissionFlagsBits.ViewChannel],
-						type: 0
-					},
-					{
-						id: interaction.guild.id,
-						deny: [PermissionFlagsBits.ViewChannel],
-						type: 0
-					},
-					{
-						id: host,
-						allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.ManageEvents]
-					}
-				]
-			}).then(voiceChannel => {
-				const club = new Club(textChannel.id, host.id, voiceChannel.id);
-				host.send({ content: `A club has been created for you on ${voiceChannel.guild.name}! As club host, you can pin messages in the club's text channel and configure the club's settings with \`/club-config\`.` });
-				textChannel.send({ content: `When invites are sent with ${commandMention("club-invite")}, the invitee will be shown the following summary:` });
-				textChannel.send({ components: [club.asContainer("info")], flags: MessageFlags.SuppressNotifications | MessageFlags.IsComponentsV2 }).then(invitePreviewMessage => {
-					invitePreviewMessage.pin();
-					club.detailSummaryId = invitePreviewMessage.id;
-					updateListReference(interaction.guild.channels, "club");
-					updateClub(club);
-				})
-				interaction.reply({ content: "The new club has been created.", flags: MessageFlags.Ephemeral });
-			}).catch(console.error);
-		})
+			type: ChannelType.GuildText,
+			reason: auditLogReason
+		});
+		const voiceChannel = await interaction.guild.channels.create({
+			name: `${clubName} Voice`,
+			parent: categoryId,
+			type: ChannelType.GuildVoice,
+			permissionOverwrites: [
+				{
+					id: interaction.guild.id,
+					deny: [PermissionFlagsBits.Speak],
+					type: OverwriteType.Role
+				},
+				{
+					id: host,
+					allow: [PermissionFlagsBits.ManageChannels, PermissionFlagsBits.ManageEvents]
+				},
+				{
+					id: memberRole,
+					allow: [PermissionFlagsBits.Speak]
+				}
+			],
+			reason: auditLogReason
+		});
+		const club = new Club(textChannel.id, clubName, memberRole.id, host.id, voiceChannel.id);
+		host.send({ content: `A club has been created for you on ${voiceChannel.guild.name}! As club host, you can pin messages in the club's text channel and configure the club's settings with \`/club-config\`.` });
+		host.roles.add(memberRole, auditLogReason);
+		textChannel.send({ content: `When invites are sent with ${commandMention("club-invite")}, the invitee will be shown the following summary:` });
+		const detailSummary = await textChannel.send({ components: [club.asContainer("info", 1)], flags: MessageFlags.SuppressNotifications | MessageFlags.IsComponentsV2 })
+		detailSummary.pin();
+		club.detailSummaryId = detailSummary.id;
+		updateListReference(interaction.guild.channels, "club");
+		updateClub(club);
+		interaction.reply({ content: `The new club (${textChannel}) has been created.`, flags: MessageFlags.Ephemeral });
 	}
 ).setOptions(
-	{ type: "User", name: "club-host", description: "The user's mention", required: true }
+	{ type: "User", name: "club-host", description: "The user's mention", required: true },
+	{ type: "String", name: "club-name", description: "A name for the new club", required: false }
 );

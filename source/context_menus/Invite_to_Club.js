@@ -6,13 +6,19 @@ const { isCantDirectMessageThisUserError } = require('../util/dAPIResponses');
 
 const mainId = "Invite to Club";
 module.exports = new UserContextMenuWrapper(mainId, PermissionFlagsBits.SendMessages, [InteractionContextType.Guild], 3000,
-	(interaction) => {
+	async (interaction) => {
 		if (interaction.targetUser.bot) {
 			interaction.reply({ content: "If you'd like at add a bot to your club, please speak with a moderator.", flags: MessageFlags.Ephemeral });
 			return;
 		}
 
-		const recruitingClubsWithUser = Object.values(getClubDictionary()).filter(club => (club.hostId === interaction.user.id || club.userIds.includes(interaction.user.id)) && club.getMembershipStatus() === "recruiting");
+		const recruitingClubsWithUser = [];
+		for (const club of Object.values(getClubDictionary())) {
+			const clubRole = await interaction.guild.roles.fetch(club.roleId);
+			if ((club.hasGuildMember(interaction.user.id, clubRole.members)) && club.getMembershipStatus(clubRole.members.size) === "recruiting") {
+				recruitingClubsWithUser.push(club);
+			}
+		}
 		const clubOptions = recruitingClubsWithUser.map(club => ({ label: club.name, description: club.description.slice(0, 100), value: club.id }));
 		if (clubOptions.length < 1) {
 			interaction.reply({ content: "You can invite server members to clubs you are a member of that are still recruiting. There don't appear to be any clubs in that list.", flags: MessageFlags.Ephemeral });
@@ -33,19 +39,20 @@ module.exports = new UserContextMenuWrapper(mainId, PermissionFlagsBits.SendMess
 			withResponse: true
 		}).then(response => response.resource.message).then(reply => {
 			const collector = reply.createMessageComponentCollector({ max: 1 });
-			collector.on("collect", collectedInteraction => {
+			collector.on("collect", async collectedInteraction => {
 				const club = getClub(collectedInteraction.values[0]);
-				if (club.hostId === interaction.targetId || club.userIds.includes(interaction.targetId)) {
+				const clubRole = await collectedInteraction.guild.roles.fetch(club.roleId);
+				if (club.hasGuildMember(interaction.targetId, clubRole.members)) {
 					collectedInteraction.reply({ content: `${userMention(interaction.targetId)} is already a member of ${club.name}.`, flags: MessageFlags.Ephemeral });
 					return;
 				}
 
-				if (club.getMembershipStatus() === "full") {
+				if (club.getMembershipStatus(clubRole.members.size) === "full") {
 					collectedInteraction.reply({ content: `Your invite to ${club.name} was not sent. The club is full!`, flags: MessageFlags.Ephemeral });
 					return;
 				}
 
-				interaction.targetUser.send({ components: [club.asContainer("invite")], flags: MessageFlags.IsComponentsV2 }).then(() => {
+				interaction.targetUser.send({ components: [club.asContainer("invite", clubRole.members.size)], flags: MessageFlags.IsComponentsV2 }).then(() => {
 					collectedInteraction.reply({ content: `Details about and an invite to ${club.name} have been sent to ${userMention(interaction.targetId)}.`, flags: MessageFlags.Ephemeral });
 				}).catch(error => {
 					if (isCantDirectMessageThisUserError(error)) {

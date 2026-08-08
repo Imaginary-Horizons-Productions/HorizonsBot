@@ -1,4 +1,4 @@
-const { PermissionsBitField, MessageFlags, InteractionContextType } = require('discord.js');
+const { MessageFlags, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
 const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { isClubHostOrModerator } = require('../engines/permissionEngine.js');
@@ -14,18 +14,15 @@ module.exports = new CommandWrapper(mainId, "Remove a user from a club", null, [
 		}
 
 		const club = getClub(interaction.channelId);
-		const user = interaction.options.getUser("target");
-		club.userIds = club.userIds.filter(memberId => memberId != user.id);
-		updateClub(club);
-		if (interaction.options.getBoolean("ban")) {
-			interaction.channel.permissionOverwrites.create(user.id, { [PermissionsBitField.Flags.ViewChannel]: false }, `Banned by ${interaction.user}`);
-			interaction.reply({ content: `${user} has been banned from this club.`, flags: MessageFlags.SuppressNotifications })
-				.catch(console.error);
-		} else {
-			interaction.channel.permissionOverwrites.delete(user, `Kicked by ${interaction.user}`);
-			interaction.reply({ content: `${user} has been kicked from this club.`, flags: MessageFlags.SuppressNotifications })
-				.catch(console.error);
+		const guildMember = interaction.options.getMember("target");
+		const wasBanned = interaction.options.getBoolean("ban");
+		guildMember.roles.remove(club.roleId);
+		if (wasBanned) {
+			club.bannedUserIds.push(guildMember.id);
 		}
+		interaction.reply({ content: `${guildMember} has been ${wasBanned ? "banned" : "kicked"} from this club.`, flags: MessageFlags.SuppressNotifications })
+			.catch(console.error);
+		updateClub(club);
 		updateListReference(interaction.guild.channels, "club");
 		createClubRecruitmentEvent(club, interaction.guild);
 	}

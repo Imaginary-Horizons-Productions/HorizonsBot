@@ -1,21 +1,24 @@
 const { ButtonBuilder, ActionRowBuilder, heading, subtext, userMention } = require("@discordjs/builders");
 const { ButtonLimits } = require("@sapphire/discord.js-utilities");
-const { ContainerBuilder, SectionBuilder, TextDisplayBuilder, ButtonStyle, MediaGalleryBuilder, MediaGalleryItemBuilder } = require("discord.js");
+const { ContainerBuilder, SectionBuilder, TextDisplayBuilder, ButtonStyle, MediaGalleryBuilder, MediaGalleryItemBuilder, GuildMember, time, TimestampStyles, Collection } = require("discord.js");
 const { SAFE_DELIMITER } = require("../constants");
 const { collapseTextToLength } = require("../util/textUtil");
 
 module.exports.Club = class {
 	/**
-	 * @param {string} idInput the club's text channel's id
-	 * @param {string} hostIdInput The host's Discord snowflake
-	 * @param {string} voiceChannelIdInput
+	 * @param {import("discord.js").Snowflake} idInput the club's text channel's id
+	 * @param {string} nameArgument
+	 * @param {import("discord.js").Snowflake} roleId
+	 * @param {import("discord.js").Snowflake} hostIdInput The host's Discord snowflake
+	 * @param {import("discord.js").Snowflake} voiceChannelIdInput
 	 */
-	constructor(idInput, hostIdInput, voiceChannelIdInput) {
+	constructor(idInput, nameArgument, roleId, hostIdInput, voiceChannelIdInput) {
 		this.id = idInput;
+		this.name = nameArgument;
+		this.roleId = roleId;
 		this.voiceChannelId = voiceChannelIdInput;
 		this.hostId = hostIdInput;
 	}
-	name = "new club";
 	description = "The host can change this text with `/club-config`.";
 	/** @type {number | null} */
 	idealMemberCount = null;
@@ -25,12 +28,16 @@ module.exports.Club = class {
 	imageURL = null;
 	/** @type {string | null} */
 	color = null;
-	userIds = []; // An array containing the allowed user snowflakes (excluding the host)
+	/** @type {import("discord.js").Snowflake[]} */
+	bannedUserIds = [];
 	detailSummaryId = "";
 	timeslot = new module.exports.ClubTimeslot();
 
-	/** @param {"info" | "config" | "invite" } mode  */
-	asContainer(mode) {
+	/**
+	 * @param {"info" | "config" | "invite" } mode
+	 * @param {number} clubSize
+	 */
+	asContainer(mode, clubSize) {
 		const container = new ContainerBuilder();
 		if (this.color) {
 			container.setAccentColor([parseInt(this.color.slice(1, 3), 16), parseInt(this.color.slice(3, 5), 16), parseInt(this.color.slice(5), 16)]);
@@ -65,7 +72,7 @@ module.exports.Club = class {
 			}
 		}
 
-		const activityText = `${heading("Membership", 2)}\nClub Host: ${userMention(this.hostId)}\n${subtext(`${this.userIds.length + 1}${this.idealMemberCount !== null ? `/${this.idealMemberCount}` : ""} Members`)}`;
+		const activityText = `${heading("Membership", 2)}\nClub Host: ${userMention(this.hostId)}\n${subtext(`${clubSize}${this.idealMemberCount !== null ? `/${this.idealMemberCount}` : ""} Members`)}`;
 		if (mode === "config") {
 			container.addSectionComponents(new SectionBuilder().addTextDisplayComponents(
 				new TextDisplayBuilder().setContent(activityText)
@@ -82,7 +89,7 @@ module.exports.Club = class {
 			.setLabel("Change Schedule")
 			.setStyle(ButtonStyle.Primary);
 		if (this.timeslot.nextMeeting) {
-			let meetingText = `${heading("Schedule", 2)}\nNext Meeting: <t:${this.timeslot.nextMeeting}:F>`;
+			let meetingText = `${heading("Schedule", 2)}\nNext Meeting: ${time(this.timeslot.nextMeeting, TimestampStyles.FullDateShortTime)}`;
 			if (this.timeslot.recurrenceData) {
 				meetingText += " (repeats every week)";
 			}
@@ -113,26 +120,30 @@ module.exports.Club = class {
 		return container;
 	}
 
-	/** @param {string} userId */
-	hasGuildMember(userId) {
-		return userId === this.hostId || this.userIds.includes(userId);
+	/**
+	 * @param {string} userId
+	 * @param {Collection<import("discord.js").Snowflake, GuildMember>}
+	 */
+	hasGuildMember(userId, memberCollection) {
+		return userId === this.hostId || memberCollection.has(userId);
 	}
 
-	getMembershipStatus() {
+	/** @param {number} clubSize */
+	getMembershipStatus(clubSize) {
 		if (this.idealMemberCount === null) {
 			return "unlimited";
 		}
 
-		if (this.userIds.length + 1 < this.idealMemberCount) {
+		if (clubSize < this.idealMemberCount) {
 			return "recruiting";
 		} else {
 			return "full";
 		}
 	}
 
-	membershipCountString() {
-		const memberCount = this.userIds.length + 1;
-		let countString = memberCount.toString();
+	/** @param {number} clubSize */
+	membershipCountString(clubSize) {
+		let countString = clubSize.toString();
 		if (this.idealMemberCount) {
 			countString += `/${this.idealMemberCount} Member`
 			if (this.idealMemberCount !== 1) {
@@ -140,7 +151,7 @@ module.exports.Club = class {
 			}
 		} else {
 			countString += " Member";
-			if (memberCount !== 1) {
+			if (clubSize !== 1) {
 				countString += "s";
 			}
 		}

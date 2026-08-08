@@ -1,4 +1,4 @@
-const { PermissionFlagsBits, InteractionContextType, MessageFlags } = require('discord.js');
+const { PermissionFlagsBits, InteractionContextType, MessageFlags, OverwriteType } = require('discord.js');
 const { CommandWrapper } = require('../classes/InteractionWrapper.js');
 const { updateClubDetails } = require('../engines/clubEngine.js');
 const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
@@ -15,12 +15,13 @@ module.exports = new CommandWrapper(mainId, "Promote another user to club host",
 
 		const club = getClub(interaction.channelId);
 		const newHost = interaction.options.getUser("user");
+		const auditLogReason = `club host changed from id: ${interaction.user.id} to id: ${newHost.id}`;
 		club.hostId = newHost.id;
-		interaction.channel.permissionOverwrites.edit(interaction.user, { [PermissionFlagsBits.ViewChannel]: true, [PermissionFlagsBits.ManageMessages]: null, [PermissionFlagsBits.PinMessages]: null }, { type: 1 })
-		interaction.channel.permissionOverwrites.edit(newHost, { [PermissionFlagsBits.ViewChannel]: true, [PermissionFlagsBits.ManageMessages]: true, [PermissionFlagsBits.PinMessages]: true }, { type: 1 })
+		interaction.channel.permissionOverwrites.delete(interaction.user, auditLogReason);
+		interaction.channel.permissionOverwrites.create(newHost, { [PermissionFlagsBits.ManageMessages]: true, [PermissionFlagsBits.PinMessages]: true }, { reason: auditLogReason, type: OverwriteType.Member });
 		interaction.guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
-			voiceChannel.permissionOverwrites.edit(interaction.user, { [PermissionFlagsBits.ViewChannel]: true, [PermissionFlagsBits.ManageChannels]: null, [PermissionFlagsBits.ManageEvents]: null }, { type: 1 });
-			voiceChannel.permissionOverwrites.edit(newHost, { [PermissionFlagsBits.ViewChannel]: true, [PermissionFlagsBits.ManageChannels]: true, [PermissionFlagsBits.ManageEvents]: true }, { type: 1 });
+			voiceChannel.permissionOverwrites.delete(interaction.user, auditLogReason);
+			voiceChannel.permissionOverwrites.create(newHost, { [PermissionFlagsBits.ManageChannels]: true, [PermissionFlagsBits.ManageEvents]: true }, { reason: auditLogReason, type: OverwriteType.Member });
 		})
 		interaction.reply(`This club is now hosted by ${newHost}.`)
 			.catch(console.error);
