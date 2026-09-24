@@ -54,7 +54,7 @@ module.exports = new CommandWrapper(mainId, "Send a user an invite to a club", P
 						const club = getClub(selectedClubId);
 						collectedInteraction.guild.roles.fetch(club.roleId).then(clubRole => {
 							const member = collectedInteraction.users.first();
-							member.send({ components: [club.asContainer(club.hasGuildMember(member.id, clubRole.members) ? "info" : "invite", clubRole.members)], flags: MessageFlags.IsComponentsV2 }).then(() => {
+							member.send({ components: [club.asContainer(club.hasGuildMember(member.id, clubRole.members) ? "info" : "invite", clubRole.members.size)], flags: MessageFlags.IsComponentsV2 }).then(() => {
 								collectedInteraction.reply({ content: `Details about and an invite to <#${selectedClubId}> have been sent to ${member}.`, flags: MessageFlags.Ephemeral });
 							}).catch(error => {
 								if (isCantDirectMessageThisUserError(error)) {
