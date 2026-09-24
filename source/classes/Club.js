@@ -40,7 +40,8 @@ module.exports.Club = class {
 	asContainer(mode, clubSize) {
 		const container = new ContainerBuilder();
 		if (this.color) {
-			container.setAccentColor([parseInt(this.color.slice(1, 3), 16), parseInt(this.color.slice(3, 5), 16), parseInt(this.color.slice(5), 16)]);
+			const startIndex = this.color.length - 6;
+			container.setAccentColor([parseInt(this.color.slice(startIndex, startIndex + 2), 16), parseInt(this.color.slice(startIndex + 2, startIndex + 4), 16), parseInt(this.color.slice(startIndex + 4), 16)]);
 		}
 		let infoText = `${heading(this.name)}\n${this.description}`;
 		if (this.activity) {

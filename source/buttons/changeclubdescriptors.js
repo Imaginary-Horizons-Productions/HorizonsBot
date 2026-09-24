@@ -79,7 +79,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				if (colorInput.length === 7 && colorInput[0] !== "#") {
 					colorErrors.push("Color codes of length 7 must start with #.");
 				}
-				if (unparsedColor.slice(7 - colorInput.length).search(/[^\dAaBbCcDdEeFf]+/) !== -1) {
+				if (unparsedColor.slice(colorInput.length - 6).search(/[^\dAaBbCcDdEeFf]+/) !== -1) {
 					colorErrors.push("Each pair of characters in the color code must be a base-16 number.");
 				}
 				if (colorErrors.length > 0) {
