@@ -2,27 +2,27 @@ const { ButtonWrapper } = require('../classes');
 const { guildId } = require('../constants.js');
 const { updateClubDetails, cancelClubRecruitmentEvent, createClubRecruitmentEvent } = require('../engines/clubEngine.js');
 const { updateListReference, getClub } = require('../engines/referenceEngine.js');
-const { clearComponents } = require('../util/discordAPIRequests.js');
 
 const mainId = "join";
 module.exports = new ButtonWrapper(mainId, 3000,
 	/** Join the club specified in args */
 	async (interaction, [channelId]) => {
-		clearComponents(interaction.message);
 		const club = getClub(channelId);
 		if (!club) {
 			interaction.reply("This club doesn't seem to exist.");
 			return;
 		}
 
-		const userId = interaction.user.id;
-		if (club.bannedUserIds.includes(userId)) {
+		const guild = interaction.guild ?? await interaction.client.guilds.fetch(guildId);
+		const membershipRole = await guild.roles.fetch(club.roleId);
+		interaction.message.edit({ components: [club.asContainer("info", membershipRole.members.size)] });
+
+		if (club.bannedUserIds.includes(interaction.user.id)) {
 			interaction.reply(`You are currently banned from ${club.name}. Speak to the club's host if you believe this is in error.`);
 			return;
 		}
 
-		const membershipRole = await interaction.guild.roles.fetch(club.roleId);
-		if (club.hasGuildMember(userId, membershipRole.members)) {
+		if (club.hasGuildMember(interaction.user.id, membershipRole.members)) {
 			interaction.reply(`You are already in ${club.name}.`);
 			return;
 		}
@@ -32,14 +32,13 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			return;
 		}
 
-		const guild = await interaction.client.guilds.fetch(guildId);
 		const clubChannel = await guild.channels.fetch(channelId);
-		await interaction.member.roles.add(membershipRole, "user joined club");
+		await (interaction.member ?? await guild.members.fetch(interaction.user.id)).roles.add(membershipRole, "user joined club");
 		clubChannel.send(`Welcome to ${club.name}, ${interaction.user}!`);
 		interaction.reply(`You have joined ${clubChannel}!`);
 		updateClubDetails(club, clubChannel);
 		updateListReference(guild.channels, "club");
-		cancelClubRecruitmentEvent(club, interaction.guild.scheduledEvents);
-		createClubRecruitmentEvent(club, interaction.guild);
+		cancelClubRecruitmentEvent(club, guild.scheduledEvents);
+		createClubRecruitmentEvent(club, guild);
 	}
 );
