@@ -39,11 +39,6 @@ module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice cha
 					deny: [PermissionFlagsBits.ViewChannel]
 				},
 				{
-					id: "536330483852771348", // BountyBot
-					type: OverwriteType.Member,
-					allow: [PermissionFlagsBits.ViewChannel]
-				},
-				{
 					id: host,
 					allow: [PermissionFlagsBits.PinMessages]
 				},
@@ -65,10 +60,6 @@ module.exports = new CommandWrapper(mainId, "Set up a club (a text and voice cha
 					id: interaction.guild.id,
 					deny: [PermissionFlagsBits.Speak],
 					type: OverwriteType.Role
-				},
-				{
-					id: host,
-					allow: [PermissionFlagsBits.ManageChannels, PermissionFlagsBits.ManageEvents]
 				},
 				{
 					id: memberRole,

@@ -70,10 +70,6 @@ module.exports = new ButtonWrapper(mainId, 3000,
 
 					modalSubmission.channel.permissionOverwrites.create(clubHostInput, { [PermissionFlagsBits.PinMessages]: true }, { reason: auditLogReason });
 					modalSubmission.channel.permissionOverwrites.delete(modalSubmission.member, auditLogReason);
-
-					const clubVoice = await modalSubmission.guild.channels.fetch(club.voiceChannelId);
-					clubVoice.permissionOverwrites.create(clubHostInput, { [PermissionFlagsBits.ManageChannels]: true, [PermissionFlagsBits.ManageEvents]: true }, { reason: auditLogReason });
-					clubVoice.permissionOverwrites.delete(modalSubmission.member, auditLogReason);
 				}
 			}
 
