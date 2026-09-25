@@ -15,7 +15,6 @@ module.exports = {
 	topicCategoryId,
 	mainTextChannelId,
 	emoteLogThreadId,
-	pluralKitId: "466378653216014359",
 	commandIds: {},
 
 	// Internal Convention

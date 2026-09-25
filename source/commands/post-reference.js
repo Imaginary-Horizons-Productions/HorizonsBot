@@ -2,10 +2,8 @@ const { CommandWrapper } = require('../classes');
 const { ensuredPathSave } = require('../util/fileUtil.js');
 const { referenceMessages, buildPetitionListPayload, buildClubListPayload } = require('../engines/referenceEngine.js');
 const { rulesEmbedBuilder, pressKitEmbedBuilder } = require('../engines/messageEngine.js');
-const { MessageFlags, PermissionFlagsBits, EmbedBuilder, InteractionContextType } = require('discord.js');
+const { MessageFlags, PermissionFlagsBits, InteractionContextType } = require('discord.js');
 const { isModerator } = require('../engines/permissionEngine.js');
-const { commandMention } = require('../util/textUtil.js');
-const { pluralKitId } = require('../constants.js');
 
 const mainId = "post-reference";
 module.exports = new CommandWrapper(mainId, "Post a reference message in this channel", PermissionFlagsBits.ManageChannels, [InteractionContextType.Guild], 3000,
