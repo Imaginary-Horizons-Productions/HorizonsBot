@@ -105,21 +105,21 @@ function buildPetitionListPayload(memberCount) {
  * @param {RoleManager} roleManager
  * @returns {Promise<import('discord.js').BaseMessageOptions>}
  */
-function buildClubListPayload(roleManager) {
+async function buildClubListPayload(roleManager) {
 	const container = new ContainerBuilder().setAccentColor([240, 117, 129]).addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(heading(`Club List (${commandMention("list clubs")})`)),
 		new TextDisplayBuilder().setContent("Clubs are private subgroups within Imaginary Horizons formed for a specific activity. Clubs come with their own voice channel and tools for scheduling meetings. You can get more details on a recruiting club or join below:")
 	);
 
 	const clubSizeMap = {};
-	const recruitingClubs = Object.values(getClubDictionary()).filter(async club => {
+	const recruitingClubs = [];
+	for (const club of Object.values(getClubDictionary())) {
 		const clubSize = (await roleManager.fetch(club.roleId)).members.size;
+		clubSizeMap[club.id] = clubSize;
 		if (club.getMembershipStatus(clubSize) === "recruiting") {
-			clubSizeMap[club.id] = clubSize;
-			return true;
+			recruitingClubs.push(club);
 		}
-		return false;
-	});
+	}
 	if (recruitingClubs.length > 0) {
 		const selectMenu = new StringSelectMenuBuilder().setCustomId("clubList")
 			.setPlaceholder("Get club details...")
