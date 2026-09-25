@@ -16,7 +16,7 @@ module.exports = new CommandWrapper(mainId, "Leave this club", null, [Interactio
 		}
 
 		if (interaction.user.id === club.hostId) {
-			interaction.reply({ content: `As this club's host, please use ${commandMention("club-sunset")} or ${commandMention("club-promote-host")} instead.`, flags: MessageFlags.Ephemeral })
+			interaction.reply({ content: `As this club's host, please use ${commandMention("club-sunset")} or promote another member to club host in ${commandMention("club-config")}'s Change Membership instead.`, flags: MessageFlags.Ephemeral })
 				.catch(console.error);
 			return;
 		}
