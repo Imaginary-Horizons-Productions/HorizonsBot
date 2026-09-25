@@ -43,13 +43,14 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			const auditLogReason = "club changed membership";
 
 			const unparsedIdealMemberCount = modalSubmission.fields.getTextInputValue(inputIdIdIdealMemberCount);
-			const newHostInput = modalSubmission.fields.getSelectedMembers(inputIdNewClubHost).first();
+			const unparsedClubHost = modalSubmission.fields.getSelectedMembers(inputIdNewClubHost);
 
 			const idealMemberCountInput = unparsedIdealMemberCount === "" ? null : parseInt(unparsedIdealMemberCount);
+			const clubHostInput = unparsedClubHost === null ? null : unparsedClubHost.first();
 
 			const errors = {};
 			const didIdealMemberCountChange = club.idealMemberCount !== idealMemberCountInput;
-			const didHostChange = Boolean(newHostInput) && newHostInput.id !== club.hostId;
+			const didHostChange = clubHostInput !== null && clubHostInput.id !== club.hostId;
 			const didValuesChange = didIdealMemberCountChange || didHostChange;
 
 			if (didIdealMemberCountChange) {
@@ -62,16 +63,16 @@ module.exports = new ButtonWrapper(mainId, 3000,
 			}
 
 			if (didHostChange) {
-				if (newHostInput.user.bot) {
+				if (clubHostInput.user.bot) {
 					errors[labelNewClubHost] = "Bots cannot be apointed as club hosts."
 				} else {
-					club.hostId = newHostInput.id;
+					club.hostId = clubHostInput.id;
 
-					modalSubmission.channel.permissionOverwrites.create(newHostInput, { [PermissionFlagsBits.PinMessages]: true }, { reason: auditLogReason });
+					modalSubmission.channel.permissionOverwrites.create(clubHostInput, { [PermissionFlagsBits.PinMessages]: true }, { reason: auditLogReason });
 					modalSubmission.channel.permissionOverwrites.delete(modalSubmission.member, auditLogReason);
 
 					const clubVoice = await modalSubmission.guild.channels.fetch(club.voiceChannelId);
-					clubVoice.permissionOverwrites.create(newHostInput, { [PermissionFlagsBits.ManageChannels]: true, [PermissionFlagsBits.ManageEvents]: true }, { reason: auditLogReason });
+					clubVoice.permissionOverwrites.create(clubHostInput, { [PermissionFlagsBits.ManageChannels]: true, [PermissionFlagsBits.ManageEvents]: true }, { reason: auditLogReason });
 					clubVoice.permissionOverwrites.delete(modalSubmission.member, auditLogReason);
 				}
 			}
