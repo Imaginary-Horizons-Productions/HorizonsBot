@@ -200,6 +200,12 @@ client.on(Events.InteractionCreate, interaction => {
 	}
 })
 
+client.on(Events.MessageCreate, (message) => {
+	if (message.channelId === "1521256025053990952") {
+		message.member.ban({ deleteMessageSeconds: 30, reason: "posted in honeypot" });
+	}
+})
+
 client.on(Events.GuildMemberRemove, (guildMember) => {
 	// Remove member's clubs
 	for (const club of Object.values(getClubDictionary())) {
