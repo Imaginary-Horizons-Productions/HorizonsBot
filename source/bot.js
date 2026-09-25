@@ -21,9 +21,10 @@ const { getSelect } = require("./selects/_selectDictionary.js");
 const { scheduleClubReminder, updateClubDetails, clearClubReminder, cancelClubRecruitmentEvent } = require("./engines/clubEngine.js");
 const { deletePingableRole, updateOnboarding, removeAllPetitionsBy, checkAllPetitions, isOptInChannel, deleteOptInChannel } = require("./engines/customizationEngine.js");
 const { versionEmbedBuilder, rulesEmbedBuilder, pressKitEmbedBuilder } = require("./engines/messageEngine.js");
-const { referenceMessages, getClubDictionary, removeClub, updateListReference, handleMissingListReferenceMesssage } = require("./engines/referenceEngine.js");
+const { referenceMessages, getClubDictionary, removeClub, updateListReference } = require("./engines/referenceEngine.js");
 const { SAFE_DELIMITER, guildId, commandIds, testGuildId, SKIP_INTERACTION_HANDLING } = require('./constants.js');
 const versionData = require('../config/_versionData.json');
+const { ensuredPathSave } = require("./util/fileUtil.js");
 //#endregion
 //#region Executing Code
 /** @type {Map<string, Map<string, number>>} */
@@ -122,18 +123,32 @@ client.on(Events.ClientReady, () => {
 		if (referenceMessages.club?.channelId && referenceMessages.club?.messageId) {
 			updateListReference(channelManager, "club");
 		}
-		Object.entries({
-			"rules": rulesEmbedBuilder(),
-			"press-kit": pressKitEmbedBuilder()
-		}).forEach(([referenceType, embed]) => {
+		for (const [referenceType, embed] of [
+			["rules", rulesEmbedBuilder()],
+			["press-kit", pressKitEmbedBuilder()]
+		]) {
 			if (referenceMessages[referenceType]?.channelId && referenceMessages[referenceType]?.messageId) {
 				channelManager.fetch(referenceMessages[referenceType].channelId).then(channel => {
 					channel.messages.fetch(referenceMessages[referenceType].messageId).then(async message => {
 						message.edit({ embeds: [await embed] });
-					}).catch(handleMissingListReferenceMesssage);
-				}).catch(handleMissingListReferenceMesssage);
+					}).catch((error) => {
+						if (error.code === 10008) { // Unknown Message
+							referenceMessages[referenceType].channelId = "";
+							referenceMessages[referenceType].messageId = "";
+							ensuredPathSave(referenceMessages, "referenceMessageIds.json");
+						}
+						console.error(error);
+					});
+				}).catch((error) => {
+					if (error.code === 10008) { // Unknown Message
+						referenceMessages[referenceType].channelId = "";
+						referenceMessages[referenceType].messageId = "";
+						ensuredPathSave(referenceMessages, "referenceMessageIds.json");
+					}
+					console.error(error);
+				});
 			}
-		})
+		}
 	})
 })
 

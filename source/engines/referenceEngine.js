@@ -153,30 +153,26 @@ async function buildClubListPayload(roleManager) {
 async function updateListReference(channelManager, listType) {
 	const { channelId, messageId } = referenceMessages[listType];
 	if (channelId && messageId) {
-		const channel = await channelManager.fetch(channelId).catch(handleMissingListReferenceChannel);
-		const message = await channel?.messages.fetch(messageId).catch(handleMissingListReferenceMesssage);
+		const channel = await channelManager.fetch(channelId).catch((error) => {
+			if (error.code === 10003) { // Unknown Channel
+				referenceMessages[listType].channelId = "";
+				referenceMessages[listType].messageId = "";
+				ensuredPathSave(referenceMessages, "referenceMessageIds.json");
+			}
+			console.error(error);
+		});
+		const message = await channel?.messages.fetch(messageId).catch((error) => {
+			if (error.code === 10008) { // Unknown Message
+				referenceMessages[listType].channelId = "";
+				referenceMessages[listType].messageId = "";
+				ensuredPathSave(referenceMessages, "referenceMessageIds.json");
+			}
+			console.error(error);
+		});
 		const promisedMessageOptions = listType === "club" ? buildClubListPayload(channelManager.guild.roles) : buildPetitionListPayload(channelManager.guild.memberCount);
 		message?.edit(await promisedMessageOptions);
 		return message;
 	}
-}
-
-function handleMissingListReferenceChannel(error) {
-	if (error.code === 10003) { // Unknown Channel
-		referenceMessages[listType].channelId = "";
-		referenceMessages[listType].messageId = "";
-		ensuredPathSave(referenceMessages, "referenceMessageIds.json");
-	}
-	console.error(error);
-}
-
-function handleMissingListReferenceMesssage(error) {
-	if (error.code === 10008) { // Unknown Message
-		referenceMessages[listType].channelId = "";
-		referenceMessages[listType].messageId = "";
-		ensuredPathSave(referenceMessages, "referenceMessageIds.json");
-	}
-	console.error(error);
 }
 
 module.exports = {
@@ -187,7 +183,5 @@ module.exports = {
 	referenceMessages,
 	buildPetitionListPayload,
 	buildClubListPayload,
-	updateListReference,
-	handleMissingListReferenceChannel,
-	handleMissingListReferenceMesssage
+	updateListReference
 };
