@@ -5,7 +5,6 @@ const selectDictionary = {};
 
 for (const file of [
 	"clubList.js",
-	"joinclubs.js",
 	"petitionChannel.js",
 	"petitionRole.js"
 ]) {
