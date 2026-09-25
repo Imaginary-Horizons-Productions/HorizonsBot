@@ -6,15 +6,15 @@ const mainId = "version";
 module.exports = new CommandWrapper(mainId, "Get HorizonsBot's version notes", null, [InteractionContextType.BotDM, InteractionContextType.Guild, InteractionContextType.PrivateChannel], 3000,
 	(interaction) => {
 		if (interaction.options.getString("notes-length") === "last-version") {
+			versionEmbedBuilder().then(embed => {
+				interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+			}).catch(console.error);
+		} else {
 			interaction.reply({
 				content: "Here are all the changes so far: ",
 				files: [new AttachmentBuilder("./ChangeLog.md")],
 				flags: MessageFlags.Ephemeral
 			});
-		} else {
-			versionEmbedBuilder().then(embed => {
-				interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
-			}).catch(console.error);
 		}
 	}
 ).setOptions(
