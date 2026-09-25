@@ -14,9 +14,5 @@
 	"press-kit": {
 		"messageId": "",
 		"channelId": ""
-	},
-	"proxy-thread-info": {
-		"messageId": "",
-		"channelId": ""
 	}
 }

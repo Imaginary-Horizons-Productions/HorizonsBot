@@ -8,6 +8,7 @@
 - Separated club image input to separate button, added checkbox for clearing image
 - Dropped support for clubs customizing reminder messages (adding ways to include time/channel link were more complicated than it was worth)
 - Dropped support for `/club-send-reminder`; it didn't save work of sending a message manually
+- Decommissioned the unused Proxy Threads system
 
 #### HorizonsBot Version 2.9.0:
 - Fixed `/roll` mistaking proper input for invalid input

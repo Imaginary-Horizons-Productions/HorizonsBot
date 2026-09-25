@@ -25,7 +25,6 @@ const commandFiles = [
 	"petition",
 	"post-reference.js",
 	"press-kit.js",
-	"proxy-thread",
 	"roles-rundown.js",
 	"roll.js",
 	"server-rules.js",
