@@ -52,7 +52,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				updateClub(club);
 			}
 
-			modalSubmission.update({ components: [club.asContainer("config")] });
+			modalSubmission.update({ components: [club.asContainer("config", (await modalSubmission.guild.roles.fetch(club.roleId)).members.size)] });
 		}).catch(butIgnoreInteractionCollectorErrors);
 	}
 );

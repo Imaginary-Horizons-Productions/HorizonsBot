@@ -5,14 +5,14 @@ const { getClubDictionary } = require('../engines/referenceEngine.js');
 const mainId = "clubList";
 module.exports = new SelectWrapper(mainId, 3000,
 	/** Provide club details embed to the user for the selected clubs */
-	(interaction, args) => {
+	async (interaction, args) => {
 		const clubs = getClubDictionary();
-		interaction.reply({
-			components: interaction.values.map(channelId => {
-				const club = clubs[channelId];
-				return club.asContainer(club.hasGuildMember(interaction.user.id) ? "info" : "invite");
-			}),
-			flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
-		});
+		const components = [];
+		for (const channelId of interaction.values) {
+			const club = clubs[channelId];
+			const membershipRole = await interaction.guild.roles.fetch(club.roleId);
+			components.push(club.asContainer(club.hasGuildMember(interaction.user.id, membershipRole.members) ? "info" : "invite", (await interaction.guild.roles.fetch(club.roleId)).members.size));
+		}
+		interaction.reply({ components, flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2 });
 	}
 );

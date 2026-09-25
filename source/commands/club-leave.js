@@ -1,34 +1,31 @@
 const { MessageFlags, InteractionContextType } = require('discord.js');
 const { CommandWrapper } = require('../classes');
-const { updateClub, updateListReference, getClub } = require('../engines/referenceEngine.js');
+const { updateListReference, getClub } = require('../engines/referenceEngine.js');
 const { commandMention } = require('../util/textUtil.js');
-const { createClubRecruitmentEvent } = require('../engines/clubEngine.js');
+const { createClubRecruitmentEvent, cancelClubRecruitmentEvent } = require('../engines/clubEngine.js');
 
 const mainId = "club-leave";
 module.exports = new CommandWrapper(mainId, "Leave this club", null, [InteractionContextType.Guild], 3000,
-	/** Do cleanup associated with user leaving a club or topic */
+	/** Do cleanup associated with user leaving a club*/
 	(interaction) => {
-		const { user: { id: userId }, channelId } = interaction;
-		const club = getClub(channelId);
-		if (club) {
-			if (userId == club.hostId) {
-				interaction.reply({ content: `As this club's host, please use ${commandMention("club-sunset")} or ${commandMention("club-promote-host")} instead.`, flags: MessageFlags.Ephemeral })
-					.catch(console.error);
-			} else {
-				club.userIds = club.userIds.filter(id => id != userId);
-				interaction.channel.permissionOverwrites.delete(interaction.user, `/${mainId}`)
-					.catch(console.error);
-				interaction.guild.channels.resolve(club.voiceChannelId).permissionOverwrites.delete(interaction.user, `/${mainId}`)
-					.catch(console.error);
-				updateClub(club);
-				interaction.reply({ content: `${interaction.user} has left this club.`, flags: MessageFlags.SuppressNotifications })
-					.catch(console.error);
-				updateListReference(interaction.guild.channels, "club");
-				createClubRecruitmentEvent(club, interaction.guild);
-			}
-		} else {
-			interaction.reply(`Please use the \`/${mainId}\` command from the club's text channel.`)
+		const club = getClub(interaction.channel.id);
+		if (!club) {
+			interaction.reply({ content: `Please use the \`/${mainId}\` command from the club's text channel.`, flags: MessageFlags.Ephemeral })
 				.catch(console.error);
+			return;
 		}
+
+		if (interaction.user.id === club.hostId) {
+			interaction.reply({ content: `As this club's host, please use ${commandMention("club-sunset")} or promote another member to club host in ${commandMention("club-config")}'s Change Membership instead.`, flags: MessageFlags.Ephemeral })
+				.catch(console.error);
+			return;
+		}
+
+		interaction.member.roles.remove(club.roleId);
+		interaction.reply({ content: `${interaction.user} has left this club.`, flags: MessageFlags.SuppressNotifications })
+			.catch(console.error);
+		updateListReference(interaction.guild.channels, "club");
+		cancelClubRecruitmentEvent(club, interaction.guild.scheduledEvents);
+		createClubRecruitmentEvent(club, interaction.guild);
 	}
 );

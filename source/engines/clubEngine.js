@@ -14,12 +14,13 @@ const reminderTimeouts = {};
  * @param {TextChannel} channel
  */
 function updateClubDetails(club, channel) {
+	const clubMemberCount = channel.members.filter(member => member.roles.cache.has(club.roleId)).size;
 	channel.messages.fetch(club.detailSummaryId).then(message => {
-		message.edit({ components: [club.asContainer("info")], flags: MessageFlags.IsComponentsV2 });
+		message.edit({ components: [club.asContainer("info", clubMemberCount)], flags: MessageFlags.IsComponentsV2 });
 	}).catch(error => {
 		if (isUnknownMessageError(error)) {
 			// message not found
-			channel.send({ components: [club.asContainer("info")], flags: MessageFlags.IsComponentsV2 }).then(detailSummaryMessage => {
+			channel.send({ components: [club.asContainer("info", clubMemberCount)], flags: MessageFlags.IsComponentsV2 }).then(detailSummaryMessage => {
 				detailSummaryMessage.pin();
 				club.detailSummaryId = detailSummaryMessage.id;
 				updateClub(club);
@@ -34,8 +35,8 @@ function updateClubDetails(club, channel) {
  * @param {Club} club
  * @param {Guild} guild
  */
-function createClubRecruitmentEvent(club, guild) {
-	if (club.getMembershipStatus() === "recruiting" && club.timeslot.nextMeeting) {
+async function createClubRecruitmentEvent(club, guild) {
+	if (club.getMembershipStatus((await guild.roles.fetch(club.roleId)).members.size) === "recruiting" && club.timeslot.nextMeeting) {
 		return guild.channels.fetch(club.voiceChannelId).then(voiceChannel => {
 			const startTime = club.timeslot.nextMeeting * 1000;
 			const eventPayload = {

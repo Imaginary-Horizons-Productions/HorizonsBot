@@ -79,7 +79,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				if (colorInput.length === 7 && colorInput[0] !== "#") {
 					colorErrors.push("Color codes of length 7 must start with #.");
 				}
-				if (unparsedColor.slice(7 - colorInput.length).search(/[^\dAaBbCcDdEeFf]+/) !== -1) {
+				if (unparsedColor.slice(colorInput.length - 6).search(/[^\dAaBbCcDdEeFf]+/) !== -1) {
 					colorErrors.push("Each pair of characters in the color code must be a base-16 number.");
 				}
 				if (colorErrors.length > 0) {
@@ -116,7 +116,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				updateClub(club);
 			}
 
-			modalSubmission.update({ components: [club.asContainer("config")] }).then(() => {
+			modalSubmission.update({ components: [club.asContainer("config", (await modalSubmission.guild.roles.fetch(club.roleId)).members.size)] }).then(() => {
 				const errorKeys = Object.keys(errors);
 				if (errorKeys.length > 0) {
 					modalSubmission.followUp({

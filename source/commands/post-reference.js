@@ -23,7 +23,7 @@ module.exports = new CommandWrapper(mainId, "Post a reference message in this ch
 				messageOptions = buildPetitionListPayload(interaction.guild.memberCount);
 				break;
 			case "club":
-				messageOptions = buildClubListPayload();
+				messageOptions = await buildClubListPayload(interaction.guild.roles);
 				break;
 			case "rules":
 				messageOptions = { embeds: [rulesEmbedBuilder()], flags: MessageFlags.SuppressNotifications };

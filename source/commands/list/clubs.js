@@ -6,7 +6,7 @@ const { buildClubListPayload } = require("../../engines/referenceEngine");
  * @param {...unknown} args
  */
 async function executeSubcommand(interaction, ...args) {
-	const messageOptions = buildClubListPayload();
+	const messageOptions = await buildClubListPayload(interaction.guild.roles);
 	messageOptions.flags |= MessageFlags.Ephemeral;
 	interaction.reply(messageOptions);
 

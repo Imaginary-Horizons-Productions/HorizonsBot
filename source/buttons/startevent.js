@@ -2,7 +2,6 @@ const { GuildScheduledEventStatus, ButtonBuilder, ButtonStyle, ActionRowBuilder,
 const { ButtonWrapper } = require('../classes');
 const { getClub } = require('../engines/referenceEngine.js');
 const { isModerator } = require("../engines/permissionEngine.js");
-const { clearComponents } = require('../util/discordAPIRequests.js');
 
 const mainId = "startevent";
 module.exports = new ButtonWrapper(mainId, 3000,
@@ -43,7 +42,7 @@ module.exports = new ButtonWrapper(mainId, 3000,
 				default:
 					console.error(error);
 			}
-			clearComponents(interaction.message);
+			interaction.message.edit({ components: [] });
 		});
 	}
 );
