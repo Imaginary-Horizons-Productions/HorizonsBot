@@ -11,9 +11,9 @@ const { EmbedLimits } = require('@sapphire/discord.js-utilities');
 function embedTemplateBuilder(color = Colors.Blurple) {
 	return new EmbedBuilder().setColor(color)
 		.setAuthor({
-			name: "Click here to visit HorizonsBot's GitHub",
+			name: "Click here to sponsor HorizonsBot",
 			iconURL: imaginaryHorizonsIconURL,
-			url: "https://github.com/Imaginary-Horizons-Productions/HorizonsBot"
+			url: "https://github.com/sponsors/Imaginary-Horizons-Productions"
 		})
 		.setFooter(randomEmbedFooter())
 		.setTimestamp();
